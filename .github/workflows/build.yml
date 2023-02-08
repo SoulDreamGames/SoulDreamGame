@@ -9,6 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+      projectPath:
+          - BloodArrows
         targetPlatform:
           - WebGL # WebGL.
     steps:
@@ -18,7 +20,7 @@ jobs:
           lfs: true
       - uses: actions/cache@v2
         with:
-          path: BloodArrows/Library
+          path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: Library-
       - uses: game-ci/unity-builder@v2
@@ -29,4 +31,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Build-${{ matrix.targetPlatform }}
-          path: BloodArrows/build/${{ matrix.targetPlatform }}
+          path: ${{ matrix.projectPath }}/build/${{ matrix.targetPlatform }}
