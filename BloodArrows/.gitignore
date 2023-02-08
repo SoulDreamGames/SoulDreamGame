@@ -7,6 +7,7 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/[Uu]serSettings/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
@@ -21,6 +22,7 @@
 
 # Visual Studio cache directory
 .vs/
+.idea/
 
 # Gradle cache directory
 .gradle/
