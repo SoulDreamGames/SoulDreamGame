@@ -30,3 +30,10 @@ jobs:
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
+      - uses: manleydev/butler-publish-itchio-action@master
+          env:
+            BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+            CHANNEL: html5
+            ITCH_GAME: ${{ secrets.ITCHIO_GAMEID }}
+            ITCH_USER: ${{ secrets.ITCHIO_USERNAME }}
+            PACKAGE: build/WebGL
