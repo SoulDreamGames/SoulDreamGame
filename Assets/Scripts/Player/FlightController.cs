@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,13 +7,14 @@ using static MoveInput;
 
 public class FlightController : MonoBehaviour, IFlyActions
 {
+    //Speeds
     public float forwardSpeed = 25f;
-    public float strafeSpeed = 7.5f;
     public float hoverSpeed = 5f;
-    private float moveSpeed = 5f;
-    private float initialMoveSpeed = 20f;
     public float moveAccel = 0.1f;
-    public float maxMoveSpeed = 100.0f;
+    public float maxMoveSpeed = 40.0f;
+
+    private float moveSpeed = 5f;
+    private float initialMoveSpeed = 5f;
 
     private float activeForwardSpeed;
     private float activeStrafeSpeed;
@@ -23,80 +25,124 @@ public class FlightController : MonoBehaviour, IFlyActions
     private float _hoverAxis;
     private Vector2 _movement;
 
+    //Smooth properties
+    private float smoothVel = 0.0f;
+    private Vector3 smoothStopVel = Vector3.zero;
+    
+    private float tolerance = 1f;
+    private Vector3 _lastForward;
+
+    //Components
     private MoveInput _input;
+    private Transform _orientation;
+    private Rigidbody _rb;
 
-    public Transform orientation;
-    private Rigidbody rb;
-
-    // Start is called before the first frame update
-    void Awake()
+    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation)
     {
-        _input = new MoveInput();
-    }
-
-    void Start()
-    {
-        moveSpeed = initialMoveSpeed;
+        _input = input;
 
         _input.Fly.Movement.performed += OnMovement;
         _input.Fly.Movement.canceled += OnMovement;
 
         _input.Fly.Hover.performed += OnHover;
         _input.Fly.Hover.canceled += OnHover;
+        
+        moveSpeed = initialMoveSpeed;
 
-        rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
+        _rb = rb;
+
+        _orientation = orientation;
+        _lastForward = _orientation.forward;
     }
 
-    float smoothVel = 0.0f;
-    // Update is called once per frame
-    void Update()
+    public void OnUpdate()
     {
+        //Unused
+    }
+
+    public void OnFixedUpdate()
+    {
+        
         if (_movement.y != 0)
         {
             moveSpeed += moveAccel * Time.deltaTime;
-            moveSpeed = Mathf.Clamp(moveSpeed, initialMoveSpeed, maxMoveSpeed);
+            moveSpeed = Mathf.Min(moveSpeed, maxMoveSpeed);
             brakeFactor = 1.0f;
-            Debug.Log("Current speed: " + moveSpeed);
+            //Debug.Log("Move speed: " + moveSpeed);
         }
         else
         {
-            moveSpeed = Mathf.SmoothDamp(moveSpeed, 0.0f, ref smoothVel, 0.2f);
-            if (moveSpeed > 0.01f)
-                brakeFactor = -5.0f;
-            else brakeFactor = 0.0f;
-        }
+            if (brakeFactor != 0.0f)
+            {
+                moveSpeed -= 2f * moveAccel * Time.deltaTime;
 
-        //ToDo: disable gravity when enabling this script, so hover makes sense
-        activeForwardSpeed = _movement.y * forwardSpeed;
-        activeStrafeSpeed = _movement.x * strafeSpeed;
+                if (moveSpeed > tolerance)
+                {
+                    //Debug.Log("Decreasing speed: " + moveSpeed);
+                    brakeFactor = -1.0f;
+                }
+                else brakeFactor = 0.0f;
+            }
+        }
+        
+        //Axis movements
+        if (brakeFactor != -1.0f) activeForwardSpeed = _movement.y * forwardSpeed;
         activeMoveSpeed = _hoverAxis * hoverSpeed; //Forward and back
 
-        Vector3 moveDir = orientation.forward * activeForwardSpeed * Time.deltaTime
-            + orientation.right * activeStrafeSpeed * Time.deltaTime;
+        //Save current forward
+        Vector3 forward = brakeFactor <= 0.0f ? _lastForward : _orientation.forward;
+        _lastForward = forward;
 
-        Vector3 movement = moveDir * moveSpeed * 10.0f * Time.deltaTime;
+        Vector3 moveDir = forward * activeForwardSpeed * Time.fixedDeltaTime;
 
-        if(brakeFactor == 0.0f)
+        Vector3 movement = moveDir * moveSpeed * 10.0f;
+
+        //Hover movement
+        //rb.MovePosition(rb.position + new Vector3(0f, activeMoveSpeed * Time.deltaTime, 0f));
+        _rb.velocity = new Vector3(_rb.velocity.x, activeMoveSpeed, _rb.velocity.z);
+
+        switch (brakeFactor)
         {
-            rb.velocity = Vector3.zero;
-            return;
+            //Forward movement
+            case 0.0f:
+                
+                if (_rb.velocity.sqrMagnitude < tolerance)
+                {
+                    _rb.velocity = Vector3.zero;
+                    moveSpeed = initialMoveSpeed;
+                    return;
+                }
+                
+                Debug.Log("Stopped smooth");
+                _rb.velocity = Vector3.SmoothDamp(_rb.velocity, Vector3.zero, ref smoothStopVel, 1.0f);
+                return;
+            //Moving forward
+            case >= 1.0f:
+                _rb.velocity = new Vector3(movement.x, _rb.velocity.y, movement.z);
+                break;
+            //Stopping
+            case <= -1.0f:
+                
+                if (_rb.velocity.sqrMagnitude <= initialMoveSpeed)
+                {
+                    Debug.Log("Stopped");
+                    brakeFactor = 0.0f;
+                    return;
+                }
+                
+                _rb.velocity -=  new Vector3(movement.x, 0f, movement.z) * Time.fixedDeltaTime;
+
+                _rb.velocity = new Vector3
+                {
+                    x = Mathf.Abs(_rb.velocity.x) < initialMoveSpeed ? 0f : _rb.velocity.x,
+                    y = Mathf.Abs(_rb.velocity.y) < initialMoveSpeed ? 0f : _rb.velocity.y,
+                    z = Mathf.Abs(_rb.velocity.z) < initialMoveSpeed ? 0f : _rb.velocity.z
+                };
+                Debug.Log("Current velocity is: " + _rb.velocity);
+                break;
         }
 
-        rb.AddForce(new Vector3(
-            movement.x,
-            activeMoveSpeed * Time.deltaTime,
-            movement.z) * brakeFactor, ForceMode.VelocityChange);
-    }
-
-    private void OnEnable()
-    {
-        _input.Enable();
-    }
-
-    private void OnDisable()
-    {
-        _input.Disable();
+        //rb.MovePosition(rb.position + new Vector3(movement.x * Time.deltaTime, 0f, movement.z * Time.deltaTime));
     }
 
     public void OnMovement(InputAction.CallbackContext context)
