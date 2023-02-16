@@ -26,7 +26,6 @@ public class FlightController : MonoBehaviour, IFlyActions
     private Vector2 _movement;
 
     //Smooth properties
-    private float smoothVel = 0.0f;
     private Vector3 smoothStopVel = Vector3.zero;
     
     private float tolerance = 1f;
@@ -36,8 +35,9 @@ public class FlightController : MonoBehaviour, IFlyActions
     private MoveInput _input;
     private Transform _orientation;
     private Rigidbody _rb;
+    private PlayerController _playerController;
 
-    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation)
+    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation, PlayerController pc)
     {
         _input = input;
 
@@ -53,11 +53,12 @@ public class FlightController : MonoBehaviour, IFlyActions
 
         _orientation = orientation;
         _lastForward = _orientation.forward;
+
+        _playerController = pc;
     }
 
     public void OnUpdate()
     {
-        //Unused
     }
 
     public void OnFixedUpdate()
@@ -110,6 +111,8 @@ public class FlightController : MonoBehaviour, IFlyActions
                 {
                     _rb.velocity = Vector3.zero;
                     moveSpeed = initialMoveSpeed;
+                    //Switch to ground movement when stopping
+                    _playerController.SwitchState(Movement.Ground);
                     return;
                 }
                 
@@ -138,9 +141,10 @@ public class FlightController : MonoBehaviour, IFlyActions
                     y = Mathf.Abs(_rb.velocity.y) < initialMoveSpeed ? 0f : _rb.velocity.y,
                     z = Mathf.Abs(_rb.velocity.z) < initialMoveSpeed ? 0f : _rb.velocity.z
                 };
-                Debug.Log("Current velocity is: " + _rb.velocity);
+
                 break;
         }
+        SpeedControl();
 
         //rb.MovePosition(rb.position + new Vector3(movement.x * Time.deltaTime, 0f, movement.z * Time.deltaTime));
     }
@@ -153,5 +157,16 @@ public class FlightController : MonoBehaviour, IFlyActions
     public void OnHover(InputAction.CallbackContext context)
     {
         _hoverAxis = context.ReadValue<float>();
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 vel = _rb.velocity;
+
+        if (vel.magnitude > maxMoveSpeed)
+        {
+            Vector3 newVel = vel.normalized * maxMoveSpeed;
+            _rb.velocity = newVel;
+        }
     }
 }

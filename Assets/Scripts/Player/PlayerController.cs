@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private PlayerMovement _groundMovement;
     
     //State
-    private Movement _moveType = Movement.Ground;
+    public Movement _moveType = Movement.Ground;
 
     private void Awake()
     {
@@ -28,8 +28,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        _groundMovement.Initialize(_input, _rb, orientation);
-        _flightMovement.Initialize(_input, _rb, orientation);
+        _groundMovement.Initialize(_input, _rb, orientation, this);
+        _flightMovement.Initialize(_input, _rb, orientation, this);
         
         //_rb.useGravity = false; //ToDo: add this on change
     }
@@ -72,9 +72,15 @@ public class PlayerController : MonoBehaviour
     {
         _input.Disable();
     }
+
+    public void SwitchState(Movement newState)
+    {
+        _moveType = newState;
+        _rb.useGravity = newState.Equals(Movement.Ground) ? true : false;
+    }
 }
 
-enum Movement
+public enum Movement
 {
     Ground,
     Air,

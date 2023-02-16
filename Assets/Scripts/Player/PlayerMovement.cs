@@ -8,8 +8,13 @@ using static MoveInput;
 
 public class PlayerMovement : MonoBehaviour, IGroundActions
 {
-    [Header("Movement")] public float moveSpeed;
+    [Header("Movement")]
+    public float initialMoveSpeed = 5.0f;
+    private float moveSpeed = 20.0f;
+    private float maxMoveSpeed = 20.0f;
     public float groundDrag;
+
+    public float groundAcceleration = 0.1f;
 
     public float jumpForce;
     public float jumpCd;
@@ -30,8 +35,9 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
     //Components
     private MoveInput _input;
     private Rigidbody _rb;
+    PlayerController _playerController;
 
-    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation)
+    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation, PlayerController pc)
     {
         _input = input;
         _input.Ground.Move.performed += OnMove;
@@ -43,6 +49,9 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
         _rb.freezeRotation = true;
 
         _orientation = orientation;
+        moveSpeed = initialMoveSpeed;
+
+        _playerController = pc;
     }
 
     public void OnUpdate()
@@ -58,6 +67,11 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
 
     public void OnFixedUpdate()
     {
+        //if(isRunning) //ToDo
+
+        moveSpeed += groundAcceleration * Time.fixedDeltaTime;
+        Debug.Log("Move speed is: " + moveSpeed);
+
         MovePlayer();
     }
 
@@ -80,9 +94,9 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
     {
         Vector3 vel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
 
-        if (vel.magnitude > moveSpeed)
+        if (vel.magnitude > maxMoveSpeed)
         {
-            Vector3 newVel = vel.normalized * moveSpeed;
+            Vector3 newVel = vel.normalized * maxMoveSpeed;
             _rb.velocity = new Vector3(newVel.x, _rb.velocity.y, newVel.z);
         }
     }
@@ -95,10 +109,26 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
         //Debug.Log("Move");
     }
 
+    bool jumpPressed = false;
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (jumpPressed)
+        {
+            Debug.Log("Switch state");
+            jumpPressed = false;
+
+            if (moveSpeed > maxMoveSpeed * 0.9f)
+            {
+                Debug.Log("Speed is: " + moveSpeed + " and threshold is " + maxMoveSpeed * 0.8f);
+                _playerController.SwitchState(Movement.Air);
+            }
+            
+            return;
+        }
+        jumpPressed = true;
+        Debug.Log("Jump pressed");
         if (!canJump || !isGrounded) return;
-        
+
         canJump = false;
         Jump();
         Invoke(nameof(ResetJump), jumpCd);
@@ -115,5 +145,7 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
     private void ResetJump()
     {
         canJump = true;
+        jumpPressed = false;
+        Debug.Log("Jump released");
     }
 }
