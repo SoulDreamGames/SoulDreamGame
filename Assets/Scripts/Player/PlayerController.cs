@@ -14,6 +14,15 @@ public class PlayerController : MonoBehaviour
     private FlightController _flightMovement;
     private PlayerMovement _groundMovement;
     
+    //Speed attributes 
+    [Header("Movement")]
+    public float initialMoveSpeed = 5.0f;
+    [HideInInspector]
+    public float moveSpeed;
+    public float thresholdSpeed = 20.0f;
+
+    public Vector2 inputAxis;
+    
     //State
     public Movement _moveType = Movement.Ground;
 
@@ -24,6 +33,8 @@ public class PlayerController : MonoBehaviour
 
         _flightMovement = GetComponent<FlightController>();
         _groundMovement = GetComponent<PlayerMovement>();
+        
+        moveSpeed = initialMoveSpeed;
     }
 
     void Start()
@@ -75,8 +86,31 @@ public class PlayerController : MonoBehaviour
 
     public void SwitchState(Movement newState)
     {
+        if (newState.Equals(Movement.Ground))
+        {
+            _rb.useGravity = true;
+            moveSpeed = initialMoveSpeed;
+            _rb.velocity = new Vector3(0.0f, _rb.velocity.y, 0.0f);
+        }
+        else
+        {
+            Debug.Log("Current rb vel previous to change: " + _rb.velocity);
+            _rb.useGravity = false; //When changing to flight, dont update moveSped
+        }
+        
         _moveType = newState;
-        _rb.useGravity = newState.Equals(Movement.Ground) ? true : false;
+        Debug.Log("Rb vel after change: " + _rb.velocity);
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer.Equals("Ground")) return;
+        else
+        {
+            //Reset speed and switch to ground
+            moveSpeed = 0.0f;
+            if(_moveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
+        }
     }
 }
 

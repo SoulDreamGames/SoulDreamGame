@@ -1202,6 +1202,7 @@ MonoBehaviour:
   player: {fileID: 1830642117}
   playerObj: {fileID: 849881785}
   rb: {fileID: 1830642118}
+  pc: {fileID: 1830642122}
   rotationSpeed: 7
 --- !u!1 &1308556391
 GameObject:
@@ -1293,8 +1294,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1308556391}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.14, y: 1.31, z: 0}
-  m_LocalScale: {x: 8.8197, y: 5.3002, z: 39.312748}
+  m_LocalPosition: {x: 15.14, y: 7.87, z: 0}
+  m_LocalScale: {x: 8.8197, y: 49.62471, z: 39.312748}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1710,7 +1711,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35757b0543eac384ca1763567a5e8509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardSpeed: 20
   hoverSpeed: 10
   moveAccel: 1
   maxMoveSpeed: 80
@@ -1726,9 +1726,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d97ec9df7fcb44ba0c58132fae9748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialMoveSpeed: 5
-  groundDrag: 5
-  groundAcceleration: 0.5
+  groundDrag: 3
+  groundAcceleration: 1
   jumpForce: 8
   jumpCd: 1
   airMultiplier: 1
@@ -1749,7 +1748,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: {fileID: 1429054545}
-  _moveType: 0
+  initialMoveSpeed: 5
+  moveSpeed: 0
+  thresholdSpeed: 20
+  inputAxis: {x: 0, y: 0}
+  _moveType: 1
 --- !u!1 &2056498747
 GameObject:
   m_ObjectHideFlags: 3

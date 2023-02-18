@@ -8,13 +8,10 @@ using static MoveInput;
 public class FlightController : MonoBehaviour, IFlyActions
 {
     //Speeds
-    public float forwardSpeed = 25f;
     public float hoverSpeed = 5f;
     public float moveAccel = 0.1f;
     public float maxMoveSpeed = 40.0f;
-
-    private float moveSpeed = 5f;
-    private float initialMoveSpeed = 5f;
+    private float _initialMoveSpeed;
 
     private float activeForwardSpeed;
     private float activeStrafeSpeed;
@@ -23,11 +20,10 @@ public class FlightController : MonoBehaviour, IFlyActions
     private float brakeFactor = 1.0f;
 
     private float _hoverAxis;
-    private Vector2 _movement;
 
     //Smooth properties
     private Vector3 smoothStopVel = Vector3.zero;
-    
+
     private float tolerance = 1f;
     private Vector3 _lastForward;
 
@@ -44,10 +40,10 @@ public class FlightController : MonoBehaviour, IFlyActions
         _input.Fly.Movement.performed += OnMovement;
         _input.Fly.Movement.canceled += OnMovement;
 
-        _input.Fly.Hover.performed += OnHover;
-        _input.Fly.Hover.canceled += OnHover;
-        
-        moveSpeed = initialMoveSpeed;
+        // _input.Fly.Hover.performed += OnHover;
+        // _input.Fly.Hover.canceled += OnHover;
+
+        //moveSpeed = initialMoveSpeed;
 
         _rb = rb;
 
@@ -55,6 +51,7 @@ public class FlightController : MonoBehaviour, IFlyActions
         _lastForward = _orientation.forward;
 
         _playerController = pc;
+        _initialMoveSpeed = pc.thresholdSpeed;
     }
 
     public void OnUpdate()
@@ -63,11 +60,10 @@ public class FlightController : MonoBehaviour, IFlyActions
 
     public void OnFixedUpdate()
     {
-        
-        if (_movement.y != 0)
+        Debug.Log("Axis input: " + _playerController.inputAxis);
+        if (_playerController.inputAxis.y != 0)
         {
-            moveSpeed += moveAccel * Time.deltaTime;
-            moveSpeed = Mathf.Min(moveSpeed, maxMoveSpeed);
+            _playerController.moveSpeed += moveAccel * Time.fixedDeltaTime;
             brakeFactor = 1.0f;
             //Debug.Log("Move speed: " + moveSpeed);
         }
@@ -75,9 +71,9 @@ public class FlightController : MonoBehaviour, IFlyActions
         {
             if (brakeFactor != 0.0f)
             {
-                moveSpeed -= 2f * moveAccel * Time.deltaTime;
+                _playerController.moveSpeed -= 2f * moveAccel * Time.fixedDeltaTime;
 
-                if (moveSpeed > tolerance)
+                if (_playerController.moveSpeed > tolerance)
                 {
                     //Debug.Log("Decreasing speed: " + moveSpeed);
                     brakeFactor = -1.0f;
@@ -85,18 +81,23 @@ public class FlightController : MonoBehaviour, IFlyActions
                 else brakeFactor = 0.0f;
             }
         }
-        
+
+        _playerController.moveSpeed =
+            Mathf.Clamp(_playerController.moveSpeed, _playerController.thresholdSpeed, maxMoveSpeed);
+
         //Axis movements
-        if (brakeFactor != -1.0f) activeForwardSpeed = _movement.y * forwardSpeed;
+        //if (brakeFactor != -1.0f) activeForwardSpeed = axisInput.y * Time.fixedDeltaTime;
         activeMoveSpeed = _hoverAxis * hoverSpeed; //Forward and back
 
         //Save current forward
         Vector3 forward = brakeFactor <= 0.0f ? _lastForward : _orientation.forward;
         _lastForward = forward;
 
-        Vector3 moveDir = forward * activeForwardSpeed * Time.fixedDeltaTime;
+        Vector3 moveDir = _playerController.inputAxis.y * forward;
 
-        Vector3 movement = moveDir * moveSpeed * 10.0f;
+        Vector3 movement = _playerController.moveSpeed * moveDir;
+        Debug.Log("Applied speed is: " + _playerController.moveSpeed);
+        Debug.Log("Current rb vel is: " + _rb.velocity);
 
         //Hover movement
         //rb.MovePosition(rb.position + new Vector3(0f, activeMoveSpeed * Time.deltaTime, 0f));
@@ -106,44 +107,47 @@ public class FlightController : MonoBehaviour, IFlyActions
         {
             //Forward movement
             case 0.0f:
-                
+
                 if (_rb.velocity.sqrMagnitude < tolerance)
                 {
                     _rb.velocity = Vector3.zero;
-                    moveSpeed = initialMoveSpeed;
+                    _playerController.moveSpeed = _initialMoveSpeed;
                     //Switch to ground movement when stopping
                     _playerController.SwitchState(Movement.Ground);
                     return;
                 }
-                
+
                 Debug.Log("Stopped smooth");
                 _rb.velocity = Vector3.SmoothDamp(_rb.velocity, Vector3.zero, ref smoothStopVel, 1.0f);
                 return;
             //Moving forward
             case >= 1.0f:
                 _rb.velocity = new Vector3(movement.x, _rb.velocity.y, movement.z);
+                //_rb.AddForce(movement, ForceMode.Force);
                 break;
             //Stopping
             case <= -1.0f:
-                
-                if (_rb.velocity.sqrMagnitude <= initialMoveSpeed)
+
+                if (_rb.velocity.sqrMagnitude <= _initialMoveSpeed)
                 {
                     Debug.Log("Stopped");
                     brakeFactor = 0.0f;
                     return;
                 }
-                
-                _rb.velocity -=  new Vector3(movement.x, 0f, movement.z) * Time.fixedDeltaTime;
 
+                movement = _playerController.moveSpeed * forward;
+                _rb.velocity -= new Vector3(movement.x, 0f, movement.z) * Time.fixedDeltaTime;
+                Debug.Log("RB velocity: " + _rb.velocity);
                 _rb.velocity = new Vector3
                 {
-                    x = Mathf.Abs(_rb.velocity.x) < initialMoveSpeed ? 0f : _rb.velocity.x,
-                    y = Mathf.Abs(_rb.velocity.y) < initialMoveSpeed ? 0f : _rb.velocity.y,
-                    z = Mathf.Abs(_rb.velocity.z) < initialMoveSpeed ? 0f : _rb.velocity.z
+                    x = Mathf.Abs(_rb.velocity.x) < _playerController.initialMoveSpeed ? 0f : _rb.velocity.x,
+                    y = Mathf.Abs(_rb.velocity.y) < _playerController.initialMoveSpeed ? 0f : _rb.velocity.y,
+                    z = Mathf.Abs(_rb.velocity.z) < _playerController.initialMoveSpeed ? 0f : _rb.velocity.z
                 };
 
                 break;
         }
+
         SpeedControl();
 
         //rb.MovePosition(rb.position + new Vector3(movement.x * Time.deltaTime, 0f, movement.z * Time.deltaTime));
@@ -151,12 +155,14 @@ public class FlightController : MonoBehaviour, IFlyActions
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        _movement = context.ReadValue<Vector2>();
+        _playerController.inputAxis = context.ReadValue<Vector2>();
     }
 
     public void OnHover(InputAction.CallbackContext context)
     {
+        //ToDo: quit this and use the forward for orientation, but restricting X and Y
         _hoverAxis = context.ReadValue<float>();
+        Debug.Log("Hover is: " + _hoverAxis);
     }
 
     private void SpeedControl()

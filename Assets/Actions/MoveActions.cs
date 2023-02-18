@@ -44,6 +44,15 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Run"",
+                    ""type"": ""Button"",
+                    ""id"": ""3a1650dd-dace-44e8-9279-3ad2d5f3cd18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""34ba24bb-f339-499a-8fb7-ffe50b51bb1b"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -131,7 +151,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""Hover"",
                     ""type"": ""Value"",
-                    ""id"": ""908bf114-020e-4107-bad1-a26a80e7fa29"",
+                    ""id"": ""0e4ac4d0-569c-43f9-86cc-cf159488bafb"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -195,37 +215,15 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""HoverAxis"",
-                    ""id"": ""aac20b30-f883-4367-b2c4-c52b7063c26e"",
-                    ""path"": ""1DAxis"",
+                    ""name"": """",
+                    ""id"": ""d86a80da-ead9-451f-91bb-93527afaccf5"",
+                    ""path"": ""<Mouse>/delta/y"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Hover"",
-                    ""isComposite"": true,
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""046abb45-e39d-4e6c-8a87-5040233befac"",
-                    ""path"": ""<Keyboard>/leftCtrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Hover"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""278b28dd-5c9e-4417-810c-01468e9d501d"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Hover"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -236,6 +234,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         m_Ground = asset.FindActionMap("Ground", throwIfNotFound: true);
         m_Ground_Move = m_Ground.FindAction("Move", throwIfNotFound: true);
         m_Ground_Jump = m_Ground.FindAction("Jump", throwIfNotFound: true);
+        m_Ground_Run = m_Ground.FindAction("Run", throwIfNotFound: true);
         // Fly
         m_Fly = asset.FindActionMap("Fly", throwIfNotFound: true);
         m_Fly_Movement = m_Fly.FindAction("Movement", throwIfNotFound: true);
@@ -301,12 +300,14 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     private IGroundActions m_GroundActionsCallbackInterface;
     private readonly InputAction m_Ground_Move;
     private readonly InputAction m_Ground_Jump;
+    private readonly InputAction m_Ground_Run;
     public struct GroundActions
     {
         private @MoveInput m_Wrapper;
         public GroundActions(@MoveInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Ground_Move;
         public InputAction @Jump => m_Wrapper.m_Ground_Jump;
+        public InputAction @Run => m_Wrapper.m_Ground_Run;
         public InputActionMap Get() { return m_Wrapper.m_Ground; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -322,6 +323,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnJump;
+                @Run.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnRun;
+                @Run.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnRun;
+                @Run.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnRun;
             }
             m_Wrapper.m_GroundActionsCallbackInterface = instance;
             if (instance != null)
@@ -332,6 +336,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Run.started += instance.OnRun;
+                @Run.performed += instance.OnRun;
+                @Run.canceled += instance.OnRun;
             }
         }
     }
@@ -381,6 +388,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnRun(InputAction.CallbackContext context);
     }
     public interface IFlyActions
     {

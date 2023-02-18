@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Run",
+                    "type": "Button",
+                    "id": "3a1650dd-dace-44e8-9279-3ad2d5f3cd18",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -90,6 +99,17 @@
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "34ba24bb-f339-499a-8fb7-ffe50b51bb1b",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -109,7 +129,7 @@
                 {
                     "name": "Hover",
                     "type": "Value",
-                    "id": "908bf114-020e-4107-bad1-a26a80e7fa29",
+                    "id": "0e4ac4d0-569c-43f9-86cc-cf159488bafb",
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
@@ -173,37 +193,15 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "HoverAxis",
-                    "id": "aac20b30-f883-4367-b2c4-c52b7063c26e",
-                    "path": "1DAxis",
+                    "name": "",
+                    "id": "d86a80da-ead9-451f-91bb-93527afaccf5",
+                    "path": "<Mouse>/delta/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Hover",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "046abb45-e39d-4e6c-8a87-5040233befac",
-                    "path": "<Keyboard>/leftCtrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hover",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "278b28dd-5c9e-4417-810c-01468e9d501d",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hover",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 }
             ]
         }
