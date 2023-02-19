@@ -127,13 +127,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Hover",
-                    "type": "Value",
-                    "id": "0e4ac4d0-569c-43f9-86cc-cf159488bafb",
-                    "expectedControlType": "Axis",
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "5b6c6609-561f-4581-84b5-375dcbd48e7e",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -194,12 +194,12 @@
                 },
                 {
                     "name": "",
-                    "id": "d86a80da-ead9-451f-91bb-93527afaccf5",
-                    "path": "<Mouse>/delta/y",
+                    "id": "8d2c0cfc-2fe2-4265-97c7-ada8951fc731",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Hover",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

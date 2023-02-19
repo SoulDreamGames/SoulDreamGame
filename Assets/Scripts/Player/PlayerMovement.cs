@@ -70,6 +70,12 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
 
     public void OnFixedUpdate()
     {
+        if (_playerController.inputAxis.y == 0)
+        {
+            _playerController.moveSpeed = 0f;
+            return;
+        }
+        
         if (_isRunning)
         {
             _playerController.moveSpeed += groundAcceleration * Time.fixedDeltaTime;

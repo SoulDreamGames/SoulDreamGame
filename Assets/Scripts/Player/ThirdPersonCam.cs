@@ -78,7 +78,6 @@ public class ThirdPersonCam : MonoBehaviour
             // Debug.Log("New forward: " + realLookAt);
         }
 
-        
         transform.position = player.position - realLookAt * lookAt.magnitude;
         orientation.forward = pc._moveType.Equals(Movement.Ground) ? lookAt.normalized : realLookAt.normalized;
 

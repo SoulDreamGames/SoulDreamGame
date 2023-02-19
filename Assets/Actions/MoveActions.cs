@@ -149,13 +149,13 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Hover"",
-                    ""type"": ""Value"",
-                    ""id"": ""0e4ac4d0-569c-43f9-86cc-cf159488bafb"",
-                    ""expectedControlType"": ""Axis"",
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b6c6609-561f-4581-84b5-375dcbd48e7e"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -216,12 +216,12 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d86a80da-ead9-451f-91bb-93527afaccf5"",
-                    ""path"": ""<Mouse>/delta/y"",
+                    ""id"": ""8d2c0cfc-2fe2-4265-97c7-ada8951fc731"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Hover"",
+                    ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -238,7 +238,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         // Fly
         m_Fly = asset.FindActionMap("Fly", throwIfNotFound: true);
         m_Fly_Movement = m_Fly.FindAction("Movement", throwIfNotFound: true);
-        m_Fly_Hover = m_Fly.FindAction("Hover", throwIfNotFound: true);
+        m_Fly_Attack = m_Fly.FindAction("Attack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -348,13 +348,13 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Fly;
     private IFlyActions m_FlyActionsCallbackInterface;
     private readonly InputAction m_Fly_Movement;
-    private readonly InputAction m_Fly_Hover;
+    private readonly InputAction m_Fly_Attack;
     public struct FlyActions
     {
         private @MoveInput m_Wrapper;
         public FlyActions(@MoveInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Fly_Movement;
-        public InputAction @Hover => m_Wrapper.m_Fly_Hover;
+        public InputAction @Attack => m_Wrapper.m_Fly_Attack;
         public InputActionMap Get() { return m_Wrapper.m_Fly; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -367,9 +367,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Movement.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnMovement;
-                @Hover.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnHover;
-                @Hover.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnHover;
-                @Hover.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnHover;
+                @Attack.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
+                @Attack.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
+                @Attack.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
             }
             m_Wrapper.m_FlyActionsCallbackInterface = instance;
             if (instance != null)
@@ -377,9 +377,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
-                @Hover.started += instance.OnHover;
-                @Hover.performed += instance.OnHover;
-                @Hover.canceled += instance.OnHover;
+                @Attack.started += instance.OnAttack;
+                @Attack.performed += instance.OnAttack;
+                @Attack.canceled += instance.OnAttack;
             }
         }
     }
@@ -393,6 +393,6 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     public interface IFlyActions
     {
         void OnMovement(InputAction.CallbackContext context);
-        void OnHover(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
     }
 }
