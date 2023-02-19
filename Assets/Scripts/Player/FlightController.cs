@@ -26,6 +26,7 @@ public class FlightController : MonoBehaviour, IFlyActions
 
     private float tolerance = 1f;
     private Vector3 _lastForward;
+    public Vector3 originalForward;
 
     //Components
     private MoveInput _input;
@@ -49,6 +50,7 @@ public class FlightController : MonoBehaviour, IFlyActions
 
         _orientation = orientation;
         _lastForward = _orientation.forward;
+        originalForward = _lastForward;
 
         _playerController = pc;
         _initialMoveSpeed = pc.thresholdSpeed;
@@ -63,6 +65,7 @@ public class FlightController : MonoBehaviour, IFlyActions
         Debug.Log("Axis input: " + _playerController.inputAxis);
         if (_playerController.inputAxis.y != 0)
         {
+            Debug.Log("Accel");
             _playerController.moveSpeed += moveAccel * Time.fixedDeltaTime;
             brakeFactor = 1.0f;
             //Debug.Log("Move speed: " + moveSpeed);
@@ -71,6 +74,7 @@ public class FlightController : MonoBehaviour, IFlyActions
         {
             if (brakeFactor != 0.0f)
             {
+                Debug.Log("Decel");
                 _playerController.moveSpeed -= 2f * moveAccel * Time.fixedDeltaTime;
 
                 if (_playerController.moveSpeed > tolerance)
@@ -78,30 +82,37 @@ public class FlightController : MonoBehaviour, IFlyActions
                     //Debug.Log("Decreasing speed: " + moveSpeed);
                     brakeFactor = -1.0f;
                 }
-                else brakeFactor = 0.0f;
+                else
+                {
+                    Debug.Log("Stop moving");
+                    brakeFactor = 0.0f;
+                }
             }
         }
 
+        Debug.Log("Move speed prev: " + _playerController.moveSpeed);
         _playerController.moveSpeed =
             Mathf.Clamp(_playerController.moveSpeed, _playerController.thresholdSpeed, maxMoveSpeed);
 
         //Axis movements
         //if (brakeFactor != -1.0f) activeForwardSpeed = axisInput.y * Time.fixedDeltaTime;
-        activeMoveSpeed = _hoverAxis * hoverSpeed; //Forward and back
+        //activeMoveSpeed = _hoverAxis * hoverSpeed; //Forward and back
 
         //Save current forward
         Vector3 forward = brakeFactor <= 0.0f ? _lastForward : _orientation.forward;
         _lastForward = forward;
 
+        
         Vector3 moveDir = _playerController.inputAxis.y * forward;
 
-        Vector3 movement = _playerController.moveSpeed * moveDir;
-        Debug.Log("Applied speed is: " + _playerController.moveSpeed);
-        Debug.Log("Current rb vel is: " + _rb.velocity);
+        Vector3 movement = _playerController.moveSpeed * new Vector3(moveDir.x, 0.0f, moveDir.z)
+            + new Vector3(0.0f, moveDir.y, 0.0f) * hoverSpeed;
+
+        Debug.Log("Movement is: " + movement);
 
         //Hover movement
         //rb.MovePosition(rb.position + new Vector3(0f, activeMoveSpeed * Time.deltaTime, 0f));
-        _rb.velocity = new Vector3(_rb.velocity.x, activeMoveSpeed, _rb.velocity.z);
+        //_rb.velocity = new Vector3(_rb.velocity.x, activeMoveSpeed, _rb.velocity.z);
 
         switch (brakeFactor)
         {
@@ -122,7 +133,7 @@ public class FlightController : MonoBehaviour, IFlyActions
                 return;
             //Moving forward
             case >= 1.0f:
-                _rb.velocity = new Vector3(movement.x, _rb.velocity.y, movement.z);
+                _rb.velocity = new Vector3(movement.x, movement.y, movement.z);
                 //_rb.AddForce(movement, ForceMode.Force);
                 break;
             //Stopping
@@ -136,7 +147,7 @@ public class FlightController : MonoBehaviour, IFlyActions
                 }
 
                 movement = _playerController.moveSpeed * forward;
-                _rb.velocity -= new Vector3(movement.x, 0f, movement.z) * Time.fixedDeltaTime;
+                _rb.velocity -= new Vector3(movement.x, movement.y, movement.z) * Time.fixedDeltaTime;
                 Debug.Log("RB velocity: " + _rb.velocity);
                 _rb.velocity = new Vector3
                 {

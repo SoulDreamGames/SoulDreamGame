@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private MoveInput _input;
     private Rigidbody _rb;
     public Transform orientation;
+    public ThirdPersonCam thirdPersonCam;
 
     //Movement types
     private FlightController _flightMovement;
@@ -25,6 +26,10 @@ public class PlayerController : MonoBehaviour
     
     //State
     public Movement _moveType = Movement.Ground;
+    
+    //Angle limits on air
+    public float rotXLimit = 30.0f;
+    public float rotYLimit = 30.0f;
 
     private void Awake()
     {
@@ -35,6 +40,8 @@ public class PlayerController : MonoBehaviour
         _groundMovement = GetComponent<PlayerMovement>();
         
         moveSpeed = initialMoveSpeed;
+
+        thirdPersonCam = Camera.main.GetComponent<ThirdPersonCam>();
     }
 
     void Start()
@@ -91,11 +98,16 @@ public class PlayerController : MonoBehaviour
             _rb.useGravity = true;
             moveSpeed = initialMoveSpeed;
             _rb.velocity = new Vector3(0.0f, _rb.velocity.y, 0.0f);
+            
+            thirdPersonCam.SwapCamera(Movement.Ground);
         }
         else
         {
             Debug.Log("Current rb vel previous to change: " + _rb.velocity);
-            _rb.useGravity = false; //When changing to flight, dont update moveSped
+            moveSpeed = _rb.velocity.magnitude;
+            _rb.useGravity = false; //When changing to flight, dont update moveSpeed
+            
+            thirdPersonCam.SwapCamera(Movement.Air);
         }
         
         _moveType = newState;
@@ -111,6 +123,11 @@ public class PlayerController : MonoBehaviour
             moveSpeed = 0.0f;
             if(_moveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
         }
+    }
+
+    public Vector3 GetFlightForward()
+    {
+        return _flightMovement.originalForward;
     }
 }
 
