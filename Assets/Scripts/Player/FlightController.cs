@@ -163,7 +163,9 @@ public class FlightController : MonoBehaviour, IFlyActions
             && _playerController.moveSpeed >= _playerController.enemySpeedThreshold)
         {
             Debug.Log("Attacking enemy");
-            Destroy(_playerController.enemyCollided);
+            _playerController.enemyCollided.GetComponent<EnemyBehavior>().OnRespawn();
+            _playerController.enemyCollided = null;
+            _playerController.inEnemyBounds = false;
         }
     }
 

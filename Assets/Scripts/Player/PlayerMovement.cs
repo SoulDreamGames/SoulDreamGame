@@ -21,7 +21,6 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
     private bool canJump = true;
     
     [Header("Ground check")] public float playerHeight;
-    public LayerMask groundMask;
     private bool isGrounded;
 
     private Transform _orientation;
@@ -60,7 +59,7 @@ public class PlayerMovement : MonoBehaviour, IGroundActions
     public void OnUpdate()
     {
         //IsGrounded
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, groundMask);
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, _playerController.groundMask);
 
         SpeedControl();
 

@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour
     
     //UI Components
     public SpeedBar speedUI;
+    
+    public LayerMask groundMask;
 
 
     private void Awake()
@@ -124,9 +126,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer.Equals("Ground")) return;
+        if ((groundMask & (1 << collision.gameObject.layer)) != 0) return;
+        // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 
         //Reset speed and switch to ground
+        Debug.Log("Collision without ground: " + collision.gameObject.name);
+        Debug.Log("Layer is: " + collision.gameObject.layer);
         moveSpeed = 0.0f;
         inputAxis = Vector2.zero;
         if (_moveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
@@ -144,16 +149,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            Debug.Log("Reset enemy and stop");
-            moveSpeed = 0.0f;
-            inputAxis = Vector2.zero;
-            if (_moveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
-            
-            inEnemyBounds = false;
-            enemyCollided = null;
-        }
+        if (!other.gameObject.CompareTag("Enemy")) return;
+        if (enemyCollided == null) return;
+
+        Debug.Log("Reset enemy and stop");
+        moveSpeed = 0.0f;
+        inputAxis = Vector2.zero;
+        if (_moveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
+
+        Invoke(nameof(ResetInBounds), 0.5f);
+    }
+
+    private void ResetInBounds()
+    {
+        enemyCollided = null;
+        inEnemyBounds = false;
     }
 }
 
