@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class PlayerController : MonoBehaviour
 {
@@ -42,6 +43,8 @@ public class PlayerController : MonoBehaviour
     
     public LayerMask groundMask;
 
+    private PhotonView _view;
+
 
     private void Awake()
     {
@@ -54,17 +57,24 @@ public class PlayerController : MonoBehaviour
         moveSpeed = initialMoveSpeed;
 
         thirdPersonCam = Camera.main.GetComponent<ThirdPersonCam>();
+
+        speedUI = FindObjectOfType<SpeedBar>();
+        speedUI.player = this;
     }
 
     void Start()
     {
         _groundMovement.Initialize(_input, _rb, orientation, this);
         _flightMovement.Initialize(_input, _rb, orientation, this);
+
+        _view = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!_view.IsMine) return;
+        
         switch (_moveType)
         {
             case Movement.Ground:
@@ -78,6 +88,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!_view.IsMine) return;
+        
         switch (_moveType)
         {
             case Movement.Ground:
