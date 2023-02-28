@@ -31,7 +31,7 @@ public class SpawnPlayers : MonoBehaviour
         int n = transform.childCount;
         cam.orientation = player.transform.GetChild(1);
         cam.pc = player.GetComponent<PlayerController>();
-        cam.player = transform;
+        cam.player = player.transform;
         cam.playerObj = player.transform.GetChild(0);
     }
 }
