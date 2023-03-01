@@ -57,9 +57,6 @@ public class PlayerController : MonoBehaviour
         moveSpeed = initialMoveSpeed;
 
         thirdPersonCam = Camera.main.GetComponent<ThirdPersonCam>();
-
-        speedUI = FindObjectOfType<SpeedBar>();
-        speedUI.player = this;
     }
 
     void Start()
@@ -68,6 +65,11 @@ public class PlayerController : MonoBehaviour
         _flightMovement.Initialize(_input, _rb, orientation, this);
 
         _view = GetComponent<PhotonView>();
+
+        if (!_view.IsMine) return;
+
+        speedUI = FindObjectOfType<SpeedBar>();
+        speedUI.player = this;
     }
 
     // Update is called once per frame
