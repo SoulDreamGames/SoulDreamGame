@@ -34,6 +34,7 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
         _room = PhotonNetwork.CurrentRoom;
         if (PhotonNetwork.IsMasterClient)
         {
@@ -81,7 +82,6 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     void LoadMainLevel()
     {
         _sceneIsLoading = true;
-        PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.LoadLevel(mainLevelScene);
     }
 
