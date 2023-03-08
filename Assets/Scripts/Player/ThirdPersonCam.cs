@@ -16,12 +16,11 @@ public class ThirdPersonCam : MonoBehaviour
     public float rotationSpeed;
 
     [SerializeField]
-    CinemachineFreeLook[] cameraBehaviours = new CinemachineFreeLook[2];
+    private CinemachineFreeLook[] cameraBehaviours = new CinemachineFreeLook[2];
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
     }
 
     public void SwapCamera(Movement movement)
@@ -34,11 +33,13 @@ public class ThirdPersonCam : MonoBehaviour
         else //Switching to air
         {
             //Set current rot value to new component
+#if false
             float currentValue = cameraBehaviours[0].m_XAxis.Value;
             
             cameraBehaviours[1].m_XAxis.Value = currentValue;
-            cameraBehaviours[1].m_XAxis.m_MaxValue = currentValue + pc.rotXLimit;
-            cameraBehaviours[1].m_XAxis.m_MinValue = currentValue - pc.rotXLimit;
+            cameraBehaviours[1].m_XAxis.m_MaxValue = currentValue + pc.RotXLimit;
+            cameraBehaviours[1].m_XAxis.m_MinValue = currentValue - pc.RotXLimit;
+#endif
                 
             cameraBehaviours[0].gameObject.SetActive(false);
             cameraBehaviours[1].gameObject.SetActive(true);
@@ -55,7 +56,7 @@ public class ThirdPersonCam : MonoBehaviour
 
 
         //Limit angles on air movement
-        if (pc._moveType.Equals(Movement.Air))
+        if (pc.MoveType.Equals(Movement.Air))
         {
             // realLookAt = realLookAt.normalized;
             // Vector3 _originalForward = pc.GetFlightForward();
@@ -79,11 +80,11 @@ public class ThirdPersonCam : MonoBehaviour
         }
 
         transform.position = player.position - realLookAt * lookAt.magnitude;
-        orientation.forward = pc._moveType.Equals(Movement.Ground) ? lookAt.normalized : realLookAt.normalized;
+        orientation.forward = pc.MoveType.Equals(Movement.Ground) ? lookAt.normalized : realLookAt.normalized;
 
         //Rotate player
-        float horizontalInput = pc.inputAxis.x;
-        float verticalInput = pc.inputAxis.y;
+        float horizontalInput = pc.InputAxis.x;
+        float verticalInput = pc.InputAxis.y;
         Vector3 input = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         if (input != Vector3.zero)
