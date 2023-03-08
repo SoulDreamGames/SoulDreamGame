@@ -120,6 +120,7 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
         
         //Set new timer
         _time = startCountdown;
+        _waitCountdown = WaitCountdown.WaittingStart;
         UpdateRoomTimeProperty();
     }
 
