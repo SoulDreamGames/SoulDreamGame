@@ -28,101 +28,86 @@ public class GroundMovement : MonoBehaviour, IGroundActions
     private bool _jumpPressed = false;
     
     //Components
-    private MoveInput _input;
-    private Rigidbody _rb;
-    private Transform _orientation;
+    private MovementComponents _movementComponents;
     private PlayerController _playerController;
     #endregion
 
     #region Functions
-    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation, PlayerController pc)
+    public void Initialize(MovementComponents components)
     {
-        _input = input;
-        _input.Ground.Move.performed += OnMove;
-        _input.Ground.Move.canceled += OnMove;
-        _input.Ground.Run.performed += OnRun;
-        _input.Ground.Run.canceled += OnRun;
-        _input.Ground.Jump.performed += OnJump;
+        components.Input.Ground.Move.performed += OnMove;
+        components.Input.Ground.Move.canceled += OnMove;
+        components.Input.Ground.Run.performed += OnRun;
+        components.Input.Ground.Run.canceled += OnRun;
+        components.Input.Ground.Jump.performed += OnJump;
 
-        _rb = rb;
-        _rb.freezeRotation = true;
+        components.Rigidbody.freezeRotation = true;
 
-        _orientation = orientation;
-
-        _playerController = pc;
+        var pc = components.PlayerController;
         _initialMoveSpeed = pc.InitialMoveSpeed;
         _maxMoveSpeed = pc.ThresholdSpeed;
-    }
 
-    
+        _movementComponents = components;
+        _playerController = _movementComponents.PlayerController;
+    }
+        
     public void OnUpdate()
     {
         //IsGrounded
-        _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _playerController.GroundMask);
+        _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _movementComponents.PlayerController.GroundMask);
 
         SpeedControl();
 
         //Drag
-        _rb.drag = _isGrounded ? _groundDrag : 0.0f;
+        _movementComponents.Rigidbody.drag = _isGrounded ? _groundDrag : 0.0f;
     }
 
     public void OnFixedUpdate()
     {
-        if (_playerController.InputAxis.y == 0)
+        var pc = _movementComponents.PlayerController;
+        if (pc.InputAxis.y == 0)
         {
-            _playerController.MoveSpeed = 0f;
+            pc.MoveSpeed = 0f;
             return;
         }
-        
-        if (_isRunning)
-        {
-            _playerController.MoveSpeed += _groundAcceleration * Time.fixedDeltaTime;
-        }
-        else
-        {
-            _playerController.MoveSpeed -= _groundAcceleration * Time.fixedDeltaTime;
-        }
 
-        _playerController.MoveSpeed = Mathf.Clamp(_playerController.MoveSpeed, _initialMoveSpeed, _maxMoveSpeed);
-
-        //Debug.Log("Move speed is: " + _playerController.moveSpeed);
-
+        float direction = _isRunning ? 1f : -1f;
+        pc.MoveSpeed += direction * _groundAcceleration * Time.fixedDeltaTime;
+        pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, _initialMoveSpeed, _maxMoveSpeed);
         MovePlayer();
     }
 
     private void MovePlayer()
     {
         //Calculate movement dir
-        _moveDirection = _orientation.forward * _playerController.InputAxis.y + _orientation.right * _playerController.InputAxis.x;
+        var orientation = _movementComponents.Orientation;
+        var pc = _movementComponents.PlayerController;
+        _moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
 
-        if (_isGrounded)
-        {
-            _rb.AddForce(_playerController.MoveSpeed * 10f * _moveDirection, ForceMode.Force);
-            return;
-        }
-        
-        //In air
-        _rb.AddForce(_playerController.MoveSpeed * 10.0f * _airMultiplier * _moveDirection, ForceMode.Force);
+        float inAirMultiplier = _isGrounded ? 1.0f : _airMultiplier;
+        _movementComponents.Rigidbody.AddForce(pc.MoveSpeed * 10f * inAirMultiplier * _moveDirection, ForceMode.Force);
     }
 
     private void SpeedControl()
     {
-        Vector3 vel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+        var rb = _movementComponents.Rigidbody;
+        Vector3 vel = _movementComponents.Rigidbody.velocity;
+        vel.y = 0.0f;
 
         if (vel.magnitude > 2.0f * _maxMoveSpeed)
         {
             Vector3 newVel = vel.normalized * _maxMoveSpeed;
-            _rb.velocity = new Vector3(newVel.x, _rb.velocity.y, newVel.z);
+            rb.velocity = new Vector3(newVel.x, rb.velocity.y, newVel.z);
         }
     }
 
     private void Jump()
     {
-        var vel = _rb.velocity;
+        var rb = _movementComponents.Rigidbody;
+        Vector3 vel = rb.velocity;
         vel.y = 0.0f;
-        _rb.velocity = vel;
-
-        _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
+        rb.velocity = vel;
+        rb.AddForce(_jumpForce * transform.up, ForceMode.Impulse);
     }
 
     private void ResetJump()
@@ -133,26 +118,24 @@ public class GroundMovement : MonoBehaviour, IGroundActions
     }
 
     #region InputSystemCallbacks
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        _playerController.InputAxis = context.ReadValue<Vector2>();
-        //Debug.Log("Move");
-    }
+    public void OnMove(InputAction.CallbackContext context) =>
+        _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
 
     public void OnJump(InputAction.CallbackContext context)
     {
         if (_jumpPressed)
         {
-            Debug.Log("Switch state");
             _jumpPressed = false;
 
-            if (_playerController.MoveSpeed < _maxMoveSpeed * 0.9f) return;
+            var pc = _movementComponents.PlayerController;
+            if (pc.MoveSpeed < _maxMoveSpeed * 0.9f) return;
 
-            //Debug.Log("Speed is: " + _playerController.moveSpeed + " and threshold is " + maxMoveSpeed * 0.8f);
-            _playerController.SwitchState(Movement.Air);
+            Debug.Log("Switch state");
+            pc.SwitchState(Movement.Air);
 
             return;
         }
+
         _jumpPressed = true;
         Debug.Log("Jump pressed");
         if (!_canJump || !_isGrounded) return;
@@ -162,10 +145,7 @@ public class GroundMovement : MonoBehaviour, IGroundActions
         Invoke(nameof(ResetJump), _jumpCooldown);
     }
 
-    public void OnRun(InputAction.CallbackContext context)
-    {
-        _isRunning = context.performed;
-    }
+    public void OnRun(InputAction.CallbackContext context) => _isRunning = context.performed;
     #endregion
 
     #endregion

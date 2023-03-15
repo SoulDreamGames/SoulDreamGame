@@ -22,27 +22,31 @@ public class FlyMovement : MonoBehaviour, IFlyActions
     public Vector3 OriginalForward;
 
     //Components
+    private MovementComponents _movementComponents;
     private MoveInput _input;
     private Rigidbody _rb;
     private Transform _orientation;
     private PlayerController _playerController;
 
-    public void Initialize(MoveInput input, Rigidbody rb, Transform orientation, PlayerController pc)
+    public void Initialize(MovementComponents components)
     {
-        _input = input;
-        _input.Fly.Movement.performed += OnMovement;
-        _input.Fly.Movement.canceled += OnMovement;
-        _input.Fly.Attack.performed += OnAttack;
+        components.Input.Fly.Movement.performed += OnMovement;
+        components.Input.Fly.Movement.canceled += OnMovement;
+        components.Input.Fly.Attack.performed += OnAttack;
 
-        _rb = rb;
+        _lastForward = components.Orientation.forward;
+        OriginalForward = _lastForward;
 
-        _orientation = orientation;
-        _lastForward = _orientation.forward;
-
-        _playerController = pc;
+        var pc = components.PlayerController;
         _initialMoveSpeed = pc.ThresholdSpeed;
         _maxMoveSpeed = pc.MaxMoveSpeed;
-        OriginalForward = _lastForward;
+
+        _movementComponents = components;
+
+        _input = _movementComponents.Input;
+        _rb = _movementComponents.Rigidbody;
+        _orientation = _movementComponents.Orientation;
+        _playerController = _movementComponents.PlayerController;
     }
 
     public void OnUpdate()

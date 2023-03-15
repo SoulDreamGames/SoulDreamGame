@@ -62,8 +62,16 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        _groundMovement.Initialize(_input, _rb, _orientation, this);
-        _flightMovement.Initialize(_input, _rb, _orientation, this);
+        MovementComponents components = new()
+        {
+            Input = _input,
+            Rigidbody = _rb,
+            Orientation = _orientation,
+            PlayerController = this,
+        };
+
+        _groundMovement.Initialize(components);
+        _flightMovement.Initialize(components);
     }
 
     // Update is called once per frame
