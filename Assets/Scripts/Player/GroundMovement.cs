@@ -116,6 +116,7 @@ public class GroundMovement : MonoBehaviour, IGroundActions
         _jumpPressed = false;
         Debug.Log("Jump released");
     }
+    #endregion
 
     #region InputSystemCallbacks
     public void OnMove(InputAction.CallbackContext context) =>
@@ -146,7 +147,5 @@ public class GroundMovement : MonoBehaviour, IGroundActions
     }
 
     public void OnRun(InputAction.CallbackContext context) => _isRunning = context.performed;
-    #endregion
-
     #endregion
 }

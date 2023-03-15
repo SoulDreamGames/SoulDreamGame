@@ -7,6 +7,7 @@ using static MoveInput;
 
 public class FlyMovement : MonoBehaviour, IFlyActions
 {
+    #region Variables
     //Speeds
     [Header("Speeds")]
     [SerializeField] private float _hoverSpeed = 10f;
@@ -23,11 +24,10 @@ public class FlyMovement : MonoBehaviour, IFlyActions
 
     //Components
     private MovementComponents _movementComponents;
-    private MoveInput _input;
     private Rigidbody _rb;
-    private Transform _orientation;
-    private PlayerController _playerController;
+    #endregion
 
+    #region Functions
     public void Initialize(MovementComponents components)
     {
         components.Input.Fly.Movement.performed += OnMovement;
@@ -42,123 +42,119 @@ public class FlyMovement : MonoBehaviour, IFlyActions
         _maxMoveSpeed = pc.MaxMoveSpeed;
 
         _movementComponents = components;
-
-        _input = _movementComponents.Input;
-        _rb = _movementComponents.Rigidbody;
-        _orientation = _movementComponents.Orientation;
-        _playerController = _movementComponents.PlayerController;
     }
 
     public void OnUpdate()
     {
+        // Update does nothing at the moment
     }
 
     public void OnFixedUpdate()
     {
-        if (_playerController.InputAxis.y != 0)
+        var rb = _movementComponents.Rigidbody;
+        var pc = _movementComponents.PlayerController;
+
+        if (pc.InputAxis.y != 0)
         {
-            _playerController.MoveSpeed += _moveAccel * Time.fixedDeltaTime;
+            pc.MoveSpeed += _moveAccel * Time.fixedDeltaTime;
             _brakeFactor = 1.0f;
-            //Debug.Log("Move speed: " + moveSpeed);
         }
-        else
+        else if (_brakeFactor != 0.0f)
         {
-            if (_brakeFactor != 0.0f)
-            {
-                _playerController.MoveSpeed -= 2f * _moveAccel * Time.fixedDeltaTime;
-                _brakeFactor = _playerController.MoveSpeed > _tolerance ? -1.0f : 0.0f;
-            }
+            pc.MoveSpeed -= 2f * _moveAccel * Time.fixedDeltaTime;
+            _brakeFactor = pc.MoveSpeed > _tolerance ? -1.0f : 0.0f;
         }
 
-        //Debug.Log("Move speed prev: " + _playerController.moveSpeed);
-        _playerController.MoveSpeed =
-            Mathf.Clamp(_playerController.MoveSpeed, _playerController.ThresholdSpeed, _maxMoveSpeed);
+        pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, pc.ThresholdSpeed, _maxMoveSpeed);
 
         //Save current forward
-        Vector3 forward = _brakeFactor <= 0.0f ? _lastForward : _orientation.forward;
+        Vector3 forward = _brakeFactor <= 0.0f ? _lastForward : _movementComponents.Orientation.forward;
         _lastForward = forward;
 
-        Vector3 moveDir = _playerController.InputAxis.y * forward;
-        Vector3 movement = _playerController.MoveSpeed * new Vector3(moveDir.x, 0.0f, moveDir.z)
-                           + new Vector3(0.0f, moveDir.y, 0.0f) * _hoverSpeed;
+        Vector3 moveDir = pc.InputAxis.y * forward;
+        Vector3 movement = new()
+        {
+            x = pc.MoveSpeed * moveDir.x,
+            y = _hoverSpeed * moveDir.y,
+            z = pc.MoveSpeed * moveDir.z,
+        };
 
         switch (_brakeFactor)
         {
             //Forward movement
             case 0.0f:
-
-                if (_rb.velocity.sqrMagnitude < _tolerance)
+                if (rb.velocity.sqrMagnitude < _tolerance)
                 {
-                    _rb.velocity = Vector3.zero;
-                    _playerController.MoveSpeed = _initialMoveSpeed;
+                    rb.velocity = Vector3.zero;
+                    pc.MoveSpeed = _initialMoveSpeed;
                     //Switch to ground movement when stopping
-                    _playerController.SwitchState(Movement.Ground);
+                    pc.SwitchState(Movement.Ground);
                     return;
                 }
-                
-                _rb.velocity = Vector3.SmoothDamp(_rb.velocity, Vector3.zero, ref _smoothStopVel, 1.0f);
+
+                rb.velocity = Vector3.SmoothDamp(rb.velocity, Vector3.zero, ref _smoothStopVel, 1.0f);
                 return;
+
             //Moving forward
             case >= 1.0f:
-                _rb.velocity = new Vector3(movement.x, movement.y, movement.z);
-                //_rb.AddForce(movement, ForceMode.Force);
+                rb.velocity = movement;
                 break;
+
             //Stopping
             case <= -1.0f:
-
-                if (_rb.velocity.sqrMagnitude <= _initialMoveSpeed)
+                if (rb.velocity.sqrMagnitude <= _initialMoveSpeed)
                 {
                     _brakeFactor = 0.0f;
                     return;
                 }
 
-                movement = _playerController.MoveSpeed * forward;
-                _rb.velocity -= new Vector3(movement.x, movement.y, movement.z) * Time.fixedDeltaTime;
-                
-                _rb.velocity = new Vector3
+                movement = pc.MoveSpeed * forward;
+                rb.velocity -= movement * Time.fixedDeltaTime;
+
+                rb.velocity = new Vector3
                 {
-                    x = Mathf.Abs(_rb.velocity.x) < _playerController.InitialMoveSpeed ? 0f : _rb.velocity.x,
-                    y = Mathf.Abs(_rb.velocity.y) < _playerController.InitialMoveSpeed ? 0f : _rb.velocity.y,
-                    z = Mathf.Abs(_rb.velocity.z) < _playerController.InitialMoveSpeed ? 0f : _rb.velocity.z
+                    x = Mathf.Abs(rb.velocity.x) < pc.InitialMoveSpeed ? 0f : rb.velocity.x,
+                    y = Mathf.Abs(rb.velocity.y) < pc.InitialMoveSpeed ? 0f : rb.velocity.y,
+                    z = Mathf.Abs(rb.velocity.z) < pc.InitialMoveSpeed ? 0f : rb.velocity.z
                 };
 
                 break;
         }
 
         SpeedControl();
-
-        //rb.MovePosition(rb.position + new Vector3(movement.x * Time.deltaTime, 0f, movement.z * Time.deltaTime));
-    }
-
-    public void OnMovement(InputAction.CallbackContext context)
-    {
-        _playerController.InputAxis = context.ReadValue<Vector2>();
-    }
-
-    public void OnAttack(InputAction.CallbackContext context)
-    {
-        Debug.Log("Attacking");
-        Debug.Log(_playerController.InEnemyBounds);
-        Debug.Log(_playerController.MoveSpeed >= _playerController.EnemySpeedThreshold);
-        
-        if (_playerController.InEnemyBounds 
-            && _playerController.MoveSpeed >= _playerController.EnemySpeedThreshold)
-        {
-            Debug.Log("Attacking enemy");
-            _playerController.EnemyCollided.GetComponent<EnemyBehavior>().OnRespawn();
-            _playerController.EnemyCollided = null;
-            _playerController.InEnemyBounds = false;
-        }
     }
 
     private void SpeedControl()
     {
-        Vector3 vel = _rb.velocity;
+        Vector3 vel = _movementComponents.Rigidbody.velocity;
 
         if (vel.magnitude > _maxMoveSpeed)
         {
             Vector3 newVel = vel.normalized * _maxMoveSpeed;
-            _rb.velocity = newVel;
+            _movementComponents.Rigidbody.velocity = newVel;
         }
     }
+    #endregion
+
+    #region InputSystemCallbacks
+    public void OnMovement(InputAction.CallbackContext context) =>
+        _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        Debug.Log("Attacking");
+        Debug.Log(pc.InEnemyBounds);
+        Debug.Log(pc.MoveSpeed >= pc.EnemySpeedThreshold);
+
+        if (pc.InEnemyBounds
+            && pc.MoveSpeed >= pc.EnemySpeedThreshold)
+        {
+            Debug.Log("Attacking enemy");
+            pc.EnemyCollided.GetComponent<EnemyBehavior>().OnRespawn();
+            pc.EnemyCollided = null;
+            pc.InEnemyBounds = false;
+        }
+    }
+    #endregion
 }
