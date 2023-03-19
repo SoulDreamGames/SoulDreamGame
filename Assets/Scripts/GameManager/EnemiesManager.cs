@@ -16,7 +16,7 @@ public class EnemiesManager : MonoBehaviour
     private List<Enemy> _enemiesSpawned;
     
     //Spawn points list
-    [SerializeField] private List<Vector3> respawnPoints = new List<Vector3>();
+    [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
     
     public void Initialize(GameManager gameManager)
     {
