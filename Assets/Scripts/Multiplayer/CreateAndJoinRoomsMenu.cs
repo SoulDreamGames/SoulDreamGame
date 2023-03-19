@@ -5,19 +5,27 @@ using UnityEngine.UI;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 
-public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
+public class CreateAndJoinRoomsMenu : MonoBehaviourPunCallbacks
 {
     public InputField roomInput;
     public string mainSceneName = "Lobby";
 
     [SerializeField] private Button createRoom;
     [SerializeField] private Button joinRoom;
+
+    [SerializeField] private Text usernameText;
     
     void Awake()
     {
         //Button listeners
         createRoom.onClick.AddListener(CreateRoom);
         joinRoom.onClick.AddListener(JoinRoom);
+    }
+
+    void Start()
+    {
+        //Set username on screen
+        usernameText.text = PlayerPrefs.GetString("username");
     }
 
     public void CreateRoom()
