@@ -1,8 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class enemy_controller : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
+{
+    
+}
+
+public class enemy_controller : Enemy
 {
     public GameObject target;
     public float mass = 1;
@@ -13,13 +20,15 @@ public class enemy_controller : MonoBehaviour
     public LayerMask target_mask;
 
     private Vector3 velocity;
-
+    
     private Rigidbody RB;
 
     private float target_force;
     private float drag;
     private bool lookingForTargets = true;
     private Vector3 external_forces;
+
+    private EnemiesManager _enemiesManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +36,19 @@ public class enemy_controller : MonoBehaviour
         velocity = new Vector3(0,0,0);
         drag = mass / acceleration_time;
         target_force = drag * max_vel;
+    }
+
+    void Initialize(EnemiesManager enemiesManager)
+    {
+        //ToDo: add other variables to initialize
+        _enemiesManager = enemiesManager;
+        
+        Destroy(this);
+    }
+
+    private void OnDestroy()
+    {
+        _enemiesManager.EnemyKilled(this);
     }
 
     // Update is called once per frame
