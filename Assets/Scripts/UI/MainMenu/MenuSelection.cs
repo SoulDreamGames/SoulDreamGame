@@ -20,9 +20,13 @@ public class MenuSelection : MonoBehaviour
     [SerializeField] private List<GameObject> menuCanvas;
 
     private MenuType _currentMenu = MenuType.StartGame;
+    [SerializeField] private OutfitMenu outfitMenu;
 
     private void Start()
     {
+        //Init visual player
+        outfitMenu.InitSkin();
+        
         //Assign callbacks to menus
         for (int i = 0; i < Enum.GetNames(typeof(MenuType)).Length; i++)
         {
@@ -39,6 +43,10 @@ public class MenuSelection : MonoBehaviour
 
     public void OnButtonPressed(MenuType menuType)
     {
+        if (_currentMenu == MenuType.SettingsMenu)
+        {
+            PlayerPrefs.Save();
+        }
         menuCanvas[(int)_currentMenu].SetActive(false);
         menuCanvas[(int)menuType].SetActive(true);
         _currentMenu = menuType;

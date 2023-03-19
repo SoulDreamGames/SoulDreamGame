@@ -6,24 +6,32 @@ using UnityEngine.SceneManagement;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private LoadingBar loadingBar;
+    [SerializeField] private LoadingMenu loadingMenu;
 
     void Start()
     {
-        loadingBar.UpdatePercentage(0.25f);
+        //Tiny wait time
+        StartCoroutine(Wait(2.0f));
+        
+        loadingMenu.UpdatePercentage(0.25f);
         PhotonNetwork.ConnectUsingSettings();
-        loadingBar.UpdatePercentage(0.5f);
+        loadingMenu.UpdatePercentage(0.5f);
     }
 
     public override void OnConnectedToMaster()
     {
-        loadingBar.UpdatePercentage(0.75f);
+        loadingMenu.UpdatePercentage(0.75f);
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
     {
-        loadingBar.UpdatePercentage(1.0f);
+        loadingMenu.UpdatePercentage(1.0f);
         SceneManager.LoadScene("Menu");
+    }
+
+    IEnumerator Wait(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
     }
 }
