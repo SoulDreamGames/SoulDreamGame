@@ -226,6 +226,34 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""eb426d34-802a-400d-b0cd-7efe99b608aa"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""a9e056e0-ccd2-4734-9b23-5ba4e6846448"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d7bc2853-28a1-4351-8b41-c4f582b524a8"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -239,6 +267,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         m_Fly = asset.FindActionMap("Fly", throwIfNotFound: true);
         m_Fly_Movement = m_Fly.FindAction("Movement", throwIfNotFound: true);
         m_Fly_Attack = m_Fly.FindAction("Attack", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -384,6 +415,39 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         }
     }
     public FlyActions @Fly => new FlyActions(this);
+
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_OpenMenu;
+    public struct UIActions
+    {
+        private @MoveInput m_Wrapper;
+        public UIActions(@MoveInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @OpenMenu => m_Wrapper.m_UI_OpenMenu;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
+        {
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            {
+                @OpenMenu.started -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenMenu;
+                @OpenMenu.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenMenu;
+                @OpenMenu.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenMenu;
+            }
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @OpenMenu.started += instance.OnOpenMenu;
+                @OpenMenu.performed += instance.OnOpenMenu;
+                @OpenMenu.canceled += instance.OnOpenMenu;
+            }
+        }
+    }
+    public UIActions @UI => new UIActions(this);
     public interface IGroundActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -394,5 +458,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+    }
+    public interface IUIActions
+    {
+        void OnOpenMenu(InputAction.CallbackContext context);
     }
 }

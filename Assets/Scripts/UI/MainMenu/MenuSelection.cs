@@ -39,6 +39,7 @@ public class MenuSelection : MonoBehaviour
         
         //Init with default canvas
         OnButtonPressed(MenuType.StartGame);
+        menuButtons[(int)_currentMenu].Select();
     }
 
     public void OnButtonPressed(MenuType menuType)

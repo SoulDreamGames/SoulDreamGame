@@ -17,12 +17,17 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Dropdown resolutionDrop;
     [SerializeField] private Toggle windowedToggle;
     [SerializeField] private Toggle vSyncToggle;
+
+    [SerializeField] private RectTransform volumeRect;
     private Resolution[] _resolutions;
 
     private void Awake()
     {
         //Set graphics defaults
         audioSlider.value = PlayerPrefs.GetFloat("Volume", 0.0f);
+        float scale = 1.0f + (audioSlider.value - audioSlider.minValue) / (audioSlider.maxValue - audioSlider.minValue);
+        volumeRect.localScale = new Vector3(scale, scale, scale);
+        
         graphicsDrop.value = PlayerPrefs.GetInt("Graphics", 4);
         windowedToggle.isOn = PlayerPrefs.GetInt("Windowed", 0) == 1;
         vSyncToggle.isOn = PlayerPrefs.GetInt("VSyncs", 0) != 0;
@@ -57,6 +62,8 @@ public class SettingsMenu : MonoBehaviour
     void SetVolume(float volume)
     {
         //ToDo: Change this to logarithmic
+        float scale = 1.0f + (audioSlider.value - audioSlider.minValue) / (audioSlider.maxValue - audioSlider.minValue);
+        volumeRect.localScale = new Vector3(scale, scale, scale);
         masterMixer.SetFloat("Volume", volume);
         PlayerPrefs.SetFloat("Volume", volume);
     }
