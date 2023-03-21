@@ -17,7 +17,6 @@ public class InGameSettings : MonoBehaviour
     [SerializeField] private Toggle windowedToggle;
     [SerializeField] private Toggle vSyncToggle;
     
-    //ToDo: Leave PUN and apply changes
     [SerializeField] private Button leaveButton;
     [SerializeField] private Button applySettings;
     

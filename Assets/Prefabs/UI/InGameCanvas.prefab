@@ -415,10 +415,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: InGameSettingsMenu
       objectReference: {fileID: 0}
-    - target: {fileID: 7757826980266488498, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7757826980266488509, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -502,26 +498,6 @@ PrefabInstance:
     - target: {fileID: 7757826980266488509, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757826980332266401, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757826980332266401, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757826980332266401, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757826980443501619, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7757826980443501619, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9099788222159437506, guid: 733e71938b6b08f4b8b911158df671b7, type: 3}
       propertyPath: inGameMenu

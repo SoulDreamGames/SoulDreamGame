@@ -11,7 +11,7 @@ public class LoadingMenu : MonoBehaviour
     private float _barSpeed;
 
     [SerializeField] private AudioMixer masterMixer;
-    private void Awake()
+    private void Start()
     {
         //Set saved settings
         //Volume
@@ -38,6 +38,7 @@ public class LoadingMenu : MonoBehaviour
         {
             Resolution[] resolutions;
             resolutions = Screen.resolutions;
+            resolution = Math.Min(resolution, resolutions.Length - 1);
 
             Screen.SetResolution(resolutions[resolution].width, resolutions[resolution].height, Screen.fullScreen);
         }
