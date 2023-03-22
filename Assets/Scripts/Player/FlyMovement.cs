@@ -57,7 +57,6 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Movement.canceled += OnMovement;
         components.Input.Fly.Attack.performed += OnAttack;
 
-        _originalRotation = components.Orientation.localRotation;
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
 
