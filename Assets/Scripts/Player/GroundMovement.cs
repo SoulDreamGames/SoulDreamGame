@@ -19,7 +19,6 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     [SerializeField] private float _jumpCooldown = 1f;
     [SerializeField] private float _airMultiplier = 1f;
     private bool _canJump = true;
-    private Vector3 _moveDirection;
     
     [Header("Ground check")]
     [SerializeField] private float _playerHeight = 2f;
@@ -80,10 +79,10 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         //Calculate movement dir
         var orientation = _movementComponents.Orientation;
         var pc = _movementComponents.PlayerController;
-        _moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
+        Vector3 moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
 
         float inAirMultiplier = _isGrounded ? 1.0f : _airMultiplier;
-        _movementComponents.Rigidbody.AddForce(pc.MoveSpeed * 10f * inAirMultiplier * _moveDirection, ForceMode.Force);
+        _movementComponents.Rigidbody.AddForce(pc.MoveSpeed * 10f * inAirMultiplier * moveDirection, ForceMode.Force);
     }
 
     private void SpeedControl()

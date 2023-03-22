@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
@@ -10,29 +11,36 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     #region Variables
     //Speeds
     [Header("Speeds")]
-    [SerializeField] private float _forwardSpeed = 45f;  // Forward movement
-    [SerializeField] private float _strafeSpeed = 7.5f;  // Sideways movement
-    [SerializeField] private float _hoverSpeed = 10f;    // Up-down movement
+    [SerializeField, Tooltip("Forward movement speed " +
+        "(Max movement speed when the boost is NOT applied)")] private float _forwardSpeed = 65f;   // Forward movement
+    [SerializeField, Tooltip("Sideways movement speed")] private float _strafeSpeed = 7.5f;  // Sideways movement
+    [SerializeField, Tooltip("Up-down movement speed")] private float _hoverSpeed = 10f;     // Up-down movement
 
-    [SerializeField] private float _forwardAccel = 2.5f;   // Forward acceleration
-    [SerializeField] private float _strafeAccel = 2f;      // Sideways acceleration
-    [SerializeField] private float _hoverAccel = 2f;       // Up-down acceleration
+    private float _initialMoveSpeed;
+    [SerializeField, Tooltip("Max movement speed when the boost IS applied")] private float _maxMoveSpeed = 100f;
 
     private float _activeForwardSpeed = 0f;
     private float _activeStrafeSpeed = 0f;
     private float _activeHoverSpeed = 0f;
 
-    [SerializeField] private float _moveAccel = 2f;
-    [SerializeField] private float _maxMoveSpeed = 100f;
-    private float _initialMoveSpeed;
+    [Header("Accelerations")]
+    [SerializeField, Tooltip("Forward movement acceleration")] private float _forwardAccel = 2.5f;  // Forward acceleration
+    [SerializeField, Tooltip("Sideways movement acceleration")] private float _strafeAccel = 2f;    // Sideways acceleration
+    [SerializeField, Tooltip("Up-down movement acceleration")] private float _hoverAccel = 2f;      // Up-down acceleration
+    [SerializeField, Range(0f, 1f), Tooltip("Acceleration damping")] private float _accelDamping = 0.6f;
+
     private float _brakeFactor = 1.0f;
 
     // Smoothing properties
-    private readonly float _tolerance = 1f;
-    private Vector3 _smoothStopVel = Vector3.zero;
-    private Vector3 _lastForward;
+    [Header("Smoothing properties")]
+    [SerializeField, Tooltip("Speed loss rate when no forward/back input is detected")] private float _speedLossRate = 4f;
+    [SerializeField, Range(0f, 1f),
+        Tooltip("How much the player has to stop after changing to Ground movement. " +
+        "This should not be 1 never")] private float _tolerance = 0.3f;
 
     [Header("Debug Info")]
+    [SerializeField] private float _usedTolerance = 1f;
+    [SerializeField] private Vector3 _lastForward;
     [SerializeField] private Vector3 _originalForward;
     [SerializeField] private MovementComponents _movementComponents; // Components
     #endregion
@@ -79,14 +87,9 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = _movementComponents.PlayerController;
         var orientation = _movementComponents.Orientation;
 
-        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, pc.InputAxis.y * _forwardSpeed, _forwardAccel * Time.deltaTime);
-        _activeStrafeSpeed = Mathf.Lerp(_activeStrafeSpeed, pc.InputAxis.x * _strafeSpeed, _strafeAccel * Time.deltaTime);
-
-        // TODO: Rotate player object when receiving sideways input movement
-
-        Vector3 velocity = _activeForwardSpeed * orientation.forward + _activeStrafeSpeed * orientation.right;
-        rb.velocity = velocity;
-        pc.MoveSpeed = Mathf.Clamp(rb.velocity.magnitude, pc.ThresholdSpeed, _maxMoveSpeed);
+        if (CheckGroundReturning()) return;
+        ApplyVelocity(pc.InputAxis);
+        SpeedControl();
 
 #else
         var rb = _movementComponents.Rigidbody;
@@ -172,6 +175,51 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             Vector3 newVel = vel.normalized * _maxMoveSpeed;
             _movementComponents.Rigidbody.velocity = newVel;
         }
+    }
+
+    private bool CheckGroundReturning()
+    {
+        var rb = _movementComponents.Rigidbody;
+        var pc = _movementComponents.PlayerController;
+
+        if (pc.InputAxis.y == 0)
+        {
+            // Slowly decrement velocity if no forward/back input is detected
+            pc.MoveSpeed -= _speedLossRate * Time.fixedDeltaTime;
+            rb.velocity = rb.velocity.normalized * pc.MoveSpeed;
+            if (pc.MoveSpeed < pc.ThresholdSpeed - _tolerance)
+            {
+                rb.velocity = Vector3.zero;
+                pc.MoveSpeed = _initialMoveSpeed;
+                //Switch to ground movement when stopping
+                pc.SwitchState(MovementType.Ground);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ApplyVelocity(in Vector2 input)
+    {
+        var pc = _movementComponents.PlayerController;
+        var orientation = _movementComponents.Orientation;
+
+        float realDamping = 1.0f - _accelDamping;
+        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * _forwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
+        _activeStrafeSpeed = Mathf.Lerp(_activeStrafeSpeed, input.x * _strafeSpeed, _strafeAccel * realDamping * Time.fixedDeltaTime);
+
+        // TODO: Rotate player object when receiving sideways input movement
+
+        Vector3 velocity = _activeForwardSpeed * orientation.forward + _activeStrafeSpeed * orientation.right;
+        _movementComponents.Rigidbody.velocity = velocity;
+
+        // Minimum speed tolerance before changing to Ground movement
+        if (input.y != 0)
+            _usedTolerance = 1f;
+        else
+            _usedTolerance = Mathf.Lerp(_usedTolerance, 0.25f, Time.fixedDeltaTime);
+        pc.MoveSpeed = Mathf.Clamp(velocity.magnitude, pc.ThresholdSpeed - _usedTolerance, _maxMoveSpeed);
     }
     #endregion
 
