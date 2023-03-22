@@ -10,7 +10,18 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     #region Variables
     //Speeds
     [Header("Speeds")]
-    [SerializeField] private float _hoverSpeed = 10f;
+    [SerializeField] private float _forwardSpeed = 25f;  // Forward movement
+    [SerializeField] private float _strafeSpeed = 7.5f;  // Sideways movement
+    [SerializeField] private float _hoverSpeed = 10f;    // Up-down movement
+
+    [SerializeField] private float _forwardAccel = 2.5f;   // Forward acceleration
+    [SerializeField] private float _strafeAccel = 2f;      // Sideways acceleration
+    [SerializeField] private float _hoverAccel = 2f;       // Up-down acceleration
+
+    private float _activeForwardSpeed = 0f;
+    private float _activeStrafeSpeed = 0f;
+    private float _activeHoverSpeed = 0f;
+
     [SerializeField] private float _moveAccel = 2f;
     [SerializeField] private float _maxMoveSpeed = 100f;
     private float _initialMoveSpeed;
@@ -26,6 +37,19 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     [SerializeField] private MovementComponents _movementComponents; // Components
     #endregion
 
+
+    private void OnDrawGizmos()
+    {
+        var tr = _movementComponents.PlayerController.PlayerObject.transform;
+        var pos = tr.position;
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(pos, pos + 4.0f * tr.forward);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(pos, pos + 4.0f * tr.up);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(pos, pos + 4.0f * tr.right);
+    }
+
     #region Functions
     public void Initialize(MovementComponents components)
     {
@@ -33,6 +57,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Movement.canceled += OnMovement;
         components.Input.Fly.Attack.performed += OnAttack;
 
+        _originalRotation = components.Orientation.localRotation;
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
 
@@ -50,6 +75,20 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     public void OnFixedUpdate()
     {
+#if true
+        var rb = _movementComponents.Rigidbody;
+        var pc = _movementComponents.PlayerController;
+        var orientation = _movementComponents.Orientation;
+
+        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, pc.InputAxis.y * _forwardSpeed, _forwardAccel * Time.deltaTime);
+        _activeStrafeSpeed = Mathf.Lerp(_activeStrafeSpeed, pc.InputAxis.x * _strafeSpeed, _strafeAccel * Time.deltaTime);
+
+        // TODO: Rotate player object when receiving sideways input movement
+
+        Vector3 velocity = _activeForwardSpeed * orientation.forward + _activeStrafeSpeed * orientation.right;
+        rb.velocity = velocity;
+
+#else
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
 
@@ -121,6 +160,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         }
 
         SpeedControl();
+#endif
     }
 
     private void SpeedControl()

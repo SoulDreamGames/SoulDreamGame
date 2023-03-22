@@ -51,12 +51,12 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         
     public void OnUpdate()
     {
-        //IsGrounded
+        // Check if the player is grounded
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _movementComponents.PlayerController.GroundMask);
 
         SpeedControl();
 
-        //Drag
+        // Apply ground drag to the player rigidbody if it's grounded
         _movementComponents.Rigidbody.drag = _isGrounded ? _groundDrag : 0.0f;
     }
 

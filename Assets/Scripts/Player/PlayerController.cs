@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     //Components
     private MoveInput _input;
     private Rigidbody _rb;
+    [SerializeField] private GameObject _playerObject;
     [SerializeField] private Transform _orientation;
     private ThirdPersonCam _thirdPersonCam;
 
@@ -69,6 +70,11 @@ public class PlayerController : MonoBehaviour
     // Enemy bounds 
     public bool InEnemyBounds { get; set; }
     public GameObject EnemyCollided { get; set; }
+
+    public GameObject PlayerObject
+    {
+        get => _playerObject;
+    }
     #endregion
 
     #region MonoBehaviour

@@ -90,6 +90,11 @@ public class ThirdPersonCam : MonoBehaviour
         if (input != Vector3.zero)
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, input.normalized, Time.deltaTime * rotationSpeed);
+
+            if (pc.MoveType.Equals(MovementType.Air))
+            {
+
+            }
         }
     }
 }
