@@ -10,7 +10,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     #region Variables
     //Speeds
     [Header("Speeds")]
-    [SerializeField] private float _forwardSpeed = 25f;  // Forward movement
+    [SerializeField] private float _forwardSpeed = 45f;  // Forward movement
     [SerializeField] private float _strafeSpeed = 7.5f;  // Sideways movement
     [SerializeField] private float _hoverSpeed = 10f;    // Up-down movement
 
@@ -86,6 +86,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
         Vector3 velocity = _activeForwardSpeed * orientation.forward + _activeStrafeSpeed * orientation.right;
         rb.velocity = velocity;
+        pc.MoveSpeed = Mathf.Clamp(rb.velocity.magnitude, pc.ThresholdSpeed, _maxMoveSpeed);
 
 #else
         var rb = _movementComponents.Rigidbody;
