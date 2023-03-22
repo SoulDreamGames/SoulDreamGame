@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
 {
@@ -9,6 +10,7 @@ public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
     private MoveInput _uiInput;
 
     [SerializeField] private List<GameObject> uiCanvas;     //0 is ingame - 1 is settings
+    [SerializeField] private Image settingsBackground;
     private int _currentUI = 0;
     
     void Awake()
@@ -19,6 +21,7 @@ public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
         //Set active
         uiCanvas[0].SetActive(true);
         uiCanvas[1].SetActive(false);
+        settingsBackground.gameObject.SetActive(false);
     }
 
     public void OnOpenMenu(InputAction.CallbackContext context)
@@ -38,11 +41,13 @@ public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            settingsBackground.gameObject.SetActive(true);
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            settingsBackground.gameObject.SetActive(false);
         }
     }
     
