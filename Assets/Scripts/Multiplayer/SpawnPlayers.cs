@@ -13,6 +13,8 @@ public class SpawnPlayers : MonoBehaviour
     public List<CinemachineFreeLook> cameras;
     public ThirdPersonCam cam;
     private GameObject player;
+
+    [SerializeField] private MiniMap _minimap;
     void Awake()
     {
         spawnPosition = transform.position;
@@ -33,5 +35,8 @@ public class SpawnPlayers : MonoBehaviour
         cam.pc = player.GetComponent<PlayerController>();
         cam.player = player.transform;
         cam.playerObj = player.transform.GetChild(0);
+
+        _minimap.playerPosition = player.transform;
+
     }
 }
