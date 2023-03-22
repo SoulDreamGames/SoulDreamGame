@@ -23,9 +23,9 @@ public class ThirdPersonCam : MonoBehaviour
         Cursor.visible = false;
     }
 
-    public void SwapCamera(Movement movement)
+    public void SwapCamera(MovementType movement)
     {
-        if (movement.Equals(Movement.Ground))
+        if (movement.Equals(MovementType.Ground))
         {
             cameraBehaviours[1].gameObject.SetActive(false);
             cameraBehaviours[0].gameObject.SetActive(true);
@@ -56,7 +56,7 @@ public class ThirdPersonCam : MonoBehaviour
 
 
         //Limit angles on air movement
-        if (pc.MoveType.Equals(Movement.Air))
+        if (pc.MoveType.Equals(MovementType.Air))
         {
             // realLookAt = realLookAt.normalized;
             // Vector3 _originalForward = pc.GetFlightForward();
@@ -80,7 +80,7 @@ public class ThirdPersonCam : MonoBehaviour
         }
 
         transform.position = player.position - realLookAt * lookAt.magnitude;
-        orientation.forward = pc.MoveType.Equals(Movement.Ground) ? lookAt.normalized : realLookAt.normalized;
+        orientation.forward = pc.MoveType.Equals(MovementType.Ground) ? lookAt.normalized : realLookAt.normalized;
 
         //Rotate player
         float horizontalInput = pc.InputAxis.x;

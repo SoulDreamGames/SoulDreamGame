@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
 
-public class FlyMovement : MonoBehaviour, IFlyActions
+public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 {
     #region Variables
     //Speeds
@@ -16,15 +16,14 @@ public class FlyMovement : MonoBehaviour, IFlyActions
     private float _initialMoveSpeed;
     private float _brakeFactor = 1.0f;
 
-    //Smoothing properties
+    // Smoothing properties
     private readonly float _tolerance = 1f;
     private Vector3 _smoothStopVel = Vector3.zero;
     private Vector3 _lastForward;
-    public Vector3 OriginalForward;
 
-    //Components
-    private MovementComponents _movementComponents;
-    private Rigidbody _rb;
+    [Header("Debug Info")]
+    [SerializeField] private Vector3 _originalForward;
+    [SerializeField] private MovementComponents _movementComponents; // Components
     #endregion
 
     #region Functions
@@ -35,7 +34,7 @@ public class FlyMovement : MonoBehaviour, IFlyActions
         components.Input.Fly.Attack.performed += OnAttack;
 
         _lastForward = components.Orientation.forward;
-        OriginalForward = _lastForward;
+        _originalForward = _lastForward;
 
         var pc = components.PlayerController;
         _initialMoveSpeed = pc.ThresholdSpeed;
@@ -54,7 +53,7 @@ public class FlyMovement : MonoBehaviour, IFlyActions
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
 
-        if (pc.InputAxis.y != 0)
+        if (pc.InputAxis.y != 0) // Moving forward or backwards
         {
             pc.MoveSpeed += _moveAccel * Time.fixedDeltaTime;
             _brakeFactor = 1.0f;
@@ -88,7 +87,7 @@ public class FlyMovement : MonoBehaviour, IFlyActions
                     rb.velocity = Vector3.zero;
                     pc.MoveSpeed = _initialMoveSpeed;
                     //Switch to ground movement when stopping
-                    pc.SwitchState(Movement.Ground);
+                    pc.SwitchState(MovementType.Ground);
                     return;
                 }
 

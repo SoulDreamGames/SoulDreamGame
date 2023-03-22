@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(GroundMovement))]
 [RequireComponent(typeof(FlyMovement))]
@@ -18,32 +19,56 @@ public class PlayerController : MonoBehaviour
     private FlyMovement _flightMovement;
     private GroundMovement _groundMovement;
 
-    //Speed attributes 
     [Header("Movement")]
-    public float InitialMoveSpeed = 5.0f;
-    public float ThresholdSpeed = 20.0f;
-    public float MaxMoveSpeed = 80.0f;
-    public float MoveSpeed { get; set; }
-
-    // Input
-    public Vector2 InputAxis;
-
+    //Speed attributes
+    [SerializeField] private float _initialMoveSpeed = 5.0f;
+    [SerializeField] private float _thresholdSpeed = 20.0f;
+    [SerializeField] private float _maxMoveSpeed = 80.0f;
     //State
-    public Movement MoveType = Movement.Ground;
-
+    [SerializeField] private MovementType _moveType = MovementType.Ground;
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
 
-    //Enemy bounds 
-    public bool InEnemyBounds { get; set; }
-    public GameObject EnemyCollided { get; set; }
-
     //UI Components
     [Header("UI Components")]
     public SpeedBar SpeedUI;
-
     public LayerMask GroundMask;
+
+    [Header("Debug Info")]
+    [SerializeField] private Vector2 _inputAxis; // Input
+    [SerializeField] private bool _godlike = false;
+    #endregion
+
+    #region Properties
+    public float InitialMoveSpeed
+    {
+        get => _initialMoveSpeed;
+    }
+    public float ThresholdSpeed
+    {
+        get => _thresholdSpeed;
+    }
+    public float MaxMoveSpeed
+    {
+        get => _maxMoveSpeed;
+    }
+    public float MoveSpeed { get; set; }
+    public MovementType MoveType
+    {
+        get => _moveType;
+    }
+
+    // Input
+    public Vector2 InputAxis
+    {
+        get => _inputAxis;
+        set => _inputAxis = value;
+    }
+
+    // Enemy bounds 
+    public bool InEnemyBounds { get; set; }
+    public GameObject EnemyCollided { get; set; }
     #endregion
 
     #region MonoBehaviour
@@ -55,9 +80,9 @@ public class PlayerController : MonoBehaviour
         _flightMovement = GetComponent<FlyMovement>();
         _groundMovement = GetComponent<GroundMovement>();
 
-        MoveSpeed = InitialMoveSpeed;
-
         _thirdPersonCam = Camera.main.GetComponent<ThirdPersonCam>();
+
+        MoveSpeed = InitialMoveSpeed;
     }
 
     void Start()
@@ -79,23 +104,26 @@ public class PlayerController : MonoBehaviour
     {
         switch (MoveType)
         {
-            case Movement.Ground:
+            case MovementType.Ground:
                 _groundMovement.OnUpdate();
                 break;
-            case Movement.Air:
+            case MovementType.Air:
                 _flightMovement.OnUpdate();
                 break;
         }
+#if UNITY_EDITOR
+        if (_godlike) PerformGodlikeActions();
+#endif
     }
 
     private void FixedUpdate()
     {
         switch (MoveType)
         {
-            case Movement.Ground:
+            case MovementType.Ground:
                 _groundMovement.OnFixedUpdate();
                 break;
-            case Movement.Air:
+            case MovementType.Air:
                 _flightMovement.OnFixedUpdate();
                 break;
         }
@@ -116,7 +144,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Layer is: " + collision.gameObject.layer);
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
-        if (MoveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
+        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -137,22 +165,22 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Reset enemy and stop");
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
-        if (MoveType.Equals(Movement.Air)) SwitchState(Movement.Ground);
+        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
 
         Invoke(nameof(ResetInBounds), 0.5f);
     }
     #endregion
 
     #region Functions
-    public void SwitchState(Movement newState)
+    public void SwitchState(MovementType newState)
     {
-        if (newState.Equals(Movement.Ground))
+        if (newState.Equals(MovementType.Ground))
         {
             _rb.useGravity = true;
             _rb.velocity = new Vector3(0.0f, _rb.velocity.y, 0.0f);
             MoveSpeed = InitialMoveSpeed;
 
-            _thirdPersonCam.SwapCamera(Movement.Ground);
+            _thirdPersonCam.SwapCamera(MovementType.Ground);
         }
         else
         {
@@ -160,10 +188,10 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Current rb vel previous to change: " + _rb.velocity);
             MoveSpeed = _rb.velocity.magnitude;
 
-            _thirdPersonCam.SwapCamera(Movement.Air);
+            _thirdPersonCam.SwapCamera(MovementType.Air);
         }
 
-        MoveType = newState;
+        _moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
     }
 
@@ -172,11 +200,35 @@ public class PlayerController : MonoBehaviour
         EnemyCollided = null;
         InEnemyBounds = false;
     }
-    #endregion
-}
 
-public enum Movement
-{
-    Ground,
-    Air,
+    private void PerformGodlikeActions()
+    {
+        MoveUpByAnAmount();
+        CheckGodlikeChangeStatus();
+    }
+
+    private void MoveUpByAnAmount()
+    {
+        if (Keyboard.current[Key.U].wasPressedThisFrame)
+        {
+            transform.position += Vector3.up * 10f;
+        }
+    }
+
+    private void CheckGodlikeChangeStatus()
+    {
+        if (Keyboard.current[Key.G].wasPressedThisFrame)
+        {
+            switch (MoveType)
+            {
+                case MovementType.Ground:
+                    SwitchState(MovementType.Air);
+                    break;
+                case MovementType.Air:
+                    SwitchState(MovementType.Ground);
+                    break;
+            }
+        }
+    }
+    #endregion
 }

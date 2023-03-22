@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
 
-public class GroundMovement : MonoBehaviour, IGroundActions
+public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 {
     #region Variables
     [Header("Movement")]
@@ -26,10 +26,9 @@ public class GroundMovement : MonoBehaviour, IGroundActions
     private bool _isGrounded;
     private bool _isRunning;
     private bool _jumpPressed = false;
-    
-    //Components
-    private MovementComponents _movementComponents;
-    private PlayerController _playerController;
+
+    [Header("Debug Info")]
+    [SerializeField] private MovementComponents _movementComponents; // Components
     #endregion
 
     #region Functions
@@ -48,7 +47,6 @@ public class GroundMovement : MonoBehaviour, IGroundActions
         _maxMoveSpeed = pc.ThresholdSpeed;
 
         _movementComponents = components;
-        _playerController = _movementComponents.PlayerController;
     }
         
     public void OnUpdate()
@@ -132,7 +130,7 @@ public class GroundMovement : MonoBehaviour, IGroundActions
             if (pc.MoveSpeed < _maxMoveSpeed * 0.9f) return;
 
             Debug.Log("Switch state");
-            pc.SwitchState(Movement.Air);
+            pc.SwitchState(MovementType.Air);
 
             return;
         }
