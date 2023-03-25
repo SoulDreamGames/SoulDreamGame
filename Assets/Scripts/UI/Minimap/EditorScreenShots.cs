@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 public class EditorScreenShots : MonoBehaviour
 {
 }
+
+#if UNITY_EDITOR
 [CustomEditor(typeof(EditorScreenShots))]
 public class EditorScreenShotsEditor : Editor
 {
@@ -28,3 +32,4 @@ public class EditorScreenShotsEditor : Editor
         counter++;
     }
 }
+#endif
