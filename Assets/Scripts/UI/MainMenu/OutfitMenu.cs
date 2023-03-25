@@ -16,6 +16,8 @@ public class OutfitMenu : MonoBehaviour
     private List<Color> _colors;
     private GameObject selectedSkin;
 
+    private Color _currentColor;
+
     public void InitSkin()
     {
         //Select current skin
@@ -23,14 +25,15 @@ public class OutfitMenu : MonoBehaviour
         {
             int id = Math.Min(PlayerPrefs.GetInt("Skin", 0), skinObjects.Count - 1);
             selectedSkin = skinObjects[id];
+            skinObjects[id].SetActive(true);
             Debug.Log("skin loaded:  "+ id);
             
             Color colorSkin = PlayerPrefsX.GetColor("SkinColor");
+            _currentColor = colorSkin;
             
             if (!(colorSkin.r >= 0.0f)) return;
             
-            selectedSkin.transform.GetChild(1).
-                GetComponent<SkinnedMeshRenderer>().materials[0].SetColor("_EmissionColor", colorSkin);
+            selectedSkin.GetComponent<MaterialChanger>().SetMaterialColor(colorSkin);
             Debug.Log("color loaded:  "+ colorSkin);
         }
     }
@@ -71,8 +74,9 @@ public class OutfitMenu : MonoBehaviour
 
     void OnClickColor(Color color)
     {
-        selectedSkin.transform.GetChild(1).
-            GetComponent<SkinnedMeshRenderer>().materials[0].SetColor("_EmissionColor", color);
+        selectedSkin.GetComponent<MaterialChanger>().SetMaterialColor(color);
+        _currentColor = color;
+        
         //Set to player prefs with PlayerPrefsX
         PlayerPrefsX.SetColor("SkinColor", color);
         Debug.Log("Color saved " + color);
@@ -87,6 +91,7 @@ public class OutfitMenu : MonoBehaviour
         selectedSkin.SetActive(false);
         selectedSkin = skinObjects[id_selected];
         selectedSkin.SetActive(true);
+        selectedSkin.GetComponent<MaterialChanger>().SetMaterialColor(_currentColor);
         
         PlayerPrefs.SetInt("Skin", id_selected);
         Debug.Log("Selected trail: " + id_selected);
