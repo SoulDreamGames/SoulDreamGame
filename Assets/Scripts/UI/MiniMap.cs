@@ -11,7 +11,11 @@ public class MiniMap : MonoBehaviour
     public Transform playerPosition;
     [SerializeField] private Transform mapCenter;
 
-    //ToDo: pass player object at spawn instead of serialized field
+    [SerializeField] private Transform enemy;
+    [SerializeField] private Image enemyIcon;
+    [SerializeField] private float realWorldScale = 60f;
+    [SerializeField] private float minimapDistance = 90f;
+    
     private void Update()
     {
         //align the player icon to the player rotation; i do - and +90 because my game north is not on 0 degrees
@@ -24,5 +28,29 @@ public class MiniMap : MonoBehaviour
         minimapMaterial.SetTextureScale("_MainTex", new Vector2(1/_aspectRatio, 1f));
         minimapMaterial.SetTextureOffset("_MainTex", new Vector2(0.5f * (1 - (1/_aspectRatio)), 0f));
         minimapMaterial.SetVector("_PlayerPos", mapPos / (size * 2f));
+
+        UpdateNearestEnemy();
+    }
+
+    void UpdateNearestEnemy()
+    {
+        //ToDo: ask for nearest enemy on enemymanager list
+        //ToDo: reset this with the real correspondence
+        
+        Vector3 enemyMapPos = enemy.position - playerPosition.position;
+        
+        //if enemy outside map area
+        if (enemyMapPos.magnitude > realWorldScale)
+        {
+            Vector3 enemyPos = enemyMapPos.normalized;
+            enemyPos = new Vector3(enemyPos.x, enemyPos.z, enemyPos.y) * minimapDistance;
+            enemyIcon.rectTransform.localPosition = playerIcon.rectTransform.localPosition + enemyPos;
+            return;
+            
+        }
+
+        //If enemy inside map area
+        enemyMapPos = new Vector3(enemyMapPos.x, enemyMapPos.z, enemyMapPos.y);
+        enemyIcon.rectTransform.localPosition = enemyMapPos / realWorldScale * minimapDistance;
     }
 }
