@@ -19,10 +19,7 @@ public class MiniMap : MonoBehaviour
         //size is the value of the orthographic size of the camera you toke the screenshot with. *2 because the orthograpic size represents half the height of the screen.
         Vector3 mapPos = playerPosition.position - mapCenter.position;
         mapPos = new Vector3(-mapPos.z, mapPos.y, mapPos.x);
-        // Vector3 mapPos = (new Vector3(-playerPosition.position.z, playerPosition.position.y, playerPosition.position.x)
-        //                   - new Vector3(-mapCenter.position.z, mapCenter.position.y, mapCenter.position.x));
-        Debug.Log("Map Pos: " + mapPos);
-        
+
         float _aspectRatio = Screen.width / Screen.height;
         minimapMaterial.SetTextureScale("_MainTex", new Vector2(1/_aspectRatio, 1f));
         minimapMaterial.SetTextureOffset("_MainTex", new Vector2(0.5f * (1 - (1/_aspectRatio)), 0f));
