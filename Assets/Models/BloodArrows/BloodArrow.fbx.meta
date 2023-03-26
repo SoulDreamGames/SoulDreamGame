@@ -77,7 +77,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|blood_flying.001
+      name: Armature|blood_flyingtostay
       takeName: Armature|blood_flying.001
       internalID: 8139642986310057994
       firstFrame: 0
