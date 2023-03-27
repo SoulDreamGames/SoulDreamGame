@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 212408921a20841468c08ab44cb9c0b5
+guid: 4049eafc4f5b00541abea1f13347aacc
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
@@ -35,9 +35,9 @@ ModelImporter:
       : position error = 20.975441 mm\n\t'mixamorig:LeftLeg' : position error = 35.013409
       mm\n\t'mixamorig:LeftFoot' : position error = 112.918190 mm\n\t'mixamorig:LeftToeBase'
       : position error = 3.368574 mm\n\t'mixamorig:RightUpLeg' : position error =
-      24.886290 mm\n\t'mixamorig:RightLeg' : position error = 35.127991 mm\n\t'mixamorig:RightFoot'
+      24.886292 mm\n\t'mixamorig:RightLeg' : position error = 35.127991 mm\n\t'mixamorig:RightFoot'
       : position error = 112.249290 mm\n\t'mixamorig:RightToeBase' : position error
-      = 5.498007 mm\n"
+      = 5.498052 mm\n"
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
