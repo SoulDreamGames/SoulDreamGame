@@ -44,8 +44,11 @@ public class ThirdPersonCam : MonoBehaviour
             cameraBehaviours[1].gameObject.SetActive(true);
         }
     }
-    private void Update(){
+    private void Update()
+    {
 
+        if (player == null) return;
+        
         // Rotate orientation
         Vector3 lookAt = player.position -
                          new Vector3(transform.position.x, player.position.y, transform.position.z);
