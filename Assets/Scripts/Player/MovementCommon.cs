@@ -8,6 +8,8 @@ interface IPlayerMovement
     public void OnUpdate();
 
     public void OnFixedUpdate();
+
+    public void ResetMovement();
 }
 
 [Serializable]

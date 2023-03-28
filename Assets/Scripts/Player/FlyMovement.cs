@@ -166,6 +166,19 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 #endif
     }
 
+    public void ResetMovement()
+    {
+        var rb = _movementComponents.Rigidbody;
+        var pc = _movementComponents.PlayerController;
+
+        rb.useGravity = true;
+        rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
+        pc.MoveSpeed = pc.InitialMoveSpeed;
+
+        _activeForwardSpeed = 0.0f;
+        _activeStrafeSpeed = 0.0f;
+    }
+
     private void SpeedControl()
     {
         Vector3 vel = _movementComponents.Rigidbody.velocity;
@@ -189,8 +202,6 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             rb.velocity = rb.velocity.normalized * pc.MoveSpeed;
             if (pc.MoveSpeed < pc.ThresholdSpeed - _tolerance)
             {
-                rb.velocity = Vector3.zero;
-                pc.MoveSpeed = _initialMoveSpeed;
                 //Switch to ground movement when stopping
                 pc.SwitchState(MovementType.Ground);
                 return true;
@@ -234,8 +245,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         Debug.Log(pc.InEnemyBounds);
         Debug.Log(pc.MoveSpeed >= pc.EnemySpeedThreshold);
 
-        if (pc.InEnemyBounds
-            && pc.MoveSpeed >= pc.EnemySpeedThreshold)
+        if (pc.InEnemyBounds && pc.MoveSpeed >= pc.EnemySpeedThreshold)
         {
             Debug.Log("Attacking enemy");
             pc.EnemyCollided.GetComponent<EnemyBehavior>().OnRespawn();

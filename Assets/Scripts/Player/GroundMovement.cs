@@ -74,6 +74,14 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         MovePlayer();
     }
 
+    public void ResetMovement()
+    {
+        var rb = _movementComponents.Rigidbody;
+        rb.useGravity = false; //When changing to flight, dont update moveSpeed
+        Debug.Log("Current rb vel previous to change: " + rb.velocity);
+        _movementComponents.PlayerController.MoveSpeed = rb.velocity.magnitude;
+    }
+
     private void MovePlayer()
     {
         //Calculate movement dir

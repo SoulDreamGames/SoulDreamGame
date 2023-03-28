@@ -182,18 +182,12 @@ public class PlayerController : MonoBehaviour
     {
         if (newState.Equals(MovementType.Ground))
         {
-            _rb.useGravity = true;
-            _rb.velocity = new Vector3(0.0f, _rb.velocity.y, 0.0f);
-            MoveSpeed = InitialMoveSpeed;
-
+            _flightMovement.ResetMovement();
             _thirdPersonCam.SwapCamera(MovementType.Ground);
         }
         else
         {
-            _rb.useGravity = false; //When changing to flight, dont update moveSpeed
-            Debug.Log("Current rb vel previous to change: " + _rb.velocity);
-            MoveSpeed = _rb.velocity.magnitude;
-
+            _groundMovement.ResetMovement();
             _thirdPersonCam.SwapCamera(MovementType.Air);
         }
 
