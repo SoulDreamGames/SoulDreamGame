@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/_Scenes/Lobby.unity
     guid: 863f63c67afe06f48a7452d6d1d1ad75
   - enabled: 1
+    path: Assets/_Scenes/GameScene.unity
+    guid: d2abc1743eb40ae49b8741dd1be747bc
+  - enabled: 0
     path: Assets/_Scenes/NavMeshTest.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
