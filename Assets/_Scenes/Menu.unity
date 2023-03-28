@@ -400,7 +400,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: db1318ffb13bfef419a8dad09473425d, type: 2}
+  - {fileID: 2100000, guid: 2686646944b79904e9f5f12ddb214311, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -594,6 +594,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BloodArrow3
       objectReference: {fileID: 0}
+    - target: {fileID: 2320044151722266901, guid: e7c4ae498fee5e04b8fa15aa64d33ee4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3132714724694723503, guid: e7c4ae498fee5e04b8fa15aa64d33ee4, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -655,6 +659,10 @@ PrefabInstance:
     - target: {fileID: 6228344524809042242, guid: 557f14b9ec7f7474d828ba7352c69281, type: 3}
       propertyPath: m_Name
       value: BloodArrow2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228344524809042242, guid: 557f14b9ec7f7474d828ba7352c69281, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6711584950682756088, guid: 557f14b9ec7f7474d828ba7352c69281, type: 3}
       propertyPath: m_RootOrder
@@ -724,7 +732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4020263390094305191, guid: 9625223d78f1e5144b0a786803206c45, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.34299994
+      value: -0.412
       objectReference: {fileID: 0}
     - target: {fileID: 4020263390094305191, guid: 9625223d78f1e5144b0a786803206c45, type: 3}
       propertyPath: m_LocalPosition.z
@@ -761,6 +769,10 @@ PrefabInstance:
     - target: {fileID: 4359775725530938653, guid: 9625223d78f1e5144b0a786803206c45, type: 3}
       propertyPath: m_Name
       value: BloodArrow1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4359775725530938653, guid: 9625223d78f1e5144b0a786803206c45, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9625223d78f1e5144b0a786803206c45, type: 3}
