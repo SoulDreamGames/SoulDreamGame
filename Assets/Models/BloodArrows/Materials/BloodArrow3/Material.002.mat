@@ -77,5 +77,5 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.9063317, g: 0.08315957, b: 0.060076922, a: 1}
-    - _EmissionColor: {r: 0.32314324, g: 0.013702081, b: 0.011612245, a: 1}
+    - _EmissionColor: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
