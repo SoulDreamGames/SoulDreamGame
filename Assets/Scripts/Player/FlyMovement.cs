@@ -71,6 +71,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = components.PlayerController;
         _initialMoveSpeed = pc.ThresholdSpeed;
         _maxMoveSpeed = pc.MaxMoveSpeed;
+        _activeForwardSpeed = _initialMoveSpeed;
 
         _movementComponents = components;
     }
@@ -175,7 +176,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
         pc.MoveSpeed = pc.InitialMoveSpeed;
 
-        _activeForwardSpeed = 0.0f;
+        _activeForwardSpeed = _initialMoveSpeed;
         _activeStrafeSpeed = 0.0f;
     }
 
