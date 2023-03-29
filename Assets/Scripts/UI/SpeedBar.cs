@@ -18,6 +18,7 @@ public class SpeedBar : MonoBehaviour
 
     public void UpdateHealthBar()
     {
+        Debug.Log("Update with value: " + player.moveSpeed / player.MaxMoveSpeed);
         float newSpeed = Mathf.Clamp(player.moveSpeed / player.MaxMoveSpeed, 0, 1f);
         SpeedImage.fillAmount = Mathf.SmoothDamp(SpeedImage.fillAmount, newSpeed, ref _barSpeed, 0.1f);
     }

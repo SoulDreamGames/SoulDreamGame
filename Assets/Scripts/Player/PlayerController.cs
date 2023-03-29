@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
 
         speedUI = FindObjectOfType<SpeedBar>();
         speedUI.player = this;
+        Debug.Log("Speed UI: " + speedUI.name);
     }
 
     // Update is called once per frame
