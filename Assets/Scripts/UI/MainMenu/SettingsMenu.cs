@@ -17,6 +17,7 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Dropdown resolutionDrop;
     [SerializeField] private Toggle windowedToggle;
     [SerializeField] private Toggle vSyncToggle;
+    [SerializeField] private Button quitGame;
 
     [SerializeField] private RectTransform volumeRect;
     private Resolution[] _resolutions;
@@ -57,6 +58,8 @@ public class SettingsMenu : MonoBehaviour
         graphicsDrop.onValueChanged.AddListener(SetGraphicsQuality);
         windowedToggle.onValueChanged.AddListener(SetWindowed);
         vSyncToggle.onValueChanged.AddListener(SetVerticalSync);
+        
+        quitGame.onClick.AddListener(QuitGame);
     }
 
     void SetVolume(float volume)
@@ -93,5 +96,14 @@ public class SettingsMenu : MonoBehaviour
         QualitySettings.vSyncCount = isSynced ? 1 : 0;
         PlayerPrefs.SetInt("VSync", isSynced ? 1 : 0);
         Debug.Log("Vsync " +  QualitySettings.vSyncCount);
+    }
+    
+    void QuitGame()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 }

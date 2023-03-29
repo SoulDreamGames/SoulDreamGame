@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -14,11 +15,12 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
         WaittingPlayers,
         WaittingStart
     }
-    
+
     //Configurable properties
     [SerializeField] private string mainLevelScene = "Sandbox";
     [SerializeField] private double waitCountdown = 120.0f;
     [SerializeField] private double startCountdown = 30.0f;
+    [SerializeField] private Button startGameButton;
 
     //UI
     [SerializeField] private Text _timerText;
@@ -36,6 +38,14 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.AutomaticallySyncScene = true;
         _room = PhotonNetwork.CurrentRoom;
+        //Start game
+        startGameButton.onClick.AddListener(LoadMainLevel);
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            startGameButton.gameObject.SetActive(false);
+        }
+
         if (PhotonNetwork.IsMasterClient)
         {
             _time = waitCountdown;
@@ -50,6 +60,8 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
 
     private void Update()
     {
+        if (PhotonNetwork.NetworkClientState == ClientState.Leaving) return;
+
         if (PhotonNetwork.IsMasterClient)
             UpdateTimer();
 
@@ -63,8 +75,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     {
         //Update Room Time
         _time -= Time.deltaTime;
+
         UpdateRoomTimeProperty();
-        
+
         if (!(_time <= 0f)) return;
 
         if (_waitCountdown.Equals(WaitCountdown.WaittingPlayers))
@@ -73,7 +86,7 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
             _waitCountdown = WaitCountdown.WaittingStart;
             return;
         }
-        
+
         if (!_sceneIsLoading)
             LoadMainLevel();
     }
@@ -82,6 +95,7 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     void LoadMainLevel()
     {
         _sceneIsLoading = true;
+        _room.IsOpen = false;
         PhotonNetwork.LoadLevel(mainLevelScene);
     }
 
@@ -105,19 +119,19 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
         hash.Add("Time", _time);
         _room.SetCustomProperties(hash);
     }
-    
+
     //Called each time a new player enters room
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
-        
+
         if (!PhotonNetwork.IsMasterClient) return;
 
         if (_room.PlayerCount < MaxPlayersPerRoom) return;
-        
+
         //Close room
         _room.IsOpen = false;
-        
+
         //Set new timer
         _time = startCountdown;
         _waitCountdown = WaitCountdown.WaittingStart;
@@ -127,9 +141,18 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //Called whenever a player leaves the room
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        base.OnPlayerLeftRoom(otherPlayer);
+        Debug.Log("Leaving");
+
+        //If is master client, set button On and open room
         if (!PhotonNetwork.IsMasterClient) return;
 
+        startGameButton.gameObject.SetActive(true);
         _room.IsOpen = true;
+    }
+
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene("Menu");
+        base.OnLeftRoom();
     }
 }

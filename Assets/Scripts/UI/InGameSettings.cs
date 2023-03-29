@@ -133,6 +133,5 @@ public class InGameSettings : MonoBehaviour
     {
         //Disconnect and go back to menu scene
         PhotonNetwork.LeaveRoom();
-        SceneManager.LoadScene("Menu");
     }
 }
