@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
@@ -38,14 +39,20 @@ public class NPCManager : MonoBehaviour
     void SpawnOnNewWave()
     {
         //for
-        SpawnNPC(npcPrefab, spawnPoints[Random.Range(0, spawnPoints.Count)].position); //etc...
+
+        for (int i = 0; i < spawnPoints.Count; i++)
+        {
+            SpawnNPC(npcPrefab, spawnPoints[i].position);
+        }
+
+         //etc...
     }
     
     public void SpawnNPC(GameObject npcToSpawn, Vector3 spawnPoint)
     {
         //Spawn new enemy
         GameObject npc = Instantiate(npcToSpawn, spawnPoint, Quaternion.identity);
-        npc.GetComponent<NPCRandomNavMesh>().Initialize(this);
+        npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[UnityEngine.Random.Range(0, safeZones.Count)]);
         _npcsSpawned.Add(npc.GetComponent<NPCRandomNavMesh>());
     }
     
