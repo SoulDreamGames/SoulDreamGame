@@ -23,7 +23,8 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     [SerializeField] private Button startGameButton;
 
     //UI
-    [SerializeField] private Text _timerText;
+    [SerializeField] private Text timerText;
+    [SerializeField] private Text bgText;
 
     //Room properties
     private Room _room;
@@ -108,7 +109,8 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //Update Timer on UI
     void SetUITimer()
     {
-        _timerText.text = ((int)_time).ToString();
+        timerText.text = ((int)_time).ToString();
+        bgText.text = ((int)_time).ToString();
     }
 
     //Update timer for all clients
