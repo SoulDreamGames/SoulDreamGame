@@ -167,6 +167,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: InGameCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 1944222332003151330, guid: 6280dbd59258f644d928284677392ea7, type: 3}
+      propertyPath: m_Type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1944222332003151330, guid: 6280dbd59258f644d928284677392ea7, type: 3}
+      propertyPath: m_FillMethod
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3783985598726155830, guid: 6280dbd59258f644d928284677392ea7, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 99.900024
