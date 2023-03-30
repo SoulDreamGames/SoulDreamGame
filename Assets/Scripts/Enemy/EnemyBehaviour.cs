@@ -6,7 +6,7 @@ public abstract class EnemyBehaviour : MonoBehaviour
 {
     public GameObject _Target;
     public GameObject _DefaultTarget;
-    protected EnemiesManager _EnemiesManager;
+    [SerializeField] protected EnemiesManager _EnemiesManager;
     [SerializeField] protected int Hitpoints = 1;
     protected bool LookingForTargets = true;
     public bool isLookingForTargets() { return LookingForTargets; }

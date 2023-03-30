@@ -29,7 +29,7 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
 
     public override void OnCollisionEnter(Collision collision) {
         base.OnCollisionEnter(collision);
-        if ((WallsMask.value & (1 << collision.gameObject.transform.gameObject.layer)) > 0) {
+        if ((TargetMask.value & (1 << collision.gameObject.transform.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
             mySwarm.createNewMember(transform.position + direction);
         }

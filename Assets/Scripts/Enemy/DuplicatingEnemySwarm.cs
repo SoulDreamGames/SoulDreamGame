@@ -29,7 +29,7 @@ public class DuplicatingEnemySwarm : EnemySwarm
     // Update is called once per frame
     void Update()
     {
-        RenderAll();
+        // RenderAll();
     }
     void FixedUpdate() {
         // apply_swarm_force();
