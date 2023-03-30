@@ -196,11 +196,11 @@ GameObject:
   - component: {fileID: 96035834990609325}
   - component: {fileID: 4834957482344205703}
   - component: {fileID: 3306631969650677189}
-  - component: {fileID: 3306631969650677191}
   - component: {fileID: 3306631969650677190}
   - component: {fileID: 3306631969650677188}
   - component: {fileID: 1178050435792598589}
   - component: {fileID: 5551516106879617800}
+  - component: {fileID: 9161321765751773339}
   m_Layer: 0
   m_Name: BloodArrow2
   m_TagString: Player
@@ -315,38 +315,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5afaa7dbb417a79498c47c2eacb91947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orientation: {fileID: 3306631970050166878}
-  thirdPersonCam: {fileID: 0}
-  initialMoveSpeed: 5
-  moveSpeed: 0
-  thresholdSpeed: 20
-  MaxMoveSpeed: 80
-  inputAxis: {x: 0, y: 0}
+  _playerObject: {fileID: 614515247016711029}
+  _orientation: {fileID: 3306631970050166878}
+  _initialMoveSpeed: 5
+  _thresholdSpeed: 10
+  _maxMoveSpeed: 80
   _moveType: 0
-  rotXLimit: 30
-  enemySpeedThreshold: 15
-  inEnemyBounds: 0
-  enemyCollided: {fileID: 0}
-  speedUI: {fileID: 0}
-  groundMask:
+  RotXLimit: 60
+  EnemySpeedThreshold: 15
+  SpeedUI: {fileID: 0}
+  GroundMask:
     serializedVersion: 2
     m_Bits: 192
---- !u!114 &3306631969650677191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3306631969650677198}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35757b0543eac384ca1763567a5e8509, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hoverSpeed: 10
-  moveAccel: 2
-  maxMoveSpeed: 100
-  originalForward: {x: 0, y: 0, z: 0}
+  _inputAxis: {x: 0, y: 0}
+  _godlike: 0
 --- !u!114 &3306631969650677190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,12 +341,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d97ec9df7fcb44ba0c58132fae9748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundDrag: 3
-  groundAcceleration: 1.5
-  jumpForce: 8
-  jumpCd: 1
-  airMultiplier: 1
-  playerHeight: 2
+  _groundDrag: 3
+  _groundAcceleration: 1.5
+  _jumpForce: 8
+  _jumpCooldown: 1
+  _airMultiplier: 1
+  _playerHeight: 2
+  _movementComponents:
+    Rigidbody: {fileID: 0}
+    Orientation: {fileID: 0}
+    PlayerController: {fileID: 0}
 --- !u!114 &3306631969650677188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,6 +419,35 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
+--- !u!114 &9161321765751773339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306631969650677198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86fc282e7425ce741bee899ff3c0ec69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _forwardSpeed: 65
+  _strafeSpeed: 7.5
+  _hoverSpeed: 10
+  _maxMoveSpeed: 100
+  _forwardAccel: 2.5
+  _strafeAccel: 2
+  _hoverAccel: 2
+  _accelDamping: 0.6
+  _speedLossRate: 4
+  _tolerance: 0.3
+  _usedTolerance: 1
+  _lastForward: {x: 0, y: 0, z: 0}
+  _originalForward: {x: 0, y: 0, z: 0}
+  _movementComponents:
+    Rigidbody: {fileID: 0}
+    Orientation: {fileID: 0}
+    PlayerController: {fileID: 0}
 --- !u!1 &3306631970050166879
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,6 +552,11 @@ PrefabInstance:
 --- !u!4 &273843201638287823 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4049eafc4f5b00541abea1f13347aacc, type: 3}
+  m_PrefabInstance: {fileID: 308034288277990948}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &614515247016711029 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4049eafc4f5b00541abea1f13347aacc, type: 3}
   m_PrefabInstance: {fileID: 308034288277990948}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &3720071037298402293 stripped

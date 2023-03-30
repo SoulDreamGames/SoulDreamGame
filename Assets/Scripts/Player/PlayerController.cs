@@ -100,9 +100,9 @@ public class PlayerController : MonoBehaviour
 
         if (!_view.IsMine) return;
 
-        speedUI = FindObjectOfType<SpeedBar>();
-        speedUI.player = this;
-        Debug.Log("Speed UI: " + speedUI.name);
+        SpeedUI = FindObjectOfType<SpeedBar>();
+        SpeedUI.Player = this;
+        Debug.Log("Speed UI: " + SpeedUI.name);
         MovementComponents components = new()
         {
             Input = _input,
@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 
         //Reset speed and switch to ground
-        Debug.Log("Collision without ground: " + collision.gameObject.name);
+        Debug.Log("Collision without ground: " + collision.gameObject.name, collision.gameObject);
         Debug.Log("Layer is: " + collision.gameObject.layer);
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
