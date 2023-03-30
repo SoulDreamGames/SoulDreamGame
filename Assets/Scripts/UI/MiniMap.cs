@@ -19,7 +19,7 @@ public class MiniMap : MonoBehaviour
     private void Update()
     {
         //align the player icon to the player rotation; i do - and +90 because my game north is not on 0 degrees
-        playerIcon.rectTransform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+        playerIcon.rectTransform.rotation = Quaternion.Euler(0f,0f,-playerPosition.eulerAngles.y);
         //size is the value of the orthographic size of the camera you toke the screenshot with. *2 because the orthograpic size represents half the height of the screen.
         Vector3 mapPos = playerPosition.position - mapCenter.position;
         mapPos = new Vector3(-mapPos.z, mapPos.y, mapPos.x);
