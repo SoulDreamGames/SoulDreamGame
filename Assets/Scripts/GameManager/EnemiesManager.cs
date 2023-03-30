@@ -13,16 +13,17 @@ public class EnemiesManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> enemiesToSpawn = new List<GameObject>();
 
-    private List<Enemy> _enemiesSpawned;
+    private List<EnemyBehaviour> _enemiesSpawned;
     
     //Spawn points list
     [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
+    [SerializeField] private List<Transform> targetPoints = new List<Transform>();
     
     public void Initialize(GameManager gameManager)
     {
         //Init gameManager
         _gameManager = gameManager;
-        _enemiesSpawned = new List<Enemy>();
+        _enemiesSpawned = new List<EnemyBehaviour>();
         _gameManager.SubscribeToEvent(GameEventType.onWaveStart, SpawnOnNewWave);
     }
 
@@ -49,14 +50,14 @@ public class EnemiesManager : MonoBehaviour
 
         //Invoke enemySpawn event 
         GameObject enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
-        _enemiesSpawned.Add(enemy.GetComponent<Enemy>());
+        _enemiesSpawned.Add(enemy.GetComponent<EnemyBehaviour>());
         _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
     }
 
     //ToDo: both onEnemySpawned and onEnemyDied are yet subscribed by other components - Eg. use it on UI
     
     //ToDo: call this method when enemy killed/destroyed - Call inside the OnDestroy method from the enemy
-    public void EnemyKilled(Enemy enemy)
+    public void EnemyKilled(EnemyBehaviour enemy)
     {
         //ToDo: delete this enemy
         //_enemiesSpawned.Delete(enemy);
@@ -71,4 +72,17 @@ public class EnemiesManager : MonoBehaviour
             _gameManager.InvokeEvent(GameEventType.onWaveEnd);
         } 
     }
+    public void IncreaseWaveRemainingEnemies(int number) {
+        remainingWaveEnemies += number;
+    }
+
+    // public void RemoveEnemyTarget(GameObject gameobject) {
+    //  /* If NPC died, the enemies must find another target */
+    //  foreach(EnemyBehaviour enemy in _enemiesSpawned) {
+    //      if (enemy.target == gameobject) {
+    //          enemy.target = null;
+    //          enemy.startLookingForTargets();
+    //      }
+    //  }
+    // }
 }
