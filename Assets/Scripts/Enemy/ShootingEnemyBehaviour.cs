@@ -43,7 +43,7 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
         }
 
         Vector3 Position = RB.position + Velocity;
-        RB.MovePosition(Position);
+        transform.position = Position;
         transform.LookAt(TargetPos, Vector3.up);
 
         ExternalForces = ExternalForces * 0;

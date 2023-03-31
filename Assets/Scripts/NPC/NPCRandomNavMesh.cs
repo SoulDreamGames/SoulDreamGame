@@ -79,7 +79,7 @@ public class NPCRandomNavMesh : MonoBehaviour
             agent.SetDestination(newTemporalPos);
 
 
-            UnityEngine.Debug.Log(agent.destination);
+            // UnityEngine.Debug.Log(agent.destination);
         }
         else
         {
