@@ -242,8 +242,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc95111f1a2542a4ba741b5cab6da952, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  _Target: {fileID: 0}
   _DefaultTarget: {fileID: 0}
+  _EnemiesManager: {fileID: 0}
+  Hitpoints: 1
   Mass: 1
   AccelerationTime: 5
   MaxSpeed: 0.1

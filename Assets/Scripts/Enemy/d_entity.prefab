@@ -297,7 +297,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -319,7 +319,7 @@ MonoBehaviour:
   Hitpoints: 1
   Mass: 1
   AccelerationTime: 5
-  MaxSpeed: 0.1
+  MaxSpeed: 0.3
   HoverHeight: 1.5
   WallsMask:
     serializedVersion: 2

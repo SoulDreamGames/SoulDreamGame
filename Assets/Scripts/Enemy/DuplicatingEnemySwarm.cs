@@ -32,7 +32,7 @@ public class DuplicatingEnemySwarm : EnemySwarm
         // RenderAll();
     }
     void FixedUpdate() {
-        // apply_swarm_force();
+        apply_swarm_force();
         updateTargets();
 
         framecout++;
