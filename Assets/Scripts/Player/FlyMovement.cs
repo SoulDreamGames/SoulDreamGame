@@ -249,10 +249,17 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         if (pc.InEnemyBounds && pc.MoveSpeed >= pc.EnemySpeedThreshold)
         {
             Debug.Log("Attacking enemy");
-            pc.EnemyCollided.GetComponent<EnemyBehavior>().OnRespawn();
+
+            var enemy = pc.EnemyCollided.GetComponent<EnemyBehaviour>();
             pc.EnemyCollided = null;
             pc.InEnemyBounds = false;
+
+            if (enemy == null) return;
+
+            bool isDead = enemy.ReceiveDamage(3);
+            if (isDead)
+                enemy.OnDeath();
         }
     }
-    #endregion
+#endregion
 }

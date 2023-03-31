@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask GroundMask;
 
     private PhotonView _view;
+    private InGameMenu _menu;
 
     [Header("Debug Info")]
     [SerializeField] private Vector2 _inputAxis; // Input
@@ -97,6 +98,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _view = GetComponent<PhotonView>();
+        _menu = FindObjectOfType<InGameMenu>();
 
         if (!_view.IsMine) return;
 
@@ -119,6 +121,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (!_view.IsMine) return;
+        if (!_menu.EnableInGameControls) InputAxis = Vector2.zero;
         
         switch (MoveType)
         {

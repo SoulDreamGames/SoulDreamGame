@@ -14,7 +14,7 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
         base.Initialize(enemiesManager, defaultTarget);
         mySwarm = dup_swarm;
     }
-    public override bool RecieveDamage(int damage) {
+    public override bool ReceiveDamage(int damage) {
         Hitpoints -= damage;
         bool died = Hitpoints <= 0;
         if (died) {

@@ -201,7 +201,7 @@ GameObject:
   - component: {fileID: 1178050435792598589}
   - component: {fileID: 5551516106879617800}
   - component: {fileID: 9161321765751773339}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BloodArrow2
   m_TagString: Player
   m_Icon: {fileID: 0}

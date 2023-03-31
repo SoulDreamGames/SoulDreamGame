@@ -21,16 +21,21 @@ public abstract class EnemyBehaviour : MonoBehaviour
     public void startLookingForTargets() { LookingForTargets = true; }
 
     /* Returns true if the enemy died with the damage done */
-    public abstract bool RecieveDamage(int damage);
+    public abstract bool ReceiveDamage(int damage);
 
     /* Notifies to the game manager that "someone" has died -> player / NPC */
     public abstract void NotifyHasEatenSomeone(GameObject someone);
+
+    public void OnDeath()
+    {
+        Destroy(gameObject);
+    }
 
     private void OnDestroy()
     {
         _EnemiesManager.EnemyKilled(this);
 
-        if (_Target.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+        if (_Target.TryGetComponent(out NPCRandomNavMesh npc))
         {
             npc.isTargeted = false;
             npc._enemyFollowing = null;

@@ -12,6 +12,8 @@ public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
     [SerializeField] private List<GameObject> uiCanvas;     //0 is ingame - 1 is settings
     [SerializeField] private Image settingsBackground;
     private int _currentUI = 0;
+
+    public bool EnableInGameControls { get; private set; } = true;
     
     void Awake()
     {
@@ -42,12 +44,14 @@ public class InGameMenu : MonoBehaviour, MoveInput.IUIActions
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             settingsBackground.gameObject.SetActive(true);
+            EnableInGameControls = false;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             settingsBackground.gameObject.SetActive(false);
+            EnableInGameControls = true;
         }
     }
     
