@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     //Manager components
     private TimeManager _timeManager;
     private PlayersManager _playersManager;
-    private EnemiesManager _enemiesManager;
-    private NPCManager _npcManager;
+    public EnemiesManager _enemiesManager;
+    public NPCManager _npcManager;
 
     //Game properties
     [HideInInspector] public int currentWave = 0;
