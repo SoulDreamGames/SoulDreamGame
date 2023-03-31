@@ -156,6 +156,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de8d71f23c85fc1468cf453aefa1ff92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemiesManager: {fileID: 0}
+  _npcManager: {fileID: 0}
   currentWave: 0
   totalWaves: 5
   cityEnergy: 100
@@ -178,6 +180,7 @@ MonoBehaviour:
   npcPrefab: {fileID: 0}
   spawnPoints: []
   safeZones: []
+  _npcsSpawned: []
 --- !u!114 &270822759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesToSpawn: []
+  _enemiesSpawned: []
   respawnPoints: []
   targetPoints: []
 --- !u!114 &270822760
@@ -381,6 +385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesToSpawn: []
+  _enemiesSpawned: []
   respawnPoints: []
   targetPoints: []
 --- !u!4 &406870099
@@ -599,7 +604,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530692467}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -38.86, y: 15.04, z: 59.89}
+  m_LocalPosition: {x: 28.5, y: 5.35, z: 59.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -698,7 +703,7 @@ Transform:
   m_GameObject: {fileID: 806107776}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -19.1, y: 8.1, z: 30}
-  m_LocalScale: {x: 68.43918, y: 34.50715, z: 1.6818}
+  m_LocalScale: {x: 271.22446, y: 34.50715, z: 1.6818}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1126,7 +1131,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 03286cf5c17d6fe48b187d549a748c1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1181,6 +1186,10 @@ PrefabInstance:
     - target: {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
       propertyPath: target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
+      propertyPath: MaxSpeed
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
       propertyPath: ShootingDelay
@@ -1343,6 +1352,10 @@ PrefabInstance:
       propertyPath: _enemy_manager
       value: 
       objectReference: {fileID: 406870098}
+    - target: {fileID: 1378950066543773415, guid: bf7db9699ad683d4f9c6ace3760ffdcd, type: 3}
+      propertyPath: swarm_stiffness
+      value: 0.001
+      objectReference: {fileID: 0}
     - target: {fileID: 1378950066543773415, guid: bf7db9699ad683d4f9c6ace3760ffdcd, type: 3}
       propertyPath: swarm_default_target
       value: 

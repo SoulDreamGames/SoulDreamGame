@@ -95,7 +95,9 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             Vector3 collision_point = hit.point;
             Vector3 offset = collision_point - center;
             offset.y = Mathf.Abs(offset.y);
-            repulsion = 0.1f * offset / hit.distance;
+            offset = offset.normalized;
+            const float DodgeForce = 10.0f;
+            repulsion =  DodgeForce * offset / hit.distance;
         }
         return repulsion;
     }
