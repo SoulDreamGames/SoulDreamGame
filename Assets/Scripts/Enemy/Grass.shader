@@ -18,22 +18,35 @@ Shader "PGATR/Grass"
 		_BladeCurve("Blade Curvature Amount", Range(1, 4)) = 2
     }
 
-	CGINCLUDE
-	#include "UnityCG.cginc"
-	#include "Autolight.cginc"
+	HLSLINCLUDE
+	#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+	#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+	#if UNITY_VERSION >= 202120
+		#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+	#else
+		#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+		#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+	#endif
+		#pragma multi_compile _ _SHADOWS_SOFT
+
+	#define UNITY_PI 3.14159265359f
+	#define UNITY_TWO_PI 6.28318530718f
 	#define BLADE_SEGMENTS 3
 
-	float _BendRotationRandom;
-	float _BladeHeight;
-	float _BladeWidth;
-	float _BladeWidthRandom;
-	float _BladeHeightRandom;
-	sampler2D _WindDistortionMap;
-	float4 _WindDistortionMap_ST;
-	float2 _WindFrequency;
-	float _WIndStrength;
-	float _BladeCurve;
-	float _BladeForward;
+	CBUFFER_START(UnityPerMaterial)
+		float _BendRotationRandom;
+		float _BladeHeight;
+		float _BladeWidth;
+		float _BladeWidthRandom;
+		float _BladeHeightRandom;
+		sampler2D _WindDistortionMap;
+		float4 _WindDistortionMap_ST;
+		float2 _WindFrequency;
+		float _WIndStrength;
+		float _BladeCurve;
+		float _BladeForward;
+	CBUFFER_END
 
 	struct geometryOutput
 	{
@@ -51,6 +64,12 @@ Shader "PGATR/Grass"
 		float3 normal : NORMAL;
 		float4 tangent : TANGENT;
 	};
+
+	//This is a replacement for the old 'UnityObjectToClipPos()'
+	float4 UnityObjectToClipPos(float3 pos)
+	{
+		return mul(UNITY_MATRIX_VP, mul(UNITY_MATRIX_M, float4 (pos, 1)));
+	}
 
 	geometryOutput VertexOutput(float3 pos, float2 uv){
 		geometryOutput o;
@@ -157,10 +176,16 @@ Shader "PGATR/Grass"
 		);
 	}
 
-	ENDCG
+	ENDHLSL
 
     SubShader
     {
+		Tags
+		{
+			"RenderType" = "Opaque"
+			"Queue" = "Geometry"
+			"RenderPipeline" = "UniversalPipeline"
+		}
 		Cull Off
 
         Pass
@@ -168,26 +193,24 @@ Shader "PGATR/Grass"
 			Tags
 			{
 				"RenderType" = "Opaque"
-				"LightMode" = "ForwardBase"
+				"LightMode" = "UniversalForward"
 			}
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 			#pragma geometry geo
 			#pragma target 4.6
-            
-			#include "Lighting.cginc"
 
 			float4 _TopColor;
 			float4 _BottomColor;
 			float _TranslucentGain;
 
-			float4 frag (geometryOutput i, fixed facing : VFACE) : SV_Target
+			float4 frag (geometryOutput i) : SV_Target
             {	
 				return lerp(_BottomColor, _TopColor, i.uv.y);
             }
-            ENDCG
+            ENDHLSL
         }
     }
 }
