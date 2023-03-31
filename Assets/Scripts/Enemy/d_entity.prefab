@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2237967332201604489}
   - component: {fileID: 1621243062500675733}
   - component: {fileID: 3159053093961383059}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: spikes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 2787024789224615410}
   - component: {fileID: 2787024789224615409}
   - component: {fileID: 2787024789224615408}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,9 +211,9 @@ GameObject:
   - component: {fileID: 2787024790338653568}
   - component: {fileID: 6579314052268557928}
   - component: {fileID: 8369897563725665082}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: d_entity
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -65,7 +65,7 @@ MonoBehaviour:
     m_Bits: 256
   EnemyMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 2048
   Lifetime: 30
 --- !u!1001 &1957669396341978250
 PrefabInstance:

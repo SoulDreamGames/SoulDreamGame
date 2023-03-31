@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2787024789224615410}
   - component: {fileID: 2787024789224615409}
   - component: {fileID: 2787024789224615408}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 2787024790338653569}
   - component: {fileID: 2787024790338653568}
   - component: {fileID: 2745822330047797927}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: shooting_enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
