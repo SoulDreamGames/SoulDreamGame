@@ -65,7 +65,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 repulsion = targetRay(target_pos);
         repulsion += groundRay(HoverHeight);
 
-        Vector3 acceleration = (repulsion + TargetForce * (target_pos - transform.position).normalized - Drag * Velocity + ExternalForces) / Mass;
+        Vector3 AtraccionForce = TargetForce * (target_pos - transform.position).normalized;
+        Vector3 acceleration = (repulsion + AtraccionForce - Drag * Velocity + ExternalForces) / Mass;
 
         // Euler integration
         Velocity = Velocity + acceleration;
@@ -85,36 +86,43 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         const float maxdist = 1000000000;
         Vector3 repulsion = new Vector3(0,0,0);
 
-        Vector3 hover_offset = new Vector3(0, HoverHeight, 0);
-        Vector3 ray_origin = transform.position - hover_offset / 0.6f;
-        Vector3 direction = (target_pos - ray_origin).normalized;
-        Debug.DrawRay(ray_origin, 100 * direction, Color.magenta);
+        Vector3 HoverOffset = new Vector3(0, HoverHeight * 0.6f, 0);
+        Vector3 RayOrigin = transform.position - HoverOffset;
+        Vector3 RayDirection = (target_pos - RayOrigin).normalized;
+        Debug.DrawRay(RayOrigin, 100 * RayDirection, Color.magenta);
 
-        if (Physics.Raycast(ray_origin, direction, out hit, maxdist, WallsMask)){
+        if (Physics.Raycast(RayOrigin, RayDirection, out hit, maxdist, WallsMask))
+        {
+            const float ThresholdAngle = 0.1f;
+            if (1.0f - Mathf.Abs(Vector3.Dot(hit.normal, Vector3.up)) < ThresholdAngle)
+            { 
+                // Debug.Log("Pointing to the ground");
+                return new Vector3(0.0f, 0.0f, 0.0f);
+            }
             Vector3 center = hit.collider.bounds.center;
+            Vector3 ColliderSize = hit.collider.bounds.extents;
             Vector3 collision_point = hit.point;
             Vector3 offset = collision_point - center;
-            offset.y = Mathf.Abs(offset.y);
-            offset = offset.normalized;
+            offset.y = Mathf.Abs(offset.y) * 10.0f;
             const float DodgeForce = 10.0f;
-            repulsion =  DodgeForce * offset / hit.distance;
+            repulsion =  DodgeForce * offset.normalized / hit.distance;
         }
         return repulsion;
     }
 
-    protected Vector3 groundRay(float min_dist) {
+    protected Vector3 groundRay(float MinDist) {
         Vector3 repulsion = new Vector3(0,0,0);
         RaycastHit hit;
         Vector3 direction = - Vector3.up;
 
-        float maxdist = min_dist;
-        float ground_repulsion_coeff = 1;
+        float MaxDist = MinDist;
+        float GroundRepulsionCoeff = 10;
 
-        Debug.DrawRay(transform.position, 100 * direction, Color.magenta);
+        Debug.DrawRay(transform.position, MaxDist * direction, Color.magenta);
 
-        if (Physics.Raycast(transform.position, direction, out hit, maxdist, WallsMask)) {
+        if (Physics.Raycast(transform.position, direction, out hit, MaxDist, WallsMask)) {
             float y = transform.position.y - hit.point.y;
-            repulsion = ground_repulsion_coeff * (2 * (y - maxdist) * Mathf.Log(y / maxdist) + (y - maxdist) * (y - maxdist) * maxdist / y) * Vector3.up;
+            repulsion = GroundRepulsionCoeff * (2 * (y - MaxDist) * Mathf.Log(y / MaxDist) + (y - MaxDist) * (y - MaxDist) * MaxDist / y) * Vector3.up;
         }
 
         return repulsion;
