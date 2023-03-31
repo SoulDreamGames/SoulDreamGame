@@ -16,7 +16,7 @@ public class NPCManager : MonoBehaviour
     //Safe zones points list
     [SerializeField] private List<Transform> safeZones = new List<Transform>();
     
-    private List<NPCRandomNavMesh> _npcsSpawned;
+    public List<NPCRandomNavMesh> _npcsSpawned;
     
     public void Initialize(GameManager gameManager)
     {
@@ -66,6 +66,8 @@ public class NPCManager : MonoBehaviour
         
         //Invoke corresponding event
         _gameManager.InvokeEvent(GameEventType.onNPCDied);
+
+        //Destroy(npc);
     }
     
     public void OnSafePoint(NPCRandomNavMesh npc)

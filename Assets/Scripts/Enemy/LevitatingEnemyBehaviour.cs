@@ -122,6 +122,13 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         if ((TargetMask.value & (1 << collision.gameObject.transform.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
+
+
+            if (collision.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+            {
+                npc.life -= 0.1f;
+                if (npc.life <= 0.0f) { NotifyHasEatenSomeone(collision.gameObject);  }
+            }
         }
     }
     public void addExternalForce(Vector3 eforce) { ExternalForces += eforce; }
@@ -131,6 +138,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             startLookingForTargets();
         }
     }
+
     public override bool RecieveDamage(int damage)
     {
         Hitpoints -= damage;
