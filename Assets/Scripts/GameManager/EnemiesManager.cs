@@ -13,7 +13,7 @@ public class EnemiesManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> enemiesToSpawn = new List<GameObject>();
 
-    private List<EnemyBehaviour> _enemiesSpawned;
+    public List<EnemyBehaviour> _enemiesSpawned;
     
     //Spawn points list
     [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
@@ -74,15 +74,5 @@ public class EnemiesManager : MonoBehaviour
     }
     public void IncreaseWaveRemainingEnemies(int number) {
         remainingWaveEnemies += number;
-    }
-
-    public void RemoveEnemyTarget(GameObject gameobject) {
-     /* If NPC died, the enemies must find another target */
-     foreach(EnemyBehaviour enemy in _enemiesSpawned) {
-         if (enemy._Target == gameobject) {
-             enemy._Target = null;
-             enemy.startLookingForTargets();
-         }
-     }
     }
 }

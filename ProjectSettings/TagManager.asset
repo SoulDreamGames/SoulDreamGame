@@ -15,8 +15,8 @@ TagManager:
   - Ground
   - Walls
   - targetable
-  - Enemies
-  - 
+  - PlayerUI
+  - Dome
   - 
   - 
   - 

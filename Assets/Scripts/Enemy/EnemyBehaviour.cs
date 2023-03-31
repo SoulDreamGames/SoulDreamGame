@@ -8,6 +8,13 @@ public abstract class EnemyBehaviour : MonoBehaviour
     public GameObject _DefaultTarget;
     [SerializeField] protected EnemiesManager _EnemiesManager;
     [SerializeField] protected int Hitpoints = 1;
+
+
+    void Start()
+    {
+        _EnemiesManager._enemiesSpawned.Add(this);
+    }
+
     protected bool LookingForTargets = true;
     public bool isLookingForTargets() { return LookingForTargets; }
     public void stopLookingForTargets() { LookingForTargets = false; }
@@ -22,6 +29,12 @@ public abstract class EnemyBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         _EnemiesManager.EnemyKilled(this);
+
+        if (_Target.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+        {
+            npc.isTargeted = false;
+            npc._enemyFollowing = null;
+        }
     }
 
 }
