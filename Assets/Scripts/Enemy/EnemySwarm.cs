@@ -8,7 +8,7 @@ public abstract class EnemySwarm : MonoBehaviour
 {
 
     public uint num_enemies = 5;
-    public float swarm_stiffness = 0.1f;
+    public float swarm_stiffness = 0.001f;
     public float swarm_distance_apart = 5.0f;
     public GameObject swarm_target;
     public List<LevitatingEnemyBehaviour> swarmMembers;

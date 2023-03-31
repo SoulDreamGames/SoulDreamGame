@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   num_enemies: 0
-  swarm_stiffness: 0.1
+  swarm_stiffness: 0.01
   swarm_distance_apart: 5
   swarm_target: {fileID: 0}
   swarmMembers: []

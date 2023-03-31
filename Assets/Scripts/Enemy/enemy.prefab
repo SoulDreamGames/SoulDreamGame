@@ -143,7 +143,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2787024790338653574}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 9.33}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -242,8 +242,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619630b4edf3beb49a207981b9b8b54b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  _Target: {fileID: 0}
   _DefaultTarget: {fileID: 0}
+  _EnemiesManager: {fileID: 0}
+  Hitpoints: 1
   Mass: 1
   AccelerationTime: 1
   MaxSpeed: 0.1

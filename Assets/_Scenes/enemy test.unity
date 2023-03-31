@@ -123,6 +123,120 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &270822756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 270822762}
+  - component: {fileID: 270822761}
+  - component: {fileID: 270822760}
+  - component: {fileID: 270822759}
+  - component: {fileID: 270822758}
+  - component: {fileID: 270822757}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &270822757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de8d71f23c85fc1468cf453aefa1ff92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWave: 0
+  totalWaves: 5
+  cityEnergy: 100
+  energyLostOnPlayer: 5
+  energyLostOnCivilian: 0.5
+  currentGameState: 0
+  gameStarted: 0
+--- !u!114 &270822758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b579c032dbaa4ced8ada48f78ac5b495, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcPrefab: {fileID: 0}
+  spawnPoints: []
+  safeZones: []
+--- !u!114 &270822759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc088e66517041b7bf9628d823dfd48a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemiesToSpawn: []
+  respawnPoints: []
+  targetPoints: []
+--- !u!114 &270822760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3db7e256ce64059ac02697af597dbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnPoints: []
+  players: []
+  _respawnTime: 5
+--- !u!114 &270822761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec525aa76550425ebd99a9df48369898, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameStateTimes: []
+  _defaultStateTime: 120
+--- !u!4 &270822762
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270822756}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -67.1474, y: 41.233276, z: 4.4781804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &324471451
 GameObject:
   m_ObjectHideFlags: 0

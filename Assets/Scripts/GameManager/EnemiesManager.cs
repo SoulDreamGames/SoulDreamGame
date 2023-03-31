@@ -76,13 +76,13 @@ public class EnemiesManager : MonoBehaviour
         remainingWaveEnemies += number;
     }
 
-    // public void RemoveEnemyTarget(GameObject gameobject) {
-    //  /* If NPC died, the enemies must find another target */
-    //  foreach(EnemyBehaviour enemy in _enemiesSpawned) {
-    //      if (enemy.target == gameobject) {
-    //          enemy.target = null;
-    //          enemy.startLookingForTargets();
-    //      }
-    //  }
-    // }
+    public void RemoveEnemyTarget(GameObject gameobject) {
+     /* If NPC died, the enemies must find another target */
+     foreach(EnemyBehaviour enemy in _enemiesSpawned) {
+         if (enemy._Target == gameobject) {
+             enemy._Target = null;
+             enemy.startLookingForTargets();
+         }
+     }
+    }
 }

@@ -49,6 +49,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     }
 
     protected virtual void FixedUpdate() {
+        RB.freezeRotation = false;
+        RB.WakeUp();
         if (!LookingForTargets){
             FollowTarget(_Target);
         }
@@ -73,7 +75,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
 
         Vector3 position = RB.position + Velocity;
-        RB.MovePosition(position);
+        transform.position = position;
         transform.LookAt(target_pos, Vector3.up);
 
         ExternalForces = ExternalForces * 0;
@@ -84,7 +86,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 repulsion = new Vector3(0,0,0);
 
         Vector3 hover_offset = new Vector3(0, HoverHeight, 0);
-        Vector3 ray_origin = transform.position - hover_offset;
+        Vector3 ray_origin = transform.position - hover_offset / 0.6f;
         Vector3 direction = (target_pos - ray_origin).normalized;
         Debug.DrawRay(ray_origin, 100 * direction, Color.magenta);
 
