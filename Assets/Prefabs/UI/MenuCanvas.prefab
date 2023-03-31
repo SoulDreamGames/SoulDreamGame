@@ -1430,7 +1430,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: gameplay programmer
+  m_Text: gameplay & shader programmer
 --- !u!1 &5272546332984125002
 GameObject:
   m_ObjectHideFlags: 0
