@@ -211,7 +211,7 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("Enemy hitted");
 
-        if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
+        if ((IsAttacking || IsHomingAttacking) & MoveSpeed >= EnemySpeedThreshold)
         {
             Debug.Log("Attacking enemy");
             var enemy = other.GetComponent<EnemyBehaviour>();
@@ -222,6 +222,7 @@ public class PlayerController : MonoBehaviour
         }
         
         //Reset velocity and energy in player
+        Debug.Log("Unsuccesfull attack");
         MoveSpeed = 0.0f;
         PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;

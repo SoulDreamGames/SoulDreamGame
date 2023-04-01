@@ -42,6 +42,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
     private void OnDestroy()
     {
+        Debug.Log("On destroy enemy");
         _EnemiesManager.EnemyKilled(this);
 
         if (_Target == null) return;

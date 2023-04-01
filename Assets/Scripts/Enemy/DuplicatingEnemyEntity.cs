@@ -8,7 +8,7 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
     void Start()
     {
         // Enemy stats
-        Hitpoints = 10;
+        Hitpoints = 2;
     }
     public void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget, DuplicatingEnemySwarm dup_swarm) {
         base.Initialize(enemiesManager, defaultTarget);
@@ -31,8 +31,21 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
     public override void OnTriggerEnter(Collider collider) {
         base.OnTriggerEnter(collider);
         if ((TargetMask.value & (1 << collider.gameObject.transform.gameObject.layer)) > 0) {
+
+            if (collider.gameObject.TryGetComponent<PlayerController>(out PlayerController player))
+            {
+                Debug.Log("Player is attacking the enemy");
+                //if player is attacking, then this wont duplicate
+                if (player.IsAttacking || player.IsHomingAttacking)
+                {
+                    Debug.Log("is attacking so dont duplicate");
+                    return;
+                }
+            }
+            
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             mySwarm.createNewMember(transform.position + direction);
+            Debug.Log("Duplicating");
         }
     }
 
