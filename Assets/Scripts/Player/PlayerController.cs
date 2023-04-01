@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("Energy lost on homing attack activation")] 
     public float playerEnergyLostOnHomingAttack = 25f;
     [SerializeField] private float _maxEnergy = 100.0f;
+    [SerializeField, Tooltip("Homing attack radius")] 
+    public float homingRadius = 10f;
     
     //GameManager
     [HideInInspector] public PlayersManager playersManager;
@@ -115,6 +117,10 @@ public class PlayerController : MonoBehaviour
         view = GetComponent<PhotonView>();
         _menu = FindObjectOfType<InGameMenu>();
 
+        playersManager = FindObjectOfType<PlayersManager>();
+        if(playersManager)
+            playersManager.AddPlayer(this);
+        
         if (!view.IsMine) return;
 
         SpeedUI = FindObjectOfType<SpeedBar>();

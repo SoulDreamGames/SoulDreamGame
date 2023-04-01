@@ -61,6 +61,10 @@ public class GameManager : MonoBehaviour
     {
         //Init game Events based on GameEventType definition
         onGameEvents = new List<UnityEvent>(Enum.GetNames(typeof(GameEventType)).Length);
+        for (int i = 0; i < onGameEvents.Capacity; i++)
+        {
+            onGameEvents.Add(new UnityEvent());
+        }
 
         //Init all callbacks needed inside the game manager
         InitGameManagerEvents();
@@ -183,5 +187,10 @@ public class GameManager : MonoBehaviour
         {
             DecreaseCityEnergy(energyLostOnCivilian);
         });
+    }
+
+    public List<EnemyBehaviour> GetEnemiesSpawnedList()
+    {
+        return _enemiesManager._enemiesSpawned;
     }
 }

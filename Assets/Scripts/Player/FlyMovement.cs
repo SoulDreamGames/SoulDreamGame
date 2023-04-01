@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 {
@@ -64,6 +67,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Movement.performed += OnMovement;
         components.Input.Fly.Movement.canceled += OnMovement;
         components.Input.Fly.Attack.performed += OnAttack;
+        components.Input.Fly.Attack.canceled += OnAttack;
         components.Input.Fly.HomingAttack.performed += OnHomingAttack;
 
         _lastForward = components.Orientation.forward;
@@ -294,11 +298,15 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         if (pc.IsHomingAttacking) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnHomingAttack) return;
         
-        Debug.Log("Attack homing");   
+        Debug.Log("Attack homing");
+        if (!pc.playersManager) return;
         
-        //ToDo: always have the nearest enemy to player in a certain distance
+        Vector3 nearestEnemyPosition = pc.playersManager.GetLocalNearestEnemy(pc.homingRadius);
+        if (float.IsPositiveInfinity(nearestEnemyPosition.x)) return;
+
         //Get nearest enemy to anywhere
-        pc.DashTo(Vector3.zero, null);
+        pc.IsHomingAttacking = true;
+        pc.DashTo(nearestEnemyPosition, null);
         pc.PlayerEnergy -= pc.playerEnergyLostOnHomingAttack;
 
         //ToDo: reset movement speed to zero on this case

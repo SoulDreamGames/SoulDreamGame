@@ -39,9 +39,9 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
-
-        remainingWaveEnemies = _enemiesSpawned.Count;
+        // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
+        //
+        // remainingWaveEnemies = _enemiesSpawned.Count;
     }
 
     public void SpawnEnemy(GameObject enemyToSpawn, Vector3 spawnPoint)
