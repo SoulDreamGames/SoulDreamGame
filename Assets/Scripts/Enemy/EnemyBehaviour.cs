@@ -17,8 +17,9 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
     protected bool LookingForTargets = true;
     public bool isLookingForTargets() { return LookingForTargets; }
-    public void stopLookingForTargets() { LookingForTargets = false; }
-    public void startLookingForTargets() { LookingForTargets = true; }
+    public virtual void stopLookingForTargets() { LookingForTargets = false; }
+    public virtual void startLookingForTargets() { LookingForTargets = true; }
+    public abstract void ChangeToDefaultTarget();
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {

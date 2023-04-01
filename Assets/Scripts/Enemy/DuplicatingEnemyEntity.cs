@@ -41,4 +41,10 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
         mySwarm.MemberDied(this);
         base.OnDeath();
     }
+
+    public override void ChangeToDefaultTarget()
+    {
+        startLookingForTargets();
+        mySwarm.ChangeToDefaultTarget();
+    }
 }
