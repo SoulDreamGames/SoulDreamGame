@@ -13,6 +13,7 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
     public void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget, DuplicatingEnemySwarm dup_swarm) {
         base.Initialize(enemiesManager, defaultTarget);
         mySwarm = dup_swarm;
+        startLookingForTargets();
     }
     public override bool ReceiveDamage(int damage) {
         Hitpoints -= damage;
@@ -27,10 +28,10 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
         base.NotifyHasEatenSomeone(someone);
     }
 
-    public override void OnCollisionEnter(Collision collision) {
-        base.OnCollisionEnter(collision);
-        if ((TargetMask.value & (1 << collision.gameObject.transform.gameObject.layer)) > 0) {
-            Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
+    public override void OnTriggerEnter(Collider collider) {
+        base.OnTriggerEnter(collider);
+        if ((TargetMask.value & (1 << collider.gameObject.transform.gameObject.layer)) > 0) {
+            Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             mySwarm.createNewMember(transform.position + direction);
         }
     }

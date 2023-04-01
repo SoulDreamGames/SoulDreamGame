@@ -23,6 +23,7 @@ public class EnemyView : MonoBehaviour
         if ((target_mask.value & (1 << other.transform.gameObject.layer)) > 0) {
             parent_enemy._Target = other.gameObject;
             parent_enemy.stopLookingForTargets();
+
             if (other.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
             {
                 if (!npc.isTargeted)

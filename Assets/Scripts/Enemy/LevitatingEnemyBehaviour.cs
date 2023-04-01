@@ -126,18 +126,18 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         return repulsion;
     }
 
-    public virtual void OnCollisionEnter(Collision collision)
+    public virtual void OnTriggerEnter(Collider collider)
     {
-        const float contact_repulsion_kik = 1.0f;
-        if ((TargetMask.value & (1 << collision.gameObject.layer)) > 0) {
-            Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
+        const float contact_repulsion_kik = 3.0f;
+        if ((TargetMask.value & (1 << collider.gameObject.layer)) > 0) {
+            Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
 
 
-            if (collision.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+            if (collider.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
             {
                 npc.life -= 0.1f;
-                if (npc.life <= 0.0f) { NotifyHasEatenSomeone(collision.gameObject);  }
+                if (npc.life <= 0.0f) { NotifyHasEatenSomeone(collider.gameObject);  }
             }
         }
     }
