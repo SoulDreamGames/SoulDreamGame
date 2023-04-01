@@ -20,9 +20,12 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected float Drag; // Drag coefficient
     protected Vector3 ExternalForces; // A sum of external forces
 
-    // Start is called before the first frame update
-    void Start()
+    protected float DefaultTargetChangeDistance = 20.0f; // Change default target when near the current one
+
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
+        base.Initialize(enemiesManager, defaultTarget);
+
         RB = GetComponent<Rigidbody>();
         Velocity = new Vector3(0,0,0);
 
@@ -33,13 +36,6 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
 
-    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
-    {
-        base.Initialize(enemiesManager, defaultTarget);
-        // Increase number of enemies
-        Start();
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -47,14 +43,18 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     }
 
     protected virtual void FixedUpdate() {
-        RB.freezeRotation = false;
-        RB.WakeUp();
         if (!LookingForTargets){
             FollowTarget(_Target);
         }
 
         else {
             FollowTarget(_DefaultTarget);
+            // Change default target when close (keep the enemies moving)
+            if ((_DefaultTarget.transform.position - transform.position).magnitude <= DefaultTargetChangeDistance)
+            {
+                // Enemy has reached  the default destination
+                _EnemiesManager.GetNewDefaultTarget(ref _DefaultTarget);
+            }
         }
     }
     public virtual void FollowTarget(GameObject current_target) {
@@ -102,8 +102,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             Vector3 collision_point = hit.point;
             Vector3 offset = collision_point - center;
             offset.y = Mathf.Abs(offset.y) * 10.0f;
-            const float DodgeForce = 10.0f;
-            repulsion =  DodgeForce * offset.normalized / hit.distance;
+            const float DodgeForce = 30.0f;
+            repulsion =  DodgeForce * offset.normalized / (hit.distance * hit.distance);
         }
         return repulsion;
     }

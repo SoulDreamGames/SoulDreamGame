@@ -14,6 +14,12 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
     private float TargetDistance = 100000000.0f;
     private Vector3 TargetPos;
 
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
+    {
+        base.Initialize(enemiesManager, defaultTarget);
+        DefaultTargetChangeDistance = ShootingDistance += 10.0f;
+    }
+
     protected override void FixedUpdate()
     {
         ShootFramecount++;

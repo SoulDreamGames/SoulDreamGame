@@ -39,11 +39,14 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        Debug.Log("Spawning enemies on new waves");
+        Debug.Log("Spawning enemies on new wave");
         int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
         for (int i = 0; i < 10; i++)
         {
-            SpawnEnemy(enemiesToSpawn[0], respawnPoints[0].position, targetPoints[0]);
+            int enemyIndex = UnityEngine.Random.Range(0, enemiesToSpawn.Count);
+            int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
+            int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
+            SpawnEnemy(enemiesToSpawn[2], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
         // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
         
