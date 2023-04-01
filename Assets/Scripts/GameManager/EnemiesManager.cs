@@ -39,6 +39,7 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
+        Debug.Log("Spawn on new wave");
         // Debug.Log("Spawning enemies on new waves");
         // int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
         // for (int i = 0; i < 10; i++)

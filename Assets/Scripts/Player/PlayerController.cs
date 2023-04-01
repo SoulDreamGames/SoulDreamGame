@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     
     //UI Components
     [Header("UI Components")]
-    public SpeedBar SpeedUI;
+    public PlayerBarsUI SpeedUI;
     public LayerMask GroundMask;
 
     [HideInInspector] public PhotonView view;
@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour
         
         if (!view.IsMine) return;
 
-        SpeedUI = FindObjectOfType<SpeedBar>();
+        SpeedUI = FindObjectOfType<PlayerBarsUI>();
         SpeedUI.Player = this;
         Debug.Log("Speed UI: " + SpeedUI.name);
         MovementComponents components = new()
