@@ -33,12 +33,10 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
 
-    public void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
-        //ToDo: add other variables to initialize
-        _EnemiesManager = enemiesManager;
-        _DefaultTarget = defaultTarget;
-
+        base.Initialize(enemiesManager, defaultTarget);
+        // Increase number of enemies
         Start();
     }
 
@@ -155,7 +153,9 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     public override bool ReceiveDamage(int damage)
     {
         Hitpoints -= damage;
-        return (Hitpoints <= 0);
+        bool died = (Hitpoints <= 0);
+        if (died) OnDeath();
+        return died;
     }
 
     public void setTarget(GameObject newTarget) {

@@ -11,14 +11,14 @@ public class EnemiesManager : MonoBehaviour
     private int remainingWaveEnemies = 10;
 
     [SerializeField]
-    private List<GameObject> enemiesToSpawn = new List<GameObject>();
+    private List<EnemySpawnable> enemiesToSpawn = new List<EnemySpawnable>();
 
     public List<EnemyBehaviour> _enemiesSpawned;
     
     //Spawn points list
     [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
-    [SerializeField] private List<Transform> targetPoints = new List<Transform>();
-    
+    [SerializeField] private List<GameObject> targetPoints = new List<GameObject>();
+    [SerializeField] private List<int> enemiesPerWave = new List<int>();
     public void Initialize(GameManager gameManager)
     {
         //Init gameManager
@@ -39,18 +39,23 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
+        Debug.Log("Spawning enemies on new waves");
+        int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
+        for (int i = 0; i < 10; i++)
+        {
+            SpawnEnemy(enemiesToSpawn[0], respawnPoints[0].position, targetPoints[0]);
+        }
         // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
-        //
-        // remainingWaveEnemies = _enemiesSpawned.Count;
+
+        remainingWaveEnemies = _enemiesSpawned.Count;
     }
 
-    public void SpawnEnemy(GameObject enemyToSpawn, Vector3 spawnPoint)
+    public void SpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
     {
-        //ToDo: spawn enemy in a selected position
+        // Spawn enemy in a selected position
 
-        //Invoke enemySpawn event 
-        GameObject enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
-        _enemiesSpawned.Add(enemy.GetComponent<EnemyBehaviour>());
+        EnemySpawnable enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
+        enemy.Initialize(this, targetPoint);
         _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
     }
 
@@ -72,7 +77,25 @@ public class EnemiesManager : MonoBehaviour
             _gameManager.InvokeEvent(GameEventType.onWaveEnd);
         } 
     }
-    public void IncreaseWaveRemainingEnemies(int number) {
-        remainingWaveEnemies += number;
+    public void AddSpawnedEnemy(EnemyBehaviour enemy)
+    {
+        remainingWaveEnemies++;
+        _enemiesSpawned.Add(enemy);
+    }
+
+    public void GetNewDefaultTarget(ref GameObject lastTarget)
+    {
+        if (targetPoints.Count == 0) return;
+
+        bool foundNewTarget = false;
+        int index = 0;
+
+        for (int i = 0; i < 100; i++)
+        {
+            index = UnityEngine.Random.Range(0, targetPoints.Count);
+            foundNewTarget = (lastTarget != targetPoints[index]);
+            if (foundNewTarget) break;
+        }
+        lastTarget = targetPoints[index];
     }
 }

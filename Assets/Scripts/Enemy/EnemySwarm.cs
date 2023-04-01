@@ -4,7 +4,7 @@ using UnityEngine;
 
 /* Enemy swarm must controll a group of enemies 
 such that they movement seems like a swarm of insects */
-public abstract class EnemySwarm : MonoBehaviour
+public abstract class EnemySwarm : EnemySpawnable
 {
 
     public uint num_enemies = 5;
@@ -17,14 +17,10 @@ public abstract class EnemySwarm : MonoBehaviour
     [SerializeField] protected EnemiesManager _enemy_manager;
     bool swarm_has_active_target = false;
     // Start is called before the first frame update
-    void Start()
-    {
-        if (swarmMembers.Count != num_enemies){
-            num_enemies = (uint) swarmMembers.Count;
-        }
-        foreach(LevitatingEnemyBehaviour enemy in swarmMembers){
-            enemy._Target = swarm_target;
-        }
+
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget){
+        _enemy_manager = enemiesManager;
+        swarm_default_target = defaultTarget;
     }
 
     void FixedUpdate() {

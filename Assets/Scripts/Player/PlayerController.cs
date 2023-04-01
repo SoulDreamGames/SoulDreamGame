@@ -217,8 +217,6 @@ public class PlayerController : MonoBehaviour
                 if (enemy == null) return;
 
                 bool isDead = enemy.ReceiveDamage(3);
-                if (isDead)
-                    enemy.OnDeath();
             }
         }
     }

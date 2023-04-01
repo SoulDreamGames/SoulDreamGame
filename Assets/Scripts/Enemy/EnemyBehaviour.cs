@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class EnemyBehaviour : MonoBehaviour
+public abstract class EnemyBehaviour : EnemySpawnable
 {
     public GameObject _Target;
     public GameObject _DefaultTarget;
@@ -20,13 +20,20 @@ public abstract class EnemyBehaviour : MonoBehaviour
     public void stopLookingForTargets() { LookingForTargets = false; }
     public void startLookingForTargets() { LookingForTargets = true; }
 
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
+    {
+        _EnemiesManager = enemiesManager;
+        _DefaultTarget = defaultTarget;
+        enemiesManager.AddSpawnedEnemy(this);
+    }
+
     /* Returns true if the enemy died with the damage done */
     public abstract bool ReceiveDamage(int damage);
 
     /* Notifies to the game manager that "someone" has died -> player / NPC */
     public abstract void NotifyHasEatenSomeone(GameObject someone);
 
-    public void OnDeath()
+    protected virtual void OnDeath()
     {
         Destroy(gameObject);
     }

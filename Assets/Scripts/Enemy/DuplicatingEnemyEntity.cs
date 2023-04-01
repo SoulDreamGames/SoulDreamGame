@@ -18,7 +18,7 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
         Hitpoints -= damage;
         bool died = Hitpoints <= 0;
         if (died) {
-            mySwarm.MemberDied(this);
+            OnDeath();
         }
         return died;
     }
@@ -33,5 +33,11 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
             Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
             mySwarm.createNewMember(transform.position + direction);
         }
+    }
+
+    protected override void OnDeath()
+    {
+        mySwarm.MemberDied(this);
+        base.OnDeath();
     }
 }
