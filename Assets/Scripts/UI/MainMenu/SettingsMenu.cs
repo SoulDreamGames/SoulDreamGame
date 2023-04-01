@@ -22,6 +22,10 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private RectTransform volumeRect;
     private Resolution[] _resolutions;
 
+    [SerializeField] private Button ourStudioButton;
+    [SerializeField] private GameObject creditsObject;
+    [SerializeField] private GameObject headerButtons;
+
     private void Awake()
     {
         //Set graphics defaults
@@ -60,6 +64,8 @@ public class SettingsMenu : MonoBehaviour
         vSyncToggle.onValueChanged.AddListener(SetVerticalSync);
         
         quitGame.onClick.AddListener(QuitGame);
+        
+        ourStudioButton.onClick.AddListener(ShowCredits);
     }
 
     void SetVolume(float volume)
@@ -96,6 +102,15 @@ public class SettingsMenu : MonoBehaviour
         QualitySettings.vSyncCount = isSynced ? 1 : 0;
         PlayerPrefs.SetInt("VSync", isSynced ? 1 : 0);
         Debug.Log("Vsync " +  QualitySettings.vSyncCount);
+    }
+    
+    void ShowCredits()
+    {
+        //Show credits
+        creditsObject.SetActive(true);
+        headerButtons.SetActive(false);
+        gameObject.SetActive(false);
+        
     }
     
     void QuitGame()

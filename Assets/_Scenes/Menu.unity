@@ -164,6 +164,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832228120}
   - component: {fileID: 832228119}
+  - component: {fileID: 832228121}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -248,6 +249,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &832228121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832228118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &1157153466
 GameObject:
   m_ObjectHideFlags: 0
@@ -727,21 +748,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5809890135533079909, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8080103126132721691, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126234102884, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126234102884, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126234102884, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126300372343, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_IsActive
@@ -749,11 +774,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126345395190, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8080103126345395190, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8080103126592112123, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8080103126741653472, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8080103127162185358, guid: 01fbaf9f5ed446e4aab4785e8944009f, type: 3}
       propertyPath: m_Name

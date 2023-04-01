@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SpeedBar : MonoBehaviour
 {
     public Image SpeedImage;
-    public PlayerController player;
+    public PlayerController Player;
 
     private float _barSpeed;
 
@@ -18,7 +18,8 @@ public class SpeedBar : MonoBehaviour
 
     public void UpdateHealthBar()
     {
-        float newSpeed = Mathf.Clamp(player.moveSpeed / player.MaxMoveSpeed, 0, 1f);
+        Debug.Log("Update with value: " + Player.MoveSpeed / Player.MaxMoveSpeed);
+        float newSpeed = Mathf.Clamp(Player.MoveSpeed / Player.MaxMoveSpeed, 0, 1f);
         SpeedImage.fillAmount = Mathf.SmoothDamp(SpeedImage.fillAmount, newSpeed, ref _barSpeed, 0.1f);
     }
 }

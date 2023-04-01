@@ -131,7 +131,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     public virtual void OnCollisionEnter(Collision collision)
     {
         const float contact_repulsion_kik = 1.0f;
-        if ((TargetMask.value & (1 << collision.gameObject.transform.gameObject.layer)) > 0) {
+        if ((TargetMask.value & (1 << collision.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collision.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
 
@@ -143,6 +143,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             }
         }
     }
+
     public void addExternalForce(Vector3 eforce) { ExternalForces += eforce; }
     public override void NotifyHasEatenSomeone(GameObject someone)
     {
@@ -151,7 +152,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
 
-    public override bool RecieveDamage(int damage)
+    public override bool ReceiveDamage(int damage)
     {
         Hitpoints -= damage;
         return (Hitpoints <= 0);

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EnemyBehavior : MonoBehaviour
+[Obsolete("This was for testing enemies on alpha version")]
+public class EnemyBehaviorTest : MonoBehaviour
 {
     [SerializeField] private List<Transform> spawnPositions;
 
