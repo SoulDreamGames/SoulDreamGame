@@ -37,7 +37,9 @@ public class PlayersManager : MonoBehaviour
 
     public void OnFixedUpdate()
     {
-        ////
+        //Get nearest enemy
+        var enemies = _gameManager.GetEnemiesSpawnedList();
+        GetPositionToNearestEnemy(enemies, _gameManager.localPlayer.homingRadius);
     }
     
     //ToDo: call this method from playerController on dead
@@ -61,13 +63,15 @@ public class PlayersManager : MonoBehaviour
         //ToDo: uncomment this and add this method to playerController
     }
 
-    public Vector3 GetLocalNearestEnemy(float radius)
+    public Vector3 GetLocalNearestEnemy()
     {
-        var enemies = _gameManager.GetEnemiesSpawnedList();
-        return GetPositionToNearestEnemy(enemies, radius);
+        Debug.Log("Nearest enemy to target");
+        return _gameManager.targetableEnemy ? 
+            _gameManager.targetableEnemy.transform.position : 
+            Vector3.positiveInfinity;
     }
     
-    public Vector3 GetPositionToNearestEnemy(List<EnemyBehaviour> enemies, float attackRadius)
+    public void GetPositionToNearestEnemy(List<EnemyBehaviour> enemies, float attackRadius)
     {
         float minDistance = Mathf.Infinity;
         GameObject nearestEnemy = null;
@@ -75,10 +79,9 @@ public class PlayersManager : MonoBehaviour
         //Get nearest by checking all distances
         foreach (var enemy in enemies)
         {
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            float distance = Vector3.Distance(
+                _gameManager.localPlayer.transform.position, enemy.transform.position);
 
-            if (distance > attackRadius) continue;
-            
             if (minDistance > distance)
             {
                 nearestEnemy = enemy.gameObject;
@@ -89,13 +92,12 @@ public class PlayersManager : MonoBehaviour
         //Return nearest
         if (nearestEnemy != null)
         {
-            Debug.Log("Nearest enemy is: " + _gameManager.nearestEnemy.name);
             _gameManager.nearestEnemy = nearestEnemy;
-            return nearestEnemy.transform.position;
+            _gameManager.targetableEnemy = minDistance <= attackRadius ? nearestEnemy : null;
+            
+            Debug.Log("Nearest enemy is: " + _gameManager.nearestEnemy.name);
+            if(_gameManager.targetableEnemy)
+                Debug.Log("Targetable enemy is: " + _gameManager.targetableEnemy.name);
         }
-
-        Debug.Log("Enemy not found");
-        _gameManager.nearestEnemy = null;
-        return Vector3.positiveInfinity;
     }
 }

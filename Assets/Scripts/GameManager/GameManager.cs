@@ -70,6 +70,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public PlayerController localPlayer;
     [SerializeField] private Image enemyMarker;
     public GameObject nearestEnemy = null;
+    public GameObject targetableEnemy = null;
     
     //Results scene
     [SerializeField] private string resultsScene = "Menu";
@@ -153,7 +154,7 @@ public class GameManager : MonoBehaviour
 
     public void InvokeEvent(GameEventType eventType)
     {
-        Debug.Log("Called event + " + eventType.ToString());
+        //Debug.Log("Called event + " + eventType.ToString());
         onGameEvents[(int)eventType].Invoke();
     }
 
@@ -239,13 +240,13 @@ public class GameManager : MonoBehaviour
     //ToDo: change this to UIManager
     private void UpdateNearestEnemyOnScreen()
     {
-        if (nearestEnemy == null)
+        if (targetableEnemy == null)
         {
             enemyMarker.enabled = false;
             return;
         }
 
-        Vector3 point = Camera.main.WorldToScreenPoint(nearestEnemy.transform.position);
+        Vector3 point = Camera.main.WorldToScreenPoint(targetableEnemy.transform.position);
         //Only print this if inside screen
         if (point.z > 0 && point.x > 0 && point.y > 0 && point.x < Screen.width && point.y < Screen.width)
         {

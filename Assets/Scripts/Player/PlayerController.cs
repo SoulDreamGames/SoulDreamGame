@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
     [Header("UI Components")]
     public PlayerBarsUI SpeedUI;
     public LayerMask GroundMask;
+    public LayerMask enemyMask;
 
     [HideInInspector] public PhotonView view;
     private InGameMenu _menu;
@@ -206,34 +207,28 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Enemy"))
+        if ((enemyMask & (1 << other.gameObject.layer)) != 0) return;
+
+        Debug.Log("Enemy hitted");
+
+        if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
         {
-            Debug.Log("Enemy");
+            Debug.Log("Attacking enemy");
+            var enemy = other.GetComponent<EnemyBehaviour>();
+            if (enemy == null) return;
 
-            if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
-            {
-                Debug.Log("Attacking enemy");
-                var enemy = other.GetComponent<EnemyBehaviour>();
-                if (enemy == null) return;
-
-                bool isDead = enemy.ReceiveDamage(3);
-            }
+            bool isDead = enemy.ReceiveDamage(3);
+            return;
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.gameObject.CompareTag("Enemy")) return;
-
-        Debug.Log("Reset enemy and stop");
         
         //Reset velocity and energy in player
         MoveSpeed = 0.0f;
         PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;
-        
+    
         //ToDo: recheck this?
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
+
     }
     #endregion
 
