@@ -156,6 +156,15 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HomingAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""146a392e-bfca-4341-b0d0-058ba6fb11ab"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -224,6 +233,17 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7bd5d690-c2db-42a1-828c-e9b9bdbadbcf"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HomingAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -267,6 +287,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         m_Fly = asset.FindActionMap("Fly", throwIfNotFound: true);
         m_Fly_Movement = m_Fly.FindAction("Movement", throwIfNotFound: true);
         m_Fly_Attack = m_Fly.FindAction("Attack", throwIfNotFound: true);
+        m_Fly_HomingAttack = m_Fly.FindAction("HomingAttack", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
@@ -380,12 +401,14 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     private IFlyActions m_FlyActionsCallbackInterface;
     private readonly InputAction m_Fly_Movement;
     private readonly InputAction m_Fly_Attack;
+    private readonly InputAction m_Fly_HomingAttack;
     public struct FlyActions
     {
         private @MoveInput m_Wrapper;
         public FlyActions(@MoveInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Fly_Movement;
         public InputAction @Attack => m_Wrapper.m_Fly_Attack;
+        public InputAction @HomingAttack => m_Wrapper.m_Fly_HomingAttack;
         public InputActionMap Get() { return m_Wrapper.m_Fly; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -401,6 +424,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Attack.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
                 @Attack.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
                 @Attack.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnAttack;
+                @HomingAttack.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
+                @HomingAttack.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
+                @HomingAttack.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
             }
             m_Wrapper.m_FlyActionsCallbackInterface = instance;
             if (instance != null)
@@ -411,6 +437,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
+                @HomingAttack.started += instance.OnHomingAttack;
+                @HomingAttack.performed += instance.OnHomingAttack;
+                @HomingAttack.canceled += instance.OnHomingAttack;
             }
         }
     }
@@ -458,6 +487,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+        void OnHomingAttack(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
