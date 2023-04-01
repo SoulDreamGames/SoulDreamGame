@@ -67,17 +67,26 @@ public class EnemiesManager : MonoBehaviour
     //ToDo: call this method when enemy killed/destroyed - Call inside the OnDestroy method from the enemy
     public void EnemyKilled(EnemyBehaviour enemy)
     {
-        _enemiesSpawned.Remove(enemy);
-        if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
+        if(!_gameManager) return;
+
+        if (!_enemiesSpawned.Remove(enemy)) return;
+        if (_gameManager.nearestEnemy != null)
         {
-            _gameManager.nearestEnemy = null;
+            if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
+            {
+                _gameManager.nearestEnemy = null;
+            }
         }
-        if (_gameManager.targetableEnemy.Equals(enemy.gameObject))
+
+        if (_gameManager.targetableEnemy != null)
         {
-            _gameManager.targetableEnemy = null;
+            if (_gameManager.targetableEnemy.Equals(enemy.gameObject))
+            {
+                _gameManager.targetableEnemy = null;
+            }
         }
-            
-        
+
+
         //Invoke Enemy Died event
         _gameManager.InvokeEvent(GameEventType.onEnemyDied);
         

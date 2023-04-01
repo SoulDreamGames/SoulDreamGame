@@ -55,11 +55,18 @@ MonoBehaviour:
   cityEnergy: 100
   energyLostOnPlayer: 5
   energyLostOnCivilian: 0.5
+  domeEnergy: 0
+  maxDomeEnergy: 100
+  energyGainedOnKill: 1
+  energyLostOnDeath: 10
   currentGameState: 0
   gameStarted: 0
   localPlayer: {fileID: 0}
   enemyMarker: {fileID: 0}
   nearestEnemy: {fileID: 0}
+  targetableEnemy: {fileID: 0}
+  resultsScene: GameResults
+  _resultsData: {fileID: 11400000, guid: 271b512d792ab2b43aac35fbf2654e93, type: 2}
 --- !u!114 &7368224080682761783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +89,8 @@ MonoBehaviour:
   - gameState: 3
     time: 30
   _defaultStateTime: 120
+  timerText: {fileID: 0}
+  bgText: {fileID: 0}
 --- !u!114 &7368224080682761782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,3 +139,4 @@ MonoBehaviour:
   spawnPoints: []
   safeZones: []
   _npcsSpawned: []
+  peopleEvacuated: 0

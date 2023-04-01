@@ -9,12 +9,10 @@ public class PlayersManager : MonoBehaviour
     private GameManager _gameManager;
 
     [SerializeField] private List<Vector3> respawnPoints = new List<Vector3>();
-    
-    //ToDo: add players here - Call it on playerStart or from Photon room
     public List<PlayerController> players;
 
     [SerializeField] private float _respawnTime = 5.0f;
-    
+
     public void Initialize(GameManager gameManager)
     {
         //Init gameManager

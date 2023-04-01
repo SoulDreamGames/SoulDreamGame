@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -13,9 +14,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(NPCManager))]
 public class GameManager : MonoBehaviour
 {
-    //ToDo: save statistics here - Eg. n_enemies killed, enemies remaining, civilians killed, etc.
-    //ToDo: add get nearest enemy, get nearest civilian and get nearest player for targets
-    
     public enum GameEventType
     {
         onGameStart = 0,
@@ -74,6 +72,12 @@ public class GameManager : MonoBehaviour
     
     //Results scene
     [SerializeField] private string resultsScene = "Menu";
+    [SerializeField] private ResultsData _resultsData;
+    
+    //Results variables
+    private bool _gameVictory = false;
+    private int enemyKills = 0;
+    private int nDeaths = 0;
 
     private void Start()
     {
@@ -129,7 +133,23 @@ public class GameManager : MonoBehaviour
         //ToDo: add behaviour here - Eg. call cinematic, show statistics, etc.
         //Check game results and show ending depending on that
         gameStarted = false;
+
+        SaveDataToResults();
+        
         ShowGameResults();
+    }
+
+    void SaveDataToResults()
+    {
+        //Save data to scriptable object
+        _resultsData.victory = _gameVictory;
+        _resultsData.evacuees = _npcManager.peopleEvacuated;    //ToDo: divide with total spawned
+        _resultsData.domeEnergy = (int)domeEnergy;
+        _resultsData.enemiesKilled =  enemyKills;
+        _resultsData.nDeaths = nDeaths;
+        
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     private void ShowGameResults()
@@ -144,6 +164,7 @@ public class GameManager : MonoBehaviour
         if (cityEnergy <= 0.0f)
         {
             InvokeEvent(GameEventType.onGameEnd);
+            _gameVictory = false;
         }
     }
 
@@ -205,6 +226,10 @@ public class GameManager : MonoBehaviour
         {
             DecreaseCityEnergy(energyLostOnPlayer);
         });
+        SubscribeToEvent(GameEventType.onPlayerDied, () =>
+        {
+            nDeaths++;
+        });
         SubscribeToEvent(GameEventType.onWaveStart, () => { 
             currentGameState = GameState.OnWave;
             currentWave++;
@@ -217,6 +242,7 @@ public class GameManager : MonoBehaviour
             if (currentWave >= totalWaves)
             {
                 currentGameState = GameState.EndingGame;
+                _gameVictory = true;
                 InvokeEvent(GameEventType.onGameEnd);
             }
         });
@@ -230,10 +256,14 @@ public class GameManager : MonoBehaviour
         {
             UpdateDomeEnergy(energyGainedOnKill);
         });
+        SubscribeToEvent(GameEventType.onEnemyDied, () =>
+        {
+            enemyKills++;
+        });
         
         SubscribeToEvent(GameEventType.onPlayerDied, () =>
         {
-            UpdateDomeEnergy(energyLostOnDeath);
+            UpdateDomeEnergy(-energyLostOnDeath);
         });
     }
 
@@ -272,6 +302,8 @@ public class GameManager : MonoBehaviour
         {
             //Call gameEnd as shield has been fully charged
             InvokeEvent(GameEventType.onGameEnd);
+            _gameVictory = true;
+            //ToDo: this one is the real victory (charge the shield)
         }
     }
     
