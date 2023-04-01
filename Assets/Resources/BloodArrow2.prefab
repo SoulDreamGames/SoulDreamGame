@@ -326,6 +326,7 @@ MonoBehaviour:
   playerEnergyLost: 0.5
   playerEnergyLostOnHomingAttack: 25
   playerEnergyLostOnBoost: 25
+  playerEnergyLostOnLightningBreak: 35
   _maxEnergy: 100
   playersManager: {fileID: 0}
   SpeedUI: {fileID: 0}
@@ -449,6 +450,7 @@ MonoBehaviour:
   _accelDamping: 0.6
   _speedLossRate: 4
   _tolerance: 0.3
+  _levitatingTime: 5
   _usedTolerance: 1
   _lastForward: {x: 0, y: 0, z: 0}
   _originalForward: {x: 0, y: 0, z: 0}
