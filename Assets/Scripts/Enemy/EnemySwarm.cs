@@ -15,7 +15,7 @@ public abstract class EnemySwarm : EnemySpawnable
 
     [SerializeField] protected GameObject swarm_default_target;
     [SerializeField] protected EnemiesManager _enemy_manager;
-    bool swarm_has_active_target = false;
+    public bool swarm_has_active_target = false;
     // Start is called before the first frame update
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget){

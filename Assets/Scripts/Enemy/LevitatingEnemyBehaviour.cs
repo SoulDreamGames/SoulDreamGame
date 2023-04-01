@@ -21,11 +21,13 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected Vector3 ExternalForces; // A sum of external forces
 
     protected float DefaultTargetChangeDistance = 20.0f; // Change default target when near the current one
+    protected float TooFarAwayDistance = 100.0f;
+    protected int TooFarAwayCounter = 0;
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         base.Initialize(enemiesManager, defaultTarget);
-
+        
         RB = GetComponent<Rigidbody>();
         Velocity = new Vector3(0,0,0);
 
@@ -45,8 +47,20 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected virtual void FixedUpdate() {
         if (!LookingForTargets){
             FollowTarget(_Target);
+            // Leave chase if the target is too far away for too long
+            if ((_Target.transform.position - transform.position).magnitude >= TooFarAwayDistance) 
+            {
+                TooFarAwayCounter++;
+                const float FixedUpdateFPS = 50.0f;
+                const float GiveUpTime = 5.0f; // seconds
+                if (TooFarAwayCounter >= FixedUpdateFPS * GiveUpTime) 
+                {
+                    ChangeToDefaultTarget();
+                    _Target = null;
+                }
+            }
+            else TooFarAwayCounter = 0;
         }
-
         else {
             FollowTarget(_DefaultTarget);
             // Change default target when close (keep the enemies moving)
@@ -102,7 +116,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             Vector3 collision_point = hit.point;
             Vector3 offset = collision_point - center;
             offset.y = Mathf.Abs(offset.y) * 10.0f;
-            const float DodgeForce = 30.0f;
+            const float DodgeForce = 20.0f;
+
             repulsion =  DodgeForce * offset.normalized / (hit.distance * hit.distance);
         }
         return repulsion;
@@ -114,7 +129,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 direction = - Vector3.up;
 
         float MaxDist = MinDist;
-        float GroundRepulsionCoeff = 10;
+        float GroundRepulsionCoeff = 5.0f;
 
         Debug.DrawRay(transform.position, MaxDist * direction, Color.magenta);
 
@@ -164,6 +179,11 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     }
     public void setDefaultTarget(GameObject newDefaultTarget) {
         _DefaultTarget = newDefaultTarget;
+        startLookingForTargets();
+    }
+
+    public override void ChangeToDefaultTarget()
+    {
         startLookingForTargets();
     }
 }
