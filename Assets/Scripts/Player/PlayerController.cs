@@ -190,6 +190,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
         if ((GroundMask & (1 << collision.gameObject.layer)) != 0) return;
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 
@@ -198,7 +199,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Layer is: " + collision.gameObject.layer);
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
-        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -67,7 +67,7 @@ public class ThirdPersonCam : MonoBehaviour
         if (pc.MoveType.Equals(MovementType.Air))
         {
             float realFovMultiplier = pc.IsBoosting ? _fovMultiplier : 1.0f;
-            float lerpVelocity = pc.IsBoosting ? 0.6f : 0.003f;
+            float lerpVelocity = pc.IsBoosting ? 0.6f : 0.6f * Time.deltaTime;
             cameraBehaviours[1].m_Lens.FieldOfView = Mathf.Lerp(cameraBehaviours[1].m_Lens.FieldOfView, _startFOV * realFovMultiplier, lerpVelocity);
         }
 
