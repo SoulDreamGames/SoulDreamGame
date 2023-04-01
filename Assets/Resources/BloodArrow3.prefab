@@ -323,6 +323,8 @@ MonoBehaviour:
   _moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
+  playerEnergyLost: 0.5
+  _maxEnergy: 100
   SpeedUI: {fileID: 0}
   GroundMask:
     serializedVersion: 2

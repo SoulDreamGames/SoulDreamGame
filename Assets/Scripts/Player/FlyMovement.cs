@@ -91,6 +91,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         if (CheckGroundReturning()) return;
         ApplyVelocity(pc.InputAxis);
         SpeedControl();
+        HandleEnergy();
 
 #else
         var rb = _movementComponents.Rigidbody;
@@ -167,6 +168,34 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 #endif
     }
 
+    private void HandleEnergy()
+    {
+        var pc = _movementComponents.PlayerController;
+
+        //When attacking, lost energy per update
+        if (pc.IsAttacking)
+        {
+            Debug.Log("Currently attacking");
+            pc.PlayerEnergy -= pc.playerEnergyLost;
+            
+            if (pc.PlayerEnergy > 0.0f) return;
+            
+            //If energy is 0, stop attack
+            pc.PlayerEnergy = 0.0f;
+            pc.IsAttacking = false;
+            return;
+        }
+        
+        //If not attacking and its moving, then increase energy based on velocity
+        if (pc.MoveSpeed > 0.0f)
+        {
+            pc.PlayerEnergy += pc.MoveSpeed / pc.MaxMoveSpeed;
+            if (pc.PlayerEnergy >= pc.MaxEnergy)
+            {
+                pc.PlayerEnergy = pc.MaxEnergy;
+            }
+        }
+    }
     public void ResetMovement()
     {
         var rb = _movementComponents.Rigidbody;
@@ -242,24 +271,16 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnAttack(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
-        Debug.Log("Attacking");
-        Debug.Log(pc.InEnemyBounds);
-        Debug.Log(pc.MoveSpeed >= pc.EnemySpeedThreshold);
 
-        if (pc.InEnemyBounds && pc.MoveSpeed >= pc.EnemySpeedThreshold)
+        if (context.performed && pc.PlayerEnergy > 0.0f)
         {
-            Debug.Log("Attacking enemy");
-
-            var enemy = pc.EnemyCollided.GetComponent<EnemyBehaviour>();
-            pc.EnemyCollided = null;
-            pc.InEnemyBounds = false;
-
-            if (enemy == null) return;
-
-            bool isDead = enemy.ReceiveDamage(3);
-            if (isDead)
-                enemy.OnDeath();
+            Debug.Log("Attack pressed: ");
+            _movementComponents.PlayerController.IsAttacking = true;
+            return;
         }
+
+        Debug.Log("Attack released");
+        _movementComponents.PlayerController.IsAttacking = false;
     }
 #endregion
 }

@@ -31,7 +31,9 @@ public class PlayerController : MonoBehaviour
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
-
+    [SerializeField, Tooltip("Energy lost per update when using hold attack")] public float playerEnergyLost = 0.5f;
+    [SerializeField] private float _maxEnergy = 100.0f;
+    
     //UI Components
     [Header("UI Components")]
     public SpeedBar SpeedUI;
@@ -59,6 +61,11 @@ public class PlayerController : MonoBehaviour
         get => _maxMoveSpeed;
     }
     public float MoveSpeed { get; set; }
+    public float PlayerEnergy { get; set; }
+    public float MaxEnergy
+    {
+        get => _maxEnergy;
+    }
     public MovementType MoveType
     {
         get => _moveType;
@@ -72,8 +79,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Enemy bounds 
-    public bool InEnemyBounds { get; set; }
-    public GameObject EnemyCollided { get; set; }
+    public bool IsAttacking { get; set; }
 
     public GameObject PlayerObject
     {
@@ -93,6 +99,7 @@ public class PlayerController : MonoBehaviour
         _thirdPersonCam = Camera.main.GetComponent<ThirdPersonCam>();
 
         MoveSpeed = InitialMoveSpeed;
+        PlayerEnergy = 0.0f;
     }
 
     void Start()
@@ -151,7 +158,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        SpeedUI.UpdateHealthBar();
+        SpeedUI.UpdateUIBars();
     }
 
     private void OnEnable() => _input.Enable();
@@ -174,23 +181,34 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Enemy bounds");
-            InEnemyBounds = true;
-            EnemyCollided = other.gameObject;
+            Debug.Log("Enemy");
+
+            if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
+            {
+                Debug.Log("Attacking enemy");
+                var enemy = other.GetComponent<EnemyBehaviour>();
+                if (enemy == null) return;
+
+                bool isDead = enemy.ReceiveDamage(3);
+                if (isDead)
+                    enemy.OnDeath();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.gameObject.CompareTag("Enemy")) return;
-        if (EnemyCollided == null) return;
 
         Debug.Log("Reset enemy and stop");
+        
+        //Reset velocity and energy in player
         MoveSpeed = 0.0f;
+        PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;
+        
+        //ToDo: recheck this?
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
-
-        Invoke(nameof(ResetInBounds), 0.5f);
     }
     #endregion
 
@@ -210,12 +228,6 @@ public class PlayerController : MonoBehaviour
 
         _moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
-    }
-
-    private void ResetInBounds()
-    {
-        EnemyCollided = null;
-        InEnemyBounds = false;
     }
 
     private void PerformGodlikeActions()
