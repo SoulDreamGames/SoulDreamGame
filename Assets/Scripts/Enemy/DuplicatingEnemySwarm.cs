@@ -20,6 +20,11 @@ public class DuplicatingEnemySwarm : EnemySwarm
         Graphics.DrawMeshInstanced(DuplicatingEnemyMesh, 0, Material, matrices);
     }
 
+    public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
+    {
+        base.Initialize(enemiesManager, defaultTarget);
+        Start();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -41,6 +46,7 @@ public class DuplicatingEnemySwarm : EnemySwarm
     {
         swarmMembers.Remove(member);
         Destroy(member);
+        if (swarmMembers.Count == 0) Destroy(gameObject);
     }
     
     private void forceCreateNewMember(Vector3 position) {

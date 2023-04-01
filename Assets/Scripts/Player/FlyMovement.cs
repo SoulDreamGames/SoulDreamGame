@@ -257,8 +257,6 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             if (enemy == null) return;
 
             bool isDead = enemy.ReceiveDamage(3);
-            if (isDead)
-                enemy.OnDeath();
         }
     }
 #endregion
