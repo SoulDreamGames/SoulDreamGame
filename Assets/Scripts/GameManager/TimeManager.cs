@@ -4,13 +4,13 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.UI;
 using GameEventType = GameManager.GameEventType;
 using GameState = GameManager.GameState;
 
 
 public class TimeManager : MonoBehaviour
 {
-    //ToDo: maybe instead of wave time, we should have a totalTime to clean up the city?
     // this time only matters when staying at OnWave state
     //ToDo: if every enemy on this wave has dead, change this state to WaittingWave and reset time to that
 
@@ -30,6 +30,10 @@ public class TimeManager : MonoBehaviour
     
     [SerializeField]
     private float _defaultStateTime = 120.0f;
+    
+    //UI
+    [SerializeField] private Text timerText;
+    [SerializeField] private Text bgText;
     
     //GameManager
     private GameManager _gameManager;
@@ -66,6 +70,8 @@ public class TimeManager : MonoBehaviour
         {
             _time = (double)_room.CustomProperties["Time"];
         }
+        
+        _gameManager.SubscribeToEvent(GameEventType.onTimerUpdated, SetUITimer);
     }
 
     public void OnUpdate()
@@ -74,7 +80,6 @@ public class TimeManager : MonoBehaviour
         UpdateTime();
         
         //Invoke on timer updated
-        //ToDo: subscribe to this event (eg. UI) 
         _gameManager.InvokeEvent(GameEventType.onTimerUpdated);
     }
 
@@ -90,6 +95,13 @@ public class TimeManager : MonoBehaviour
 
         else ReadTimer();
     }
+    
+    void SetUITimer()
+    {
+        timerText.text = ((int)_time).ToString();
+        bgText.text = ((int)_time).ToString();
+    }
+    
     
     void UpdateTimer()
     {
