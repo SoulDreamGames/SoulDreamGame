@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 5551516106879617800}
   - component: {fileID: 4834957482344205703}
   - component: {fileID: 9161321765751773339}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -331,10 +331,16 @@ MonoBehaviour:
   _moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
+  playerEnergyLost: 0.5
+  playerEnergyLostOnHomingAttack: 25
+  _maxEnergy: 100
+  homingRadius: 10
+  playersManager: {fileID: 0}
   SpeedUI: {fileID: 0}
   GroundMask:
     serializedVersion: 2
     m_Bits: 0
+  view: {fileID: 0}
   _inputAxis: {x: 0, y: 0}
   _godlike: 0
 --- !u!114 &3306631969650677190

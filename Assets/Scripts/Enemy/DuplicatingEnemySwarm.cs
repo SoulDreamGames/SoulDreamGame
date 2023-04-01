@@ -23,11 +23,6 @@ public class DuplicatingEnemySwarm : EnemySwarm
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         base.Initialize(enemiesManager, defaultTarget);
-        Start();
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
         forceCreateNewMember(transform.position);
     }
 

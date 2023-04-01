@@ -301,7 +301,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         Debug.Log("Attack homing");
         if (!pc.playersManager) return;
         
-        Vector3 nearestEnemyPosition = pc.playersManager.GetLocalNearestEnemy(pc.homingRadius);
+        Vector3 nearestEnemyPosition = pc.playersManager.GetLocalNearestEnemy();
         if (float.IsPositiveInfinity(nearestEnemyPosition.x)) return;
 
         //Get nearest enemy to anywhere

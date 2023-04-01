@@ -662,6 +662,7 @@ MonoBehaviour:
   Player: {fileID: 0}
   SpeedImage: {fileID: 1206706248892660257}
   EnergyImage: {fileID: 6920256680474035860}
+  DomeImage: {fileID: 1944222332003151330}
 --- !u!1 &1206706249880104106
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,7 +26,8 @@ public class GameManager : MonoBehaviour
         onGameEnd = 5,
         onEnemySpawned = 6,
         onEnemyDied = 7,
-        onNPCDied = 8
+        onNPCDied = 8,
+        onSceneQuit = 9
     }
 
     [Serializable]
@@ -55,6 +57,11 @@ public class GameManager : MonoBehaviour
     public float energyLostOnPlayer = 5.0f;
     public float energyLostOnCivilian = 0.5f;
 
+    public float domeEnergy = 0.0f;
+    public float maxDomeEnergy = 100.0f;
+    public float energyGainedOnKill = 1.0f;
+    public float energyLostOnDeath = 10.0f;
+    
     //Game state 
     [HideInInspector] public GameState currentGameState;
     [HideInInspector] public bool gameStarted = false;
@@ -63,6 +70,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public PlayerController localPlayer;
     [SerializeField] private Image enemyMarker;
     public GameObject nearestEnemy = null;
+    public GameObject targetableEnemy = null;
+    
+    //Results scene
+    [SerializeField] private string resultsScene = "Menu";
 
     private void Start()
     {
@@ -109,13 +120,21 @@ public class GameManager : MonoBehaviour
         gameStarted = true;
     }
 
+    private void EndingGame()
+    {
+        currentGameState = GameState.EndingGame;
+    }
     private void EndGame()
     {
         //ToDo: add behaviour here - Eg. call cinematic, show statistics, etc.
         //Check game results and show ending depending on that
-        
-        currentGameState = GameState.EndingGame;
         gameStarted = false;
+        ShowGameResults();
+    }
+
+    private void ShowGameResults()
+    {
+        PhotonNetwork.LoadLevel(resultsScene);
     }
 
     public void DecreaseCityEnergy(float energy)
@@ -135,6 +154,7 @@ public class GameManager : MonoBehaviour
 
     public void InvokeEvent(GameEventType eventType)
     {
+        //Debug.Log("Called event + " + eventType.ToString());
         onGameEvents[(int)eventType].Invoke();
     }
 
@@ -157,6 +177,9 @@ public class GameManager : MonoBehaviour
                 //Invoke GameEnd if completed waves or waveEnd if middle wave
                 InvokeEvent(GameEventType.onWaveEnd);
                 break;
+            case GameState.EndingGame:
+                InvokeEvent(GameEventType.onSceneQuit);
+                break;
         }
     }
 
@@ -176,7 +199,8 @@ public class GameManager : MonoBehaviour
 
         //Subscribe to events
         SubscribeToEvent(GameEventType.onGameStart, InitGame);
-        SubscribeToEvent(GameEventType.onGameEnd, EndGame);
+        SubscribeToEvent(GameEventType.onGameEnd, EndingGame);
+        SubscribeToEvent(GameEventType.onSceneQuit, EndGame);
         SubscribeToEvent(GameEventType.onPlayerDied, () =>
         {
             DecreaseCityEnergy(energyLostOnPlayer);
@@ -191,24 +215,38 @@ public class GameManager : MonoBehaviour
 
             //If currentWave is last one, then call gameEnd
             if (currentWave >= totalWaves)
+            {
+                currentGameState = GameState.EndingGame;
                 InvokeEvent(GameEventType.onGameEnd);
+            }
         });
         SubscribeToEvent(GameEventType.onNPCDied, () =>
         {
             DecreaseCityEnergy(energyLostOnCivilian);
+        });
+        
+        //Dome energy events - Gain on enemy kill + loss on player respawn
+        SubscribeToEvent(GameEventType.onEnemyDied, () =>
+        {
+            UpdateDomeEnergy(energyGainedOnKill);
+        });
+        
+        SubscribeToEvent(GameEventType.onPlayerDied, () =>
+        {
+            UpdateDomeEnergy(energyLostOnDeath);
         });
     }
 
     //ToDo: change this to UIManager
     private void UpdateNearestEnemyOnScreen()
     {
-        if (nearestEnemy == null)
+        if (targetableEnemy == null)
         {
             enemyMarker.enabled = false;
             return;
         }
 
-        Vector3 point = Camera.main.WorldToScreenPoint(nearestEnemy.transform.position);
+        Vector3 point = Camera.main.WorldToScreenPoint(targetableEnemy.transform.position);
         //Only print this if inside screen
         if (point.z > 0 && point.x > 0 && point.y > 0 && point.x < Screen.width && point.y < Screen.width)
         {
@@ -223,8 +261,18 @@ public class GameManager : MonoBehaviour
         }
         
         enemyMarker.enabled = false;
-        
+    }
 
+    private void UpdateDomeEnergy(float energy)
+    {
+        domeEnergy += energy;
+        domeEnergy = Math.Clamp(domeEnergy, 0f, maxDomeEnergy);
+
+        if (domeEnergy >= maxDomeEnergy)
+        {
+            //Call gameEnd as shield has been fully charged
+            InvokeEvent(GameEventType.onGameEnd);
+        }
     }
     
     public List<EnemyBehaviour> GetEnemiesSpawnedList()

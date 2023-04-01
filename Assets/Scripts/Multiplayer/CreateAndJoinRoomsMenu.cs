@@ -37,14 +37,33 @@ public class CreateAndJoinRoomsMenu : MonoBehaviourPunCallbacks
 
     public void JoinRoom()
     {
-        joinRoom.interactable = false;
-        createRoom.interactable = false;
-        PhotonNetwork.JoinRoom(roomInput.text);
+        if (PhotonNetwork.JoinRoom(roomInput.text))
+        {
+            joinRoom.interactable = false;
+            createRoom.interactable = false;
+        }
+        
     }
 
     public override void OnJoinedRoom()
     {
         //SceneManager.LoadScene(mainSceneName);
         PhotonNetwork.LoadLevel(mainSceneName);
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("Fail ");
+        base.OnCreateRoomFailed(returnCode, message);
+        joinRoom.interactable = true;
+        createRoom.interactable = true;
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log("Fail ");
+        base.OnJoinRoomFailed(returnCode, message);
+        joinRoom.interactable = true;
+        createRoom.interactable = true;
     }
 }

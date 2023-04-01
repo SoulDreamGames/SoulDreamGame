@@ -45,8 +45,9 @@ public class PlayerController : MonoBehaviour
     
     //UI Components
     [Header("UI Components")]
-    public SpeedBar SpeedUI;
+    public PlayerBarsUI SpeedUI;
     public LayerMask GroundMask;
+    public LayerMask enemyMask;
 
     [HideInInspector] public PhotonView view;
     private InGameMenu _menu;
@@ -123,7 +124,7 @@ public class PlayerController : MonoBehaviour
         
         if (!view.IsMine) return;
 
-        SpeedUI = FindObjectOfType<SpeedBar>();
+        SpeedUI = FindObjectOfType<PlayerBarsUI>();
         SpeedUI.Player = this;
         Debug.Log("Speed UI: " + SpeedUI.name);
         MovementComponents components = new()
@@ -206,34 +207,29 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Enemy"))
+        if ((enemyMask & (1 << other.gameObject.layer)) != 0) return;
+
+        Debug.Log("Enemy hitted");
+
+        if ((IsAttacking || IsHomingAttacking) & MoveSpeed >= EnemySpeedThreshold)
         {
-            Debug.Log("Enemy");
+            Debug.Log("Attacking enemy");
+            var enemy = other.GetComponent<EnemyBehaviour>();
+            if (enemy == null) return;
 
-            if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
-            {
-                Debug.Log("Attacking enemy");
-                var enemy = other.GetComponent<EnemyBehaviour>();
-                if (enemy == null) return;
-
-                bool isDead = enemy.ReceiveDamage(3);
-            }
+            bool isDead = enemy.ReceiveDamage(3);
+            return;
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.gameObject.CompareTag("Enemy")) return;
-
-        Debug.Log("Reset enemy and stop");
         
         //Reset velocity and energy in player
+        Debug.Log("Unsuccesfull attack");
         MoveSpeed = 0.0f;
         PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;
-        
+    
         //ToDo: recheck this?
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
+
     }
     #endregion
 

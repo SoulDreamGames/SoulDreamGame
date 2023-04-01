@@ -22,9 +22,11 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
+        Debug.Log("Assigning default target");
         _EnemiesManager = enemiesManager;
         _DefaultTarget = defaultTarget;
         enemiesManager.AddSpawnedEnemy(this);
+        startLookingForTargets();
     }
 
     /* Returns true if the enemy died with the damage done */
@@ -40,7 +42,10 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
     private void OnDestroy()
     {
+        Debug.Log("On destroy enemy");
         _EnemiesManager.EnemyKilled(this);
+
+        if (_Target == null) return;
 
         if (_Target.TryGetComponent(out NPCRandomNavMesh npc))
         {

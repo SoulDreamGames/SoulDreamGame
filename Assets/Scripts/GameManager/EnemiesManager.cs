@@ -39,11 +39,14 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        Debug.Log("Spawning enemies on new waves");
+        Debug.Log("Spawning enemies on new wave");
         int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
         for (int i = 0; i < 10; i++)
         {
-            SpawnEnemy(enemiesToSpawn[0], respawnPoints[0].position, targetPoints[0]);
+            int enemyIndex = UnityEngine.Random.Range(0, enemiesToSpawn.Count);
+            int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
+            int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
+            SpawnEnemy(enemiesToSpawn[2], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
         // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
         
@@ -64,8 +67,16 @@ public class EnemiesManager : MonoBehaviour
     //ToDo: call this method when enemy killed/destroyed - Call inside the OnDestroy method from the enemy
     public void EnemyKilled(EnemyBehaviour enemy)
     {
-        //ToDo: delete this enemy
-        //_enemiesSpawned.Delete(enemy);
+        _enemiesSpawned.Remove(enemy);
+        if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
+        {
+            _gameManager.nearestEnemy = null;
+        }
+        if (_gameManager.targetableEnemy.Equals(enemy.gameObject))
+        {
+            _gameManager.targetableEnemy = null;
+        }
+            
         
         //Invoke Enemy Died event
         _gameManager.InvokeEvent(GameEventType.onEnemyDied);

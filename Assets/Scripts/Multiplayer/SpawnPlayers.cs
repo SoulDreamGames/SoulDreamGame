@@ -41,7 +41,7 @@ public class SpawnPlayers : MonoBehaviour
         cam.player = _player.transform;
         cam.playerObj = _player.transform.GetChild(0);
 
-        minimap.playerPosition = _player.transform;
+        minimap.playerPosition = _player.transform.GetChild(0);
 
     }
 }
