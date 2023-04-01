@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
     public float playerEnergyLostOnHomingAttack = 25f;
     [SerializeField, Tooltip("Energy lost on boost activation")] 
     public float playerEnergyLostOnBoost = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")]
+    public float playerEnergyLostOnLightningBreak = 35f;
     [SerializeField] private float _maxEnergy = 100.0f;
     
     //GameManager
@@ -91,6 +93,7 @@ public class PlayerController : MonoBehaviour
     public bool IsAttacking { get; set; }
     public bool IsHomingAttacking { get; set; }
     public bool IsBoosting { get; set; }
+    public bool IsLightningBreaking { get; set; }
 
     public GameObject PlayerObject
     {
@@ -178,7 +181,7 @@ public class PlayerController : MonoBehaviour
         //Add a visual effect based on a prefab
         if (pDashEffect != null)
         {
-            Transform dashEffect = Instantiate(pDashEffect, transform.position, quaternion.identity);
+            Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
         }
 
         //Finally, move to desired position
@@ -190,7 +193,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
+        if (MoveType.Equals(MovementType.Air))
+        {
+            PlayerEnergy = 0f;
+            SwitchState(MovementType.Ground);
+        }
         if ((GroundMask & (1 << collision.gameObject.layer)) != 0) return;
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 

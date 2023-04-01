@@ -11,7 +11,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     #region Variables
     public enum InternalState
     {
-        Levitate, Moving
+        Levitate, Moving, LightningBreak
     }
     private InternalState _internalState = InternalState.Levitate;
 
@@ -82,6 +82,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Attack.performed += OnAttack;
         components.Input.Fly.HomingAttack.performed += OnHomingAttack;
         components.Input.Fly.Boost.performed += OnBoost;
+        components.Input.Fly.LightningBreak.performed += OnLightningBreak;
 
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
@@ -103,7 +104,6 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
-        var orientation = _movementComponents.Orientation;
 
         SelectInternalState(pc, rb);
         if (CheckGroundReturning(pc)) return;
@@ -186,6 +186,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     private void SelectInternalState(in PlayerController pc, in Rigidbody rb)
     {
+        if (_internalState == InternalState.LightningBreak) return;
+
         if (pc.InputAxis.y == 0)
         {
             // Slowly decrement velocity if no forward/back input is detected
@@ -217,14 +219,21 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     private void ApplyVelocity(in Vector2 input)
     {
+        var pc = _movementComponents.PlayerController;
+        var orientation = _movementComponents.Orientation;
+
         if (_internalState == InternalState.Levitate)
         {
             _movementComponents.PlayerController.MoveSpeed = 0f;
             return;
         }
 
-        var pc = _movementComponents.PlayerController;
-        var orientation = _movementComponents.Orientation;
+        if (_internalState == InternalState.LightningBreak)
+        {
+            if (input != Vector2.zero)
+                PerformLightningBreak(pc, orientation);
+            return;
+        }
 
         float realForwardSpeed = pc.IsBoosting ? _maxMoveSpeed : _forwardSpeed;
         float realDamping = 1.0f - _accelDamping;
@@ -241,10 +250,27 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         pc.MoveSpeed = Mathf.Clamp(velocity.magnitude, _initialMoveSpeed - _usedTolerance, _maxMoveSpeed);
     }
 
+    private void PerformLightningBreak(in PlayerController pc, in Transform orientation)
+    {
+        Vector3 pos = transform.position;
+        Vector2 dashInput = 15f * pc.InputAxis;
+        Vector3 dashPos = pos + dashInput.x * orientation.right + dashInput.y * orientation.up;
+        pc.DashTo(dashPos, null);
+        pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+        ResetLightningBreak();
+    }
+
     private void ResetHomingAttack()
     {
         var pc = _movementComponents.PlayerController;
         pc.IsHomingAttacking = false;
+    }
+
+    private void ResetLightningBreak()
+    {
+        var pc = _movementComponents.PlayerController;
+        pc.IsLightningBreaking = false;
+        _internalState = InternalState.Moving;
     }
     #endregion
 
@@ -290,6 +316,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnBoost(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnBoost) return;
 
         pc.IsBoosting = true;
@@ -298,5 +325,16 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
     }
 
+    public void OnLightningBreak(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
+        if (pc.IsLightningBreaking) return;
+        if (pc.PlayerEnergy < pc.playerEnergyLostOnLightningBreak) return;
+
+        pc.IsLightningBreaking = true;
+        _internalState = InternalState.LightningBreak;
+        Invoke(nameof(ResetLightningBreak), 1.0f);
+    }
     #endregion
 }
