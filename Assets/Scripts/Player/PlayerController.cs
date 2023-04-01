@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     //Speed attributes
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
-    [SerializeField] private float _maxMoveSpeed = 80.0f;
+    [SerializeField] private float _maxMoveSpeed = 100.0f;
     //State
     [SerializeField] private MovementType _moveType = MovementType.Ground;
     //Angle limits on air
@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     public float playerEnergyLost = 0.5f;
     [SerializeField, Tooltip("Energy lost on homing attack activation")] 
     public float playerEnergyLostOnHomingAttack = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")] 
+    public float playerEnergyLostOnBoost = 25f;
     [SerializeField] private float _maxEnergy = 100.0f;
     
     //GameManager
@@ -88,6 +90,7 @@ public class PlayerController : MonoBehaviour
     // Enemy bounds 
     public bool IsAttacking { get; set; }
     public bool IsHomingAttacking { get; set; }
+    public bool IsBoosting { get; set; }
 
     public GameObject PlayerObject
     {
@@ -204,11 +207,10 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Enemy");
 
-            if (IsAttacking & MoveSpeed >= EnemySpeedThreshold)
+            if (IsAttacking && MoveSpeed >= EnemySpeedThreshold)
             {
                 Debug.Log("Attacking enemy");
-                var enemy = other.GetComponent<EnemyBehaviour>();
-                if (enemy == null) return;
+                if (other.TryGetComponent<EnemyBehaviour>(out var enemy)) return;
 
                 bool isDead = enemy.ReceiveDamage(3);
                 if (isDead)

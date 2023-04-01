@@ -15,20 +15,21 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         "(Max movement speed when the boost is NOT applied)")] private float _forwardSpeed = 65f;   // Forward movement
     [SerializeField, Tooltip("Sideways movement speed")] private float _strafeSpeed = 7.5f;  // Sideways movement
     [SerializeField, Tooltip("Up-down movement speed")] private float _hoverSpeed = 10f;     // Up-down movement
-
-    private float _initialMoveSpeed;
-    [SerializeField, Tooltip("Max movement speed when the boost IS applied")] private float _maxMoveSpeed = 100f;
-
     private float _activeForwardSpeed = 0f;
     private float _activeStrafeSpeed = 0f;
     private float _activeHoverSpeed = 0f;
+    private float _initialMoveSpeed;
+
+    [Header("Boost options")]
+    [SerializeField, Tooltip("Max movement speed when the boost IS applied")] private float _maxMoveSpeed = 100f;
+    [SerializeField, Tooltip("Boosting time")] private float _boostActiveTime = 3f;
+    private float _timeSinceLastBoost = 0f;
 
     [Header("Accelerations")]
     [SerializeField, Tooltip("Forward movement acceleration")] private float _forwardAccel = 2.5f;  // Forward acceleration
     [SerializeField, Tooltip("Sideways movement acceleration")] private float _strafeAccel = 2f;    // Sideways acceleration
     [SerializeField, Tooltip("Up-down movement acceleration")] private float _hoverAccel = 2f;      // Up-down acceleration
     [SerializeField, Range(0f, 1f), Tooltip("Acceleration damping")] private float _accelDamping = 0.6f;
-
     private float _brakeFactor = 1.0f;
 
     // Smoothing properties
@@ -65,6 +66,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Movement.canceled += OnMovement;
         components.Input.Fly.Attack.performed += OnAttack;
         components.Input.Fly.HomingAttack.performed += OnHomingAttack;
+        components.Input.Fly.Boost.performed += OnBoost;
 
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
@@ -80,6 +82,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnUpdate()
     {
         // Update does nothing at the moment
+
+        HandleBoost();
     }
 
     public void OnFixedUpdate()
@@ -199,6 +203,17 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             }
         }
     }
+
+    private void HandleBoost()
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.IsBoosting) return;
+
+        _timeSinceLastBoost += Time.deltaTime;
+        if (_timeSinceLastBoost >= _boostActiveTime)
+            pc.IsBoosting = false;
+    }
+    
     public void ResetMovement()
     {
         var rb = _movementComponents.Rigidbody;
@@ -207,6 +222,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         rb.useGravity = true;
         rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
         pc.MoveSpeed = pc.InitialMoveSpeed;
+        pc.IsBoosting = false;
 
         _activeForwardSpeed = _initialMoveSpeed;
         _activeStrafeSpeed = 0.0f;
@@ -249,8 +265,9 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = _movementComponents.PlayerController;
         var orientation = _movementComponents.Orientation;
 
+        float realForwardSpeed = pc.IsBoosting ? _maxMoveSpeed : _forwardSpeed;
         float realDamping = 1.0f - _accelDamping;
-        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * _forwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
+        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * realForwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
         _activeStrafeSpeed = Mathf.Lerp(_activeStrafeSpeed, input.x * _strafeSpeed, _strafeAccel * realDamping * Time.fixedDeltaTime);
 
         // TODO: Rotate player object when receiving sideways input movement
@@ -310,6 +327,17 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var pc = _movementComponents.PlayerController;
         pc.IsHomingAttacking = false;
+    }
+
+    public void OnBoost(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (pc.PlayerEnergy < pc.playerEnergyLostOnBoost) return;
+
+        pc.IsBoosting = true;
+        _timeSinceLastBoost = 0f;
+        _activeForwardSpeed = _maxMoveSpeed;
+        pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
     }
 
     #endregion

@@ -165,6 +165,15 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Boost"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d77eb02-27aa-4cbe-a307-720313a51178"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -244,6 +253,17 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""action"": ""HomingAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""506cbcb6-d085-4d71-8848-61372392b28b"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -288,6 +308,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         m_Fly_Movement = m_Fly.FindAction("Movement", throwIfNotFound: true);
         m_Fly_Attack = m_Fly.FindAction("Attack", throwIfNotFound: true);
         m_Fly_HomingAttack = m_Fly.FindAction("HomingAttack", throwIfNotFound: true);
+        m_Fly_Boost = m_Fly.FindAction("Boost", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
@@ -402,6 +423,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Fly_Movement;
     private readonly InputAction m_Fly_Attack;
     private readonly InputAction m_Fly_HomingAttack;
+    private readonly InputAction m_Fly_Boost;
     public struct FlyActions
     {
         private @MoveInput m_Wrapper;
@@ -409,6 +431,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Fly_Movement;
         public InputAction @Attack => m_Wrapper.m_Fly_Attack;
         public InputAction @HomingAttack => m_Wrapper.m_Fly_HomingAttack;
+        public InputAction @Boost => m_Wrapper.m_Fly_Boost;
         public InputActionMap Get() { return m_Wrapper.m_Fly; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -427,6 +450,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @HomingAttack.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
                 @HomingAttack.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
                 @HomingAttack.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnHomingAttack;
+                @Boost.started -= m_Wrapper.m_FlyActionsCallbackInterface.OnBoost;
+                @Boost.performed -= m_Wrapper.m_FlyActionsCallbackInterface.OnBoost;
+                @Boost.canceled -= m_Wrapper.m_FlyActionsCallbackInterface.OnBoost;
             }
             m_Wrapper.m_FlyActionsCallbackInterface = instance;
             if (instance != null)
@@ -440,6 +466,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                 @HomingAttack.started += instance.OnHomingAttack;
                 @HomingAttack.performed += instance.OnHomingAttack;
                 @HomingAttack.canceled += instance.OnHomingAttack;
+                @Boost.started += instance.OnBoost;
+                @Boost.performed += instance.OnBoost;
+                @Boost.canceled += instance.OnBoost;
             }
         }
     }
@@ -488,6 +517,7 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnHomingAttack(InputAction.CallbackContext context);
+        void OnBoost(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
