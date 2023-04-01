@@ -241,11 +241,13 @@ public class PlayerController : MonoBehaviour
         if (newState.Equals(MovementType.Ground))
         {
             _flightMovement.ResetMovement();
+            _groundMovement.SetSubState(GroundMovement.InternalState.Falling);
             _thirdPersonCam.SwapCamera(MovementType.Ground);
         }
         else
         {
             _groundMovement.ResetMovement();
+            _flightMovement.SetSubState(FlyMovement.InternalState.Levitate);
             _thirdPersonCam.SwapCamera(MovementType.Air);
         }
 

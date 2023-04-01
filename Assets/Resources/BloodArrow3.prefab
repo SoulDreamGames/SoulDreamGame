@@ -352,6 +352,7 @@ MonoBehaviour:
   _jumpForce: 8
   _jumpCooldown: 1
   _airMultiplier: 1
+  _fallingAcceleration: 2.5
   _playerHeight: 2
   _movementComponents:
     Rigidbody: {fileID: 0}
