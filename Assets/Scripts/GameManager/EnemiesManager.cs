@@ -39,6 +39,7 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
+        Debug.Log("Spawning enemies on new waves");
         int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
         for (int i = 0; i < 10; i++)
         {
@@ -76,8 +77,25 @@ public class EnemiesManager : MonoBehaviour
             _gameManager.InvokeEvent(GameEventType.onWaveEnd);
         } 
     }
-    public void AddSpawnedEnemy(EnemyBehaviour enemy) {
+    public void AddSpawnedEnemy(EnemyBehaviour enemy)
+    {
         remainingWaveEnemies++;
         _enemiesSpawned.Add(enemy);
+    }
+
+    public void GetNewDefaultTarget(ref GameObject lastTarget)
+    {
+        if (targetPoints.Count == 0) return;
+
+        bool foundNewTarget = false;
+        int index = 0;
+
+        for (int i = 0; i < 100; i++)
+        {
+            index = UnityEngine.Random.Range(0, targetPoints.Count);
+            foundNewTarget = (lastTarget != targetPoints[index]);
+            if (foundNewTarget) break;
+        }
+        lastTarget = targetPoints[index];
     }
 }
