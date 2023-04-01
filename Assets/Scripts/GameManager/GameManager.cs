@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(TimeManager))]
 [RequireComponent(typeof(PlayersManager))]
@@ -41,8 +43,8 @@ public class GameManager : MonoBehaviour
     //Manager components
     private TimeManager _timeManager;
     private PlayersManager _playersManager;
-    public EnemiesManager _enemiesManager;
-    public NPCManager _npcManager;
+    [HideInInspector] public EnemiesManager _enemiesManager;
+    [HideInInspector] public NPCManager _npcManager;
 
     //Game properties
     [HideInInspector] public int currentWave = 0;
@@ -56,6 +58,11 @@ public class GameManager : MonoBehaviour
     //Game state 
     [HideInInspector] public GameState currentGameState;
     [HideInInspector] public bool gameStarted = false;
+    
+    //Player variables
+    [HideInInspector] public PlayerController localPlayer;
+    [SerializeField] private Image enemyMarker;
+    public GameObject nearestEnemy = null;
 
     private void Start()
     {
@@ -81,6 +88,9 @@ public class GameManager : MonoBehaviour
         _playersManager.OnUpdate();
         _enemiesManager.OnUpdate();
         _npcManager.OnUpdate();
+        
+        //UI
+        UpdateNearestEnemyOnScreen();
     }
 
     private void FixedUpdate()
@@ -189,6 +199,34 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    //ToDo: change this to UIManager
+    private void UpdateNearestEnemyOnScreen()
+    {
+        if (nearestEnemy == null)
+        {
+            enemyMarker.enabled = false;
+            return;
+        }
+
+        Vector3 point = Camera.main.WorldToScreenPoint(nearestEnemy.transform.position);
+        //Only print this if inside screen
+        if (point.z > 0 && point.x > 0 && point.y > 0 && point.x < Screen.width && point.y < Screen.width)
+        {
+            float scale = Mathf.Clamp((localPlayer.homingRadius - point.z), 0f, localPlayer.homingRadius) / localPlayer.homingRadius;
+            enemyMarker.rectTransform.localScale = new Vector3(scale, scale, scale) * 1.5f;
+            
+            point.z = 0.0f;
+            enemyMarker.rectTransform.position = point;
+            
+            if (!enemyMarker.enabled) enemyMarker.enabled = true;
+            return;
+        }
+        
+        enemyMarker.enabled = false;
+        
+
+    }
+    
     public List<EnemyBehaviour> GetEnemiesSpawnedList()
     {
         return _enemiesManager._enemiesSpawned;

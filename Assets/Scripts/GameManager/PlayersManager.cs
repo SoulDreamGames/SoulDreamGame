@@ -12,8 +12,6 @@ public class PlayersManager : MonoBehaviour
     
     //ToDo: add players here - Call it on playerStart or from Photon room
     public List<PlayerController> players;
-    private PlayerController _localPlayer;
-    private GameObject _nearestEnemy = null;
 
     [SerializeField] private float _respawnTime = 5.0f;
     
@@ -29,7 +27,7 @@ public class PlayersManager : MonoBehaviour
         players.Add(pc);
 
         if (!pc.view.IsMine) return;
-        _localPlayer = pc;
+        _gameManager.localPlayer = pc;
     }
 
     public void OnUpdate()
@@ -72,7 +70,7 @@ public class PlayersManager : MonoBehaviour
     public Vector3 GetPositionToNearestEnemy(List<EnemyBehaviour> enemies, float attackRadius)
     {
         float minDistance = Mathf.Infinity;
-        _nearestEnemy = null;
+        GameObject nearestEnemy = null;
 
         //Get nearest by checking all distances
         foreach (var enemy in enemies)
@@ -83,19 +81,21 @@ public class PlayersManager : MonoBehaviour
             
             if (minDistance > distance)
             {
-                _nearestEnemy = enemy.gameObject;
+                nearestEnemy = enemy.gameObject;
                 minDistance = distance;
             }
         }
 
         //Return nearest
-        if (_nearestEnemy != null)
+        if (nearestEnemy != null)
         {
-            Debug.Log("Nearest enemy is: " + _nearestEnemy.name);
-            return _nearestEnemy.transform.position;
+            Debug.Log("Nearest enemy is: " + _gameManager.nearestEnemy.name);
+            _gameManager.nearestEnemy = nearestEnemy;
+            return nearestEnemy.transform.position;
         }
 
         Debug.Log("Enemy not found");
+        _gameManager.nearestEnemy = null;
         return Vector3.positiveInfinity;
     }
 }

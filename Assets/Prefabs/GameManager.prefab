@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de8d71f23c85fc1468cf453aefa1ff92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemiesManager: {fileID: 0}
+  _npcManager: {fileID: 0}
   currentWave: 0
   totalWaves: 5
   cityEnergy: 100
@@ -55,6 +57,9 @@ MonoBehaviour:
   energyLostOnCivilian: 0.5
   currentGameState: 0
   gameStarted: 0
+  localPlayer: {fileID: 0}
+  enemyMarker: {fileID: 0}
+  nearestEnemy: {fileID: 0}
 --- !u!114 &7368224080682761783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,7 +110,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesToSpawn: []
+  _enemiesSpawned: []
   respawnPoints: []
+  targetPoints: []
+  enemiesPerWave: 
 --- !u!114 &7368224080682761780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,3 +129,4 @@ MonoBehaviour:
   npcPrefab: {fileID: 2262894242641886616, guid: 609851faeea031b49ac1248992f4d263, type: 3}
   spawnPoints: []
   safeZones: []
+  _npcsSpawned: []
