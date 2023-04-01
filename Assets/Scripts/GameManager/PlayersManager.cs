@@ -12,6 +12,7 @@ public class PlayersManager : MonoBehaviour
     
     //ToDo: add players here - Call it on playerStart or from Photon room
     public List<PlayerController> players;
+    private PlayerController _localPlayer;
 
     [SerializeField] private float _respawnTime = 5.0f;
     
@@ -19,6 +20,16 @@ public class PlayersManager : MonoBehaviour
     {
         //Init gameManager
         _gameManager = gameManager;
+    }
+
+    //Add players to player list on spawn and set local player
+    public void AddPlayer(PlayerController pc)
+    {
+        players.Add(pc);
+        pc.playersManager = this;
+
+        if (!pc.view.IsMine) return;
+        _localPlayer = pc;
     }
 
     public void OnUpdate()
@@ -50,5 +61,10 @@ public class PlayersManager : MonoBehaviour
         int rnd = Random.Range(0, respawnPoints.Count);
         //pc.Spawn(respawnPoints[rnd]);
         //ToDo: uncomment this and add this method to playerController
+    }
+
+    public void GetLocalNearestEnemy()
+    {
+        
     }
 }

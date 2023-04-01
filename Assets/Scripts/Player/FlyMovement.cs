@@ -64,6 +64,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Movement.performed += OnMovement;
         components.Input.Fly.Movement.canceled += OnMovement;
         components.Input.Fly.Attack.performed += OnAttack;
+        components.Input.Fly.HomingAttack.performed += OnHomingAttack;
 
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
@@ -173,19 +174,21 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = _movementComponents.PlayerController;
 
         //When attacking, lost energy per update
-        if (pc.IsAttacking)
+        if (pc.PlayerEnergy < 0.0f)
         {
-            Debug.Log("Currently attacking");
-            pc.PlayerEnergy -= pc.playerEnergyLost;
-            
-            if (pc.PlayerEnergy > 0.0f) return;
-            
             //If energy is 0, stop attack
             pc.PlayerEnergy = 0.0f;
             pc.IsAttacking = false;
             return;
         }
         
+        if (pc.IsAttacking)
+        {
+            Debug.Log("Currently attacking");
+            pc.PlayerEnergy -= pc.playerEnergyLost;
+            return;
+        }
+
         //If not attacking and its moving, then increase energy based on velocity
         if (pc.MoveSpeed > 0.0f)
         {
@@ -272,6 +275,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var pc = _movementComponents.PlayerController;
 
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (context.performed && pc.PlayerEnergy > 0.0f)
         {
             Debug.Log("Attack pressed: ");
@@ -282,5 +286,31 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         Debug.Log("Attack released");
         _movementComponents.PlayerController.IsAttacking = false;
     }
-#endregion
+
+    public void OnHomingAttack(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
+        if (pc.IsHomingAttacking) return;
+        if (pc.PlayerEnergy < pc.playerEnergyLostOnHomingAttack) return;
+        
+        Debug.Log("Attack homing");   
+        
+        //ToDo: always have the nearest enemy to player in a certain distance
+        //Get nearest enemy to anywhere
+        pc.DashTo(Vector3.zero, null);
+        pc.PlayerEnergy -= pc.playerEnergyLostOnHomingAttack;
+
+        //ToDo: reset movement speed to zero on this case
+        
+        Invoke(nameof(ResetHomingAttack), 1.0f);
+    }
+
+    private void ResetHomingAttack()
+    {
+        var pc = _movementComponents.PlayerController;
+        pc.IsHomingAttacking = false;
+    }
+
+    #endregion
 }

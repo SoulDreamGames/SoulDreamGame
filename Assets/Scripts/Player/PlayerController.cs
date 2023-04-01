@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Unity.Mathematics;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(GroundMovement))]
@@ -31,15 +32,21 @@ public class PlayerController : MonoBehaviour
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
-    [SerializeField, Tooltip("Energy lost per update when using hold attack")] public float playerEnergyLost = 0.5f;
+    [SerializeField, Tooltip("Energy lost per update when using hold attack")] 
+    public float playerEnergyLost = 0.5f;
+    [SerializeField, Tooltip("Energy lost on homing attack activation")] 
+    public float playerEnergyLostOnHomingAttack = 25f;
     [SerializeField] private float _maxEnergy = 100.0f;
+    
+    //GameManager
+    [HideInInspector] public PlayersManager playersManager;
     
     //UI Components
     [Header("UI Components")]
     public SpeedBar SpeedUI;
     public LayerMask GroundMask;
 
-    private PhotonView _view;
+    [HideInInspector] public PhotonView view;
     private InGameMenu _menu;
 
     [Header("Debug Info")]
@@ -80,6 +87,7 @@ public class PlayerController : MonoBehaviour
 
     // Enemy bounds 
     public bool IsAttacking { get; set; }
+    public bool IsHomingAttacking { get; set; }
 
     public GameObject PlayerObject
     {
@@ -104,10 +112,10 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        _view = GetComponent<PhotonView>();
+        view = GetComponent<PhotonView>();
         _menu = FindObjectOfType<InGameMenu>();
 
-        if (!_view.IsMine) return;
+        if (!view.IsMine) return;
 
         SpeedUI = FindObjectOfType<SpeedBar>();
         SpeedUI.Player = this;
@@ -127,7 +135,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!_view.IsMine) return;
+        if (!view.IsMine) return;
         if (!_menu.EnableInGameControls) InputAxis = Vector2.zero;
         
         switch (MoveType)
@@ -146,7 +154,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!_view.IsMine) return;
+        if (!view.IsMine) return;
         
         switch (MoveType)
         {
@@ -159,6 +167,19 @@ public class PlayerController : MonoBehaviour
         }
 
         SpeedUI.UpdateUIBars();
+    }
+
+    //ToDo: add a list of effects for lightning break + homing attack
+    public void DashTo(Vector3 targetPosition, Transform pDashEffect)
+    {
+        //Add a visual effect based on a prefab
+        if (pDashEffect != null)
+        {
+            Transform dashEffect = Instantiate(pDashEffect, transform.position, quaternion.identity);
+        }
+
+        //Finally, move to desired position
+        transform.position = targetPosition;
     }
 
     private void OnEnable() => _input.Enable();
