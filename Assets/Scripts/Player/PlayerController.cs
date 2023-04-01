@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     //Speed attributes
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
-    [SerializeField] private float _maxMoveSpeed = 80.0f;
+    [SerializeField] private float _maxMoveSpeed = 100.0f;
     //State
     [SerializeField] private MovementType _moveType = MovementType.Ground;
     //Angle limits on air
@@ -36,6 +36,10 @@ public class PlayerController : MonoBehaviour
     public float playerEnergyLost = 0.5f;
     [SerializeField, Tooltip("Energy lost on homing attack activation")] 
     public float playerEnergyLostOnHomingAttack = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")] 
+    public float playerEnergyLostOnBoost = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")]
+    public float playerEnergyLostOnLightningBreak = 35f;
     [SerializeField] private float _maxEnergy = 100.0f;
     [SerializeField, Tooltip("Homing attack radius")] 
     public float homingRadius = 10f;
@@ -91,6 +95,8 @@ public class PlayerController : MonoBehaviour
     // Enemy bounds 
     public bool IsAttacking { get; set; }
     public bool IsHomingAttacking { get; set; }
+    public bool IsBoosting { get; set; }
+    public bool IsLightningBreaking { get; set; }
 
     public GameObject PlayerObject
     {
@@ -182,7 +188,7 @@ public class PlayerController : MonoBehaviour
         //Add a visual effect based on a prefab
         if (pDashEffect != null)
         {
-            Transform dashEffect = Instantiate(pDashEffect, transform.position, quaternion.identity);
+            Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
         }
 
         //Finally, move to desired position
@@ -194,6 +200,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (MoveType.Equals(MovementType.Air))
+        {
+            PlayerEnergy = 0f;
+            SwitchState(MovementType.Ground);
+        }
         if ((GroundMask & (1 << collision.gameObject.layer)) != 0) return;
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 
@@ -202,7 +213,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Layer is: " + collision.gameObject.layer);
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
-        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -216,7 +226,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Attacking enemy");
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
-
+            
             bool isDead = enemy.ReceiveDamage(3);
             return;
         }
@@ -239,11 +249,13 @@ public class PlayerController : MonoBehaviour
         if (newState.Equals(MovementType.Ground))
         {
             _flightMovement.ResetMovement();
+            _groundMovement.SetSubState(GroundMovement.InternalState.Falling);
             _thirdPersonCam.SwapCamera(MovementType.Ground);
         }
         else
         {
             _groundMovement.ResetMovement();
+            _flightMovement.SetSubState(FlyMovement.InternalState.Levitate);
             _thirdPersonCam.SwapCamera(MovementType.Air);
         }
 

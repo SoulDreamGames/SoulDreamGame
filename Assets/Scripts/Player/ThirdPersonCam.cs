@@ -17,10 +17,15 @@ public class ThirdPersonCam : MonoBehaviour
 
     [SerializeField]
     private CinemachineFreeLook[] cameraBehaviours = new CinemachineFreeLook[2];
+
+    private float _startFOV;
+    private float _fovMultiplier = 1.3f;
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        _startFOV = cameraBehaviours[1].m_Lens.FieldOfView;
     }
 
     public void SwapCamera(MovementType movement)
@@ -58,28 +63,12 @@ public class ThirdPersonCam : MonoBehaviour
                        new Vector3(transform.position.x, transform.position.y, transform.position.z)).normalized;
 
 
-        //Limit angles on air movement
+        // Check boosting fov if player is flying
         if (pc.MoveType.Equals(MovementType.Air))
         {
-            // realLookAt = realLookAt.normalized;
-            // Vector3 _originalForward = pc.GetFlightForward();
-            //
-            // Debug.Log("Forward from orientation: " + realLookAt);
-            //
-            // float angleY = Vector3.SignedAngle(_originalForward, realLookAt, Vector3.up);
-            // float angleX =
-            //     Vector3.SignedAngle(_originalForward, realLookAt, transform.right);
-            //
-            // //Angle limits
-            // if (angleX > pc.rotXLimit) angleX = pc.rotXLimit;
-            // else if (angleX < -pc.rotXLimit) angleX = -pc.rotXLimit;
-            //
-            // if (angleY > pc.rotYLimit) angleY = pc.rotYLimit;
-            // else if (angleY < -pc.rotYLimit) angleY = pc.rotYLimit;
-            //
-            // //Get new forward with limited angles
-            // realLookAt = Quaternion.Euler(angleX, angleY, 0.0f) * _originalForward;
-            // Debug.Log("New forward: " + realLookAt);
+            float realFovMultiplier = pc.IsBoosting ? _fovMultiplier : 1.0f;
+            float lerpVelocity = pc.IsBoosting ? 0.6f : 0.6f * Time.deltaTime;
+            cameraBehaviours[1].m_Lens.FieldOfView = Mathf.Lerp(cameraBehaviours[1].m_Lens.FieldOfView, _startFOV * realFovMultiplier, lerpVelocity);
         }
 
         transform.position = player.position - realLookAt * lookAt.magnitude;

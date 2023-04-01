@@ -12,26 +12,33 @@ using Vector3 = UnityEngine.Vector3;
 public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 {
     #region Variables
-    //Speeds
+    public enum InternalState
+    {
+        Levitate, Moving, LightningBreak
+    }
+    private InternalState _internalState = InternalState.Levitate;
+
     [Header("Speeds")]
     [SerializeField, Tooltip("Forward movement speed " +
-        "(Max movement speed when the boost is NOT applied)")] private float _forwardSpeed = 65f;   // Forward movement
+        "(Max movement speed when the boost is NOT applied)")]
+    private float _forwardSpeed = 65f;   // Forward movement
     [SerializeField, Tooltip("Sideways movement speed")] private float _strafeSpeed = 7.5f;  // Sideways movement
     [SerializeField, Tooltip("Up-down movement speed")] private float _hoverSpeed = 10f;     // Up-down movement
-
-    private float _initialMoveSpeed;
-    [SerializeField, Tooltip("Max movement speed when the boost IS applied")] private float _maxMoveSpeed = 100f;
-
     private float _activeForwardSpeed = 0f;
     private float _activeStrafeSpeed = 0f;
     private float _activeHoverSpeed = 0f;
+    private float _initialMoveSpeed;
+
+    [Header("Boost options")]
+    [SerializeField, Tooltip("Max movement speed when the boost IS applied")] private float _maxMoveSpeed = 100f;
+    [SerializeField, Tooltip("Boosting time")] private float _boostActiveTime = 3f;
+    private float _timeSinceLastBoost = 0f;
 
     [Header("Accelerations")]
     [SerializeField, Tooltip("Forward movement acceleration")] private float _forwardAccel = 2.5f;  // Forward acceleration
     [SerializeField, Tooltip("Sideways movement acceleration")] private float _strafeAccel = 2f;    // Sideways acceleration
     [SerializeField, Tooltip("Up-down movement acceleration")] private float _hoverAccel = 2f;      // Up-down acceleration
     [SerializeField, Range(0f, 1f), Tooltip("Acceleration damping")] private float _accelDamping = 0.6f;
-
     private float _brakeFactor = 1.0f;
 
     // Smoothing properties
@@ -39,7 +46,15 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     [SerializeField, Tooltip("Speed loss rate when no forward/back input is detected")] private float _speedLossRate = 4f;
     [SerializeField, Range(0f, 1f),
         Tooltip("How much the player has to stop after changing to Ground movement. " +
-        "This should not be 1 never")] private float _tolerance = 0.3f;
+        "This should not be 1 never")]
+    private float _tolerance = 0.3f;
+
+    [Header("Levitating")]
+    [SerializeField,
+        Tooltip("How much time the player is allowed to be levitating " +
+        "before it returns to Ground movement.")]
+    private float _levitatingTime = 5f;
+    private float _timeSinceStartedLevitating = 0f;
 
     [Header("Debug Info")]
     [SerializeField] private float _usedTolerance = 1f;
@@ -62,6 +77,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     }
 
     #region Functions
+    #region IPlayerMovement
     public void Initialize(MovementComponents components)
     {
         components.Input.Fly.Movement.performed += OnMovement;
@@ -69,12 +85,14 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         components.Input.Fly.Attack.performed += OnAttack;
         components.Input.Fly.Attack.canceled += OnAttack;
         components.Input.Fly.HomingAttack.performed += OnHomingAttack;
+        components.Input.Fly.Boost.performed += OnBoost;
+        components.Input.Fly.LightningBreak.performed += OnLightningBreak;
 
         _lastForward = components.Orientation.forward;
         _originalForward = _lastForward;
 
         var pc = components.PlayerController;
-        _initialMoveSpeed = pc.ThresholdSpeed;
+        _initialMoveSpeed = pc.InitialMoveSpeed;
         _maxMoveSpeed = pc.MaxMoveSpeed;
         _activeForwardSpeed = _initialMoveSpeed;
 
@@ -83,94 +101,39 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     public void OnUpdate()
     {
-        // Update does nothing at the moment
+        HandleBoost();
     }
 
     public void OnFixedUpdate()
     {
-#if true
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
-        var orientation = _movementComponents.Orientation;
 
-        if (CheckGroundReturning()) return;
+        SelectInternalState(pc, rb);
+        if (CheckGroundReturning(pc)) return;
         ApplyVelocity(pc.InputAxis);
-        SpeedControl();
+        SpeedControl(rb);
         HandleEnergy();
+    }
 
-#else
+    public void ResetMovement()
+    {
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
 
-        if (pc.InputAxis.y != 0) // Moving forward or backwards
-        {
-            pc.MoveSpeed += _moveAccel * Time.fixedDeltaTime;
-            _brakeFactor = 1.0f;
-        }
-        else if (_brakeFactor != 0.0f)
-        {
-            pc.MoveSpeed -= 2f * _moveAccel * Time.fixedDeltaTime;
-            _brakeFactor = pc.MoveSpeed > _tolerance ? -1.0f : 0.0f;
-        }
+        rb.useGravity = true;
+        rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
+        pc.MoveSpeed = pc.InitialMoveSpeed;
+        pc.IsBoosting = false;
 
-        pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, pc.ThresholdSpeed, _maxMoveSpeed);
+        _activeForwardSpeed = _initialMoveSpeed;
+        _activeStrafeSpeed = 0.0f;
+    }
+    #endregion
 
-        //Save current forward
-        Vector3 forward = _brakeFactor <= 0.0f ? _lastForward : _movementComponents.Orientation.forward;
-        _lastForward = forward;
-
-        Vector3 moveDir = pc.InputAxis.y * forward;
-        Vector3 movement = new()
-        {
-            x = pc.MoveSpeed * moveDir.x,
-            y = _hoverSpeed * moveDir.y,
-            z = pc.MoveSpeed * moveDir.z,
-        };
-
-        switch (_brakeFactor)
-        {
-            //Forward movement
-            case 0.0f:
-                if (rb.velocity.sqrMagnitude < _tolerance)
-                {
-                    rb.velocity = Vector3.zero;
-                    pc.MoveSpeed = _initialMoveSpeed;
-                    //Switch to ground movement when stopping
-                    pc.SwitchState(MovementType.Ground);
-                    return;
-                }
-
-                rb.velocity = Vector3.SmoothDamp(rb.velocity, Vector3.zero, ref _smoothStopVel, 1.0f);
-                return;
-
-            //Moving forward
-            case >= 1.0f:
-                rb.velocity = movement;
-                break;
-
-            //Stopping
-            case <= -1.0f:
-                if (rb.velocity.sqrMagnitude <= _initialMoveSpeed)
-                {
-                    _brakeFactor = 0.0f;
-                    return;
-                }
-
-                movement = pc.MoveSpeed * forward;
-                rb.velocity -= movement * Time.fixedDeltaTime;
-
-                rb.velocity = new Vector3
-                {
-                    x = Mathf.Abs(rb.velocity.x) < pc.InitialMoveSpeed ? 0f : rb.velocity.x,
-                    y = Mathf.Abs(rb.velocity.y) < pc.InitialMoveSpeed ? 0f : rb.velocity.y,
-                    z = Mathf.Abs(rb.velocity.z) < pc.InitialMoveSpeed ? 0f : rb.velocity.z
-                };
-
-                break;
-        }
-
-        SpeedControl();
-#endif
+    public void SetSubState(InternalState newSubState)
+    {
+        _internalState = newSubState;
     }
 
     private void HandleEnergy()
@@ -185,7 +148,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             pc.IsAttacking = false;
             return;
         }
-        
+
         if (pc.IsAttacking)
         {
             Debug.Log("Currently attacking");
@@ -203,49 +166,59 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             }
         }
     }
-    public void ResetMovement()
+
+    private void HandleBoost()
     {
-        var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
+        if (!pc.IsBoosting) return;
 
-        rb.useGravity = true;
-        rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
-        pc.MoveSpeed = pc.InitialMoveSpeed;
-
-        _activeForwardSpeed = _initialMoveSpeed;
-        _activeStrafeSpeed = 0.0f;
+        _timeSinceLastBoost += Time.deltaTime;
+        if (_timeSinceLastBoost >= _boostActiveTime)
+            pc.IsBoosting = false;
     }
 
-    private void SpeedControl()
+    private void SpeedControl(in Rigidbody rb)
     {
-        Vector3 vel = _movementComponents.Rigidbody.velocity;
+        Vector3 vel = rb.velocity;
 
         if (vel.magnitude > _maxMoveSpeed)
         {
             Vector3 newVel = vel.normalized * _maxMoveSpeed;
-            _movementComponents.Rigidbody.velocity = newVel;
+            rb.velocity = newVel;
         }
     }
 
-    private bool CheckGroundReturning()
+    private void SelectInternalState(in PlayerController pc, in Rigidbody rb)
     {
-        var rb = _movementComponents.Rigidbody;
-        var pc = _movementComponents.PlayerController;
+        if (_internalState == InternalState.LightningBreak) return;
 
         if (pc.InputAxis.y == 0)
         {
             // Slowly decrement velocity if no forward/back input is detected
             pc.MoveSpeed -= _speedLossRate * Time.fixedDeltaTime;
+            pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, 0f, pc.MoveSpeed);
             rb.velocity = rb.velocity.normalized * pc.MoveSpeed;
             if (pc.MoveSpeed < pc.ThresholdSpeed - _tolerance)
-            {
-                //Switch to ground movement when stopping
-                pc.SwitchState(MovementType.Ground);
-                return true;
-            }
+                _internalState = InternalState.Levitate;
         }
+        else
+        {
+            _timeSinceStartedLevitating = 0f;
+            _internalState = InternalState.Moving;
+        }
+    }
 
-        return false;
+    private bool CheckGroundReturning(in PlayerController pc)
+    {
+        if (_internalState != InternalState.Levitate) return false;
+
+        _timeSinceStartedLevitating += Time.fixedDeltaTime;
+        if (_timeSinceStartedLevitating < _levitatingTime) return false;
+
+        //Switch to ground movement after too much time levitating
+        _timeSinceStartedLevitating = 0f;
+        pc.SwitchState(MovementType.Ground);
+        return true;
     }
 
     private void ApplyVelocity(in Vector2 input)
@@ -253,8 +226,22 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = _movementComponents.PlayerController;
         var orientation = _movementComponents.Orientation;
 
+        if (_internalState == InternalState.Levitate)
+        {
+            _movementComponents.PlayerController.MoveSpeed = 0f;
+            return;
+        }
+
+        if (_internalState == InternalState.LightningBreak)
+        {
+            if (input != Vector2.zero)
+                PerformLightningBreak(pc, orientation);
+            return;
+        }
+
+        float realForwardSpeed = pc.IsBoosting ? _maxMoveSpeed : _forwardSpeed;
         float realDamping = 1.0f - _accelDamping;
-        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * _forwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
+        _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * realForwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
         _activeStrafeSpeed = Mathf.Lerp(_activeStrafeSpeed, input.x * _strafeSpeed, _strafeAccel * realDamping * Time.fixedDeltaTime);
 
         // TODO: Rotate player object when receiving sideways input movement
@@ -263,11 +250,31 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         _movementComponents.Rigidbody.velocity = velocity;
 
         // Minimum speed tolerance before changing to Ground movement
-        if (input.y != 0)
-            _usedTolerance = 1f;
-        else
-            _usedTolerance = Mathf.Lerp(_usedTolerance, 0.25f, Time.fixedDeltaTime);
-        pc.MoveSpeed = Mathf.Clamp(velocity.magnitude, pc.ThresholdSpeed - _usedTolerance, _maxMoveSpeed);
+        _usedTolerance = input.y == 0f ? Mathf.Lerp(_usedTolerance, 0.25f, Time.fixedDeltaTime) : 1f;
+        pc.MoveSpeed = Mathf.Clamp(velocity.magnitude, _initialMoveSpeed - _usedTolerance, _maxMoveSpeed);
+    }
+
+    private void PerformLightningBreak(in PlayerController pc, in Transform orientation)
+    {
+        Vector3 pos = transform.position;
+        Vector2 dashInput = 15f * pc.InputAxis;
+        Vector3 dashPos = pos + dashInput.x * orientation.right + dashInput.y * orientation.up;
+        pc.DashTo(dashPos, null);
+        pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+        ResetLightningBreak();
+    }
+
+    private void ResetHomingAttack()
+    {
+        var pc = _movementComponents.PlayerController;
+        pc.IsHomingAttacking = false;
+    }
+
+    private void ResetLightningBreak()
+    {
+        var pc = _movementComponents.PlayerController;
+        pc.IsLightningBreaking = false;
+        _internalState = InternalState.Moving;
     }
     #endregion
 
@@ -297,28 +304,45 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsHomingAttacking) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnHomingAttack) return;
-        
+
         Debug.Log("Attack homing");
         if (!pc.playersManager) return;
         
         Vector3 nearestEnemyPosition = pc.playersManager.GetLocalNearestEnemy();
         if (float.IsPositiveInfinity(nearestEnemyPosition.x)) return;
-
+        
         //Get nearest enemy to anywhere
         pc.IsHomingAttacking = true;
         pc.DashTo(nearestEnemyPosition, null);
         pc.PlayerEnergy -= pc.playerEnergyLostOnHomingAttack;
 
         //ToDo: reset movement speed to zero on this case
-        
+
         Invoke(nameof(ResetHomingAttack), 1.0f);
     }
 
-    private void ResetHomingAttack()
+    public void OnBoost(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
-        pc.IsHomingAttacking = false;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
+        if (pc.PlayerEnergy < pc.playerEnergyLostOnBoost) return;
+
+        pc.IsBoosting = true;
+        _timeSinceLastBoost = 0f;
+        _activeForwardSpeed = _maxMoveSpeed;
+        pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
     }
 
+    public void OnLightningBreak(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
+        if (pc.IsLightningBreaking) return;
+        if (pc.PlayerEnergy < pc.playerEnergyLostOnLightningBreak) return;
+
+        pc.IsLightningBreaking = true;
+        _internalState = InternalState.LightningBreak;
+        Invoke(nameof(ResetLightningBreak), 1.0f);
+    }
     #endregion
 }

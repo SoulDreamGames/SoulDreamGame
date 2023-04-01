@@ -9,6 +9,12 @@ using static MoveInput;
 public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 {
     #region Variables
+    public enum InternalState
+    {
+        Idle, Moving, Jumping, Falling
+    }
+    private InternalState _internalState = InternalState.Idle;
+
     [Header("Movement")]
     [SerializeField] private float _groundDrag = 3f;
     [SerializeField] private float _groundAcceleration = 1.5f;
@@ -18,8 +24,9 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     [SerializeField] private float _jumpForce = 8f;
     [SerializeField] private float _jumpCooldown = 1f;
     [SerializeField] private float _airMultiplier = 1f;
+    [SerializeField] private float _fallingAcceleration = 2.5f;
     private bool _canJump = true;
-    
+
     [Header("Ground check")]
     [SerializeField] private float _playerHeight = 2f;
     private bool _isGrounded;
@@ -31,6 +38,7 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     #endregion
 
     #region Functions
+    #region IPlayerMovement
     public void Initialize(MovementComponents components)
     {
         components.Input.Ground.Move.performed += OnMove;
@@ -47,31 +55,24 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 
         _movementComponents = components;
     }
-        
+
     public void OnUpdate()
     {
         // Check if the player is grounded
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _movementComponents.PlayerController.GroundMask);
-
-        SpeedControl();
-
         // Apply ground drag to the player rigidbody if it's grounded
         _movementComponents.Rigidbody.drag = _isGrounded ? _groundDrag : 0.0f;
     }
 
     public void OnFixedUpdate()
     {
+        var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
-        if (pc.InputAxis.y == 0)
-        {
-            pc.MoveSpeed = 0f;
-            return;
-        }
 
-        float direction = _isRunning ? 1f : -1f;
-        pc.MoveSpeed += direction * _groundAcceleration * Time.fixedDeltaTime;
-        pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, _initialMoveSpeed, _maxMoveSpeed);
-        MovePlayer();
+        if (IsIdling(pc)) return;
+        HandleFalling(pc, rb);
+        MovePlayer(pc);
+        SpeedControl(rb);
     }
 
     public void ResetMovement()
@@ -81,22 +82,64 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         Debug.Log("Current rb vel previous to change: " + rb.velocity);
         _movementComponents.PlayerController.MoveSpeed = rb.velocity.magnitude;
     }
+    #endregion
 
-    private void MovePlayer()
+    public void SetSubState(InternalState newSubState)
     {
-        //Calculate movement dir
-        var orientation = _movementComponents.Orientation;
-        var pc = _movementComponents.PlayerController;
-        Vector3 moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
-
-        float inAirMultiplier = _isGrounded ? 1.0f : _airMultiplier;
-        _movementComponents.Rigidbody.AddForce(pc.MoveSpeed * 10f * inAirMultiplier * moveDirection, ForceMode.Force);
+        _internalState = newSubState;
     }
 
-    private void SpeedControl()
+    private void HandleFalling(in PlayerController pc, in Rigidbody rb)
     {
-        var rb = _movementComponents.Rigidbody;
-        Vector3 vel = _movementComponents.Rigidbody.velocity;
+        if (!_isGrounded && rb.velocity.y < 0f)
+        {
+            _internalState = InternalState.Falling;
+            float gravityAccel = 0.2f * Physics.gravity.magnitude;
+            pc.MoveSpeed += _fallingAcceleration * gravityAccel * Time.fixedDeltaTime;
+            pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, 0f, _maxMoveSpeed);
+        }
+    }
+
+    private bool IsIdling(in PlayerController pc)
+    {
+        if (pc.InputAxis.y == 0 && _isGrounded)
+        {
+            if (_internalState != InternalState.Idle)
+                Debug.Log("Enter Idling");
+
+            _internalState = InternalState.Idle;
+            pc.MoveSpeed = 0f;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void MovePlayer(in PlayerController pc)
+    {
+        if (pc.InputAxis != Vector2.zero)
+        {
+            // We only consider player is moving state if it's grounded,
+            // although we want to be able to move it at any moment
+            if (_isGrounded)
+                _internalState = InternalState.Moving;
+
+            float direction = _isRunning ? 1f : -1f;
+            pc.MoveSpeed += direction * _groundAcceleration * Time.fixedDeltaTime;
+            pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, _initialMoveSpeed, _maxMoveSpeed);
+
+            //Calculate movement dir
+            var orientation = _movementComponents.Orientation;
+            Vector3 moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
+
+            float inAirMultiplier = _isGrounded ? 1.0f : _airMultiplier;
+            _movementComponents.Rigidbody.AddForce(pc.MoveSpeed * 10f * inAirMultiplier * moveDirection, ForceMode.Force);
+        }
+    }
+
+    private void SpeedControl(in Rigidbody rb)
+    {
+        Vector3 vel = rb.velocity;
         vel.y = 0.0f;
 
         if (vel.magnitude > 2.0f * _maxMoveSpeed)
@@ -113,6 +156,8 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         vel.y = 0.0f;
         rb.velocity = vel;
         rb.AddForce(_jumpForce * transform.up, ForceMode.Impulse);
+
+        _internalState = InternalState.Jumping;
     }
 
     private void ResetJump()
@@ -129,26 +174,56 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (_jumpPressed)
+        var rb = _movementComponents.Rigidbody;
+        var pc = _movementComponents.PlayerController;
+        void StartFlying()
         {
-            _jumpPressed = false;
-
-            var pc = _movementComponents.PlayerController;
-            if (pc.MoveSpeed < _maxMoveSpeed * 0.9f) return;
-
             Debug.Log("Switch state");
             pc.SwitchState(MovementType.Air);
+            rb.AddForce(_jumpForce * 40.0f * transform.up, ForceMode.Force);
+        }
+        void PerformJump()
+        {
+            _jumpPressed = true;
+            Debug.Log("Jump pressed");
+            if (!_canJump || !_isGrounded) return;
 
-            return;
+            _canJump = false;
+            Jump();
+            Invoke(nameof(ResetJump), _jumpCooldown);
         }
 
-        _jumpPressed = true;
-        Debug.Log("Jump pressed");
-        if (!_canJump || !_isGrounded) return;
+        bool enoughSpeed = pc.MoveSpeed >= _maxMoveSpeed * 0.9f;
+        switch (_internalState)
+        {
+            case InternalState.Falling:
+                if (enoughSpeed)
+                {
+                    StartFlying();
+                }
+                break;
+            case InternalState.Jumping:
+                StartFlying();
+                break;
+            case InternalState.Moving:
+            case InternalState.Idle:
+                if (enoughSpeed)
+                {
+                    StartFlying();
+                }
+                else
+                {
+                    if (_jumpPressed)
+                    {
+                        _jumpPressed = false;
+                        StartFlying();
+                        return;
+                    }
 
-        _canJump = false;
-        Jump();
-        Invoke(nameof(ResetJump), _jumpCooldown);
+                    PerformJump();
+                }
+                break;
+        }
     }
 
     public void OnRun(InputAction.CallbackContext context) => _isRunning = context.performed;

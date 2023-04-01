@@ -218,22 +218,19 @@ MonoBehaviour:
   _orientation: {fileID: 3306631970050166878}
   _initialMoveSpeed: 5
   _thresholdSpeed: 10
-  _maxMoveSpeed: 80
+  _maxMoveSpeed: 100
   _moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
   playerEnergyLost: 0.5
   playerEnergyLostOnHomingAttack: 25
+  playerEnergyLostOnBoost: 25
   _maxEnergy: 100
-  homingRadius: 50
   playersManager: {fileID: 0}
   SpeedUI: {fileID: 0}
   GroundMask:
     serializedVersion: 2
     m_Bits: 192
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 2048
   view: {fileID: 0}
   _inputAxis: {x: 0, y: 0}
   _godlike: 0
@@ -254,6 +251,7 @@ MonoBehaviour:
   _jumpForce: 8
   _jumpCooldown: 1
   _airMultiplier: 1
+  _fallingAcceleration: 2.5
   _playerHeight: 2
   _movementComponents:
     Rigidbody: {fileID: 0}
@@ -343,6 +341,7 @@ MonoBehaviour:
   _strafeSpeed: 7.5
   _hoverSpeed: 10
   _maxMoveSpeed: 100
+  _boostActiveTime: 3
   _forwardAccel: 2.5
   _strafeAccel: 2
   _hoverAccel: 2
