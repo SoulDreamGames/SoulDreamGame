@@ -26,6 +26,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
         _EnemiesManager = enemiesManager;
         _DefaultTarget = defaultTarget;
         enemiesManager.AddSpawnedEnemy(this);
+        startLookingForTargets();
     }
 
     /* Returns true if the enemy died with the damage done */

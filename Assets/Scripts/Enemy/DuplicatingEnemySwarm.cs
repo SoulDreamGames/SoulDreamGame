@@ -26,6 +26,11 @@ public class DuplicatingEnemySwarm : EnemySwarm
         forceCreateNewMember(transform.position);
     }
 
+    void Start()
+    {
+        forceCreateNewMember(transform.position);
+    }
+
     // Update is called once per frame
     void Update()
     {
