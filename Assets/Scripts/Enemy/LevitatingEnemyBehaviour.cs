@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,11 +25,15 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected float TooFarAwayDistance = 100.0f;
     protected int TooFarAwayCounter = 0;
 
+    private PhotonView _view;
+
+
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         base.Initialize(enemiesManager, defaultTarget);
         
         RB = GetComponent<Rigidbody>();
+        _view = GetComponent<PhotonView>();
         Velocity = new Vector3(0,0,0);
 
         Drag = Mass / AccelerationTime;
@@ -44,8 +49,12 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         
     }
 
-    protected virtual void FixedUpdate() {
+    protected virtual void FixedUpdate()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         if (_Target == null)  ChangeToDefaultTarget();
+        
         if (!LookingForTargets){
             FollowTarget(_Target);
             // Leave chase if the target is too far away for too long
@@ -78,6 +87,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
     public virtual void FollowTarget(GameObject current_target) {
+        
         Vector3 target_pos = current_target.transform.position;
 
         Vector3 repulsion = targetRay(target_pos);

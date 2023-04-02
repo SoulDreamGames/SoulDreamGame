@@ -64,19 +64,19 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     #endregion
 
 
-    private void OnDrawGizmos()
-    {
-        if (!UnityEditor.EditorApplication.isPlaying) return;
-        
-        var tr = _movementComponents.PlayerController.PlayerObject.transform;
-        var pos = tr.position;
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(pos, pos + 4.0f * tr.forward);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(pos, pos + 4.0f * tr.up);
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(pos, pos + 4.0f * tr.right);
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     if (!UnityEditor.EditorApplication.isPlaying) return;
+    //     
+    //     var tr = _movementComponents.PlayerController.PlayerObject.transform;
+    //     var pos = tr.position;
+    //     Gizmos.color = Color.blue;
+    //     Gizmos.DrawLine(pos, pos + 4.0f * tr.forward);
+    //     Gizmos.color = Color.green;
+    //     Gizmos.DrawLine(pos, pos + 4.0f * tr.up);
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawLine(pos, pos + 4.0f * tr.right);
+    // }
 
     #region Functions
     #region IPlayerMovement

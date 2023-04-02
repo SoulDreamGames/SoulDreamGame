@@ -229,7 +229,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!view) return;
         if (!view.IsMine) return;
+        
         Debug.Log("Can collide is: " + _canCollide);
         if (MoveType.Equals(MovementType.Air) && _canCollide)
         {
