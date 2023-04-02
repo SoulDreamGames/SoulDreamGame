@@ -96,10 +96,6 @@ public class PlayersManager : MonoBehaviour
         {
             _gameManager.nearestEnemy = nearestEnemy;
             _gameManager.targetableEnemy = minDistance <= attackRadius ? nearestEnemy : null;
-            
-            Debug.Log("Nearest enemy is: " + _gameManager.nearestEnemy.name);
-            if(_gameManager.targetableEnemy)
-                Debug.Log("Targetable enemy is: " + _gameManager.targetableEnemy.name);
         }
     }
 }
