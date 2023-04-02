@@ -346,6 +346,7 @@ MonoBehaviour:
   isFlyingID: 0
   isGroundedID: 0
   moveSpeedDamp: 0
+  invulnerabilityTime: 1
 --- !u!114 &3306631969650677190
 MonoBehaviour:
   m_ObjectHideFlags: 0
