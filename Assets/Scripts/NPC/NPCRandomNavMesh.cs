@@ -26,25 +26,23 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
-    void Start()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        animController = GetComponent<Animator>();
-        life = 1.0f;
-        agent.SetDestination(NPCtarget.position);
 
-
-        isTargeted = false;
-        _enemyFollowing = null;
-    }
 
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
+        UnityEngine.Debug.Log("NPC init");
+
+        agent = GetComponent<NavMeshAgent>();
+
+
         _npcManager = npcManager;
         NPCtarget = targetPoint;
+        animController = GetComponent<Animator>();
+        life = 1.0f;
+        isTargeted = false;
+        _enemyFollowing = null;
+
         agent.SetDestination(targetPoint.position);
-    //ToDo: call this on died
-        _npcManager.NPCDied(this);
     }
 
     void Update()
@@ -61,8 +59,15 @@ public class NPCRandomNavMesh : MonoBehaviour
 
         if (life <= 0.0f)
         {
+            if (_enemyFollowing != null)
+            {
+                if (_enemyFollowing.TryGetComponent<EnemyBehaviour>(out EnemyBehaviour enemy))
+                {
+                    enemy.ChangeToDefaultTarget();
+                }
+            }
             _npcManager.NPCDied(this);
-            Destroy(this.gameObject);
+
         }
 
 
@@ -84,8 +89,17 @@ public class NPCRandomNavMesh : MonoBehaviour
             agent.SetDestination(NPCtarget.position);
         }
 
-        if ((agent.remainingDistance <= agent.stoppingDistance) && !isTargeted) //done with path
+        if (((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f) && !isTargeted) //done with path
         {
+
+            if (_enemyFollowing != null)
+            {
+                if (_enemyFollowing.TryGetComponent<EnemyBehaviour>(out EnemyBehaviour enemy))
+                {
+                    enemy.ChangeToDefaultTarget();
+                }
+            }
+
             _npcManager.OnSafePoint(this);
         }
     }
