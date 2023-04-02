@@ -26,27 +26,21 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
-    void Start()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        animController = GetComponent<Animator>();
-        life = 1.0f;
-        agent.SetDestination(NPCtarget.position);
 
-
-        isTargeted = false;
-        _enemyFollowing = null;
-
-        _npcManager._npcsSpawned.Add(this);
-    }
 
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
-        //_npcManager = npcManager;
-        //NPCtarget = targetPoint;
-        //agent.SetDestination(targetPoint.position);
-        //ToDo: call this on died
-        //_npcManager.NPCDied(this);
+        agent = GetComponent<NavMeshAgent>();
+
+
+        _npcManager = npcManager;
+        NPCtarget = targetPoint;
+        animController = GetComponent<Animator>();
+        life = 1.0f;
+        isTargeted = false;
+        _enemyFollowing = null;
+
+        agent.SetDestination(targetPoint.position);
     }
 
     void Update()
@@ -63,8 +57,15 @@ public class NPCRandomNavMesh : MonoBehaviour
 
         if (life <= 0.0f)
         {
+            if (_enemyFollowing != null)
+            {
+                if (_enemyFollowing.TryGetComponent<EnemyBehaviour>(out EnemyBehaviour enemy))
+                {
+                    enemy.ChangeToDefaultTarget();
+                }
+            }
             _npcManager.NPCDied(this);
-            Destroy(this.gameObject);
+
         }
 
 
@@ -86,17 +87,18 @@ public class NPCRandomNavMesh : MonoBehaviour
             agent.SetDestination(NPCtarget.position);
         }
 
-        if (agent.remainingDistance <= agent.stoppingDistance) //done with path
+        if ((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f) //done with path
         {
-            _npcManager.OnSafePoint(this);
 
-            if (isTargeted)
+            if (_enemyFollowing != null)
             {
                 if (_enemyFollowing.TryGetComponent<EnemyBehaviour>(out EnemyBehaviour enemy))
                 {
-                    enemy.startLookingForTargets();
+                    enemy.ChangeToDefaultTarget();
                 }
             }
+
+            _npcManager.OnSafePoint(this);
         }
     }
 }
