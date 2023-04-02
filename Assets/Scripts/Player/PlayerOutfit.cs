@@ -22,6 +22,8 @@ public class PlayerOutfit : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        if (!_view.IsMine) return;
+        
         Color skinColor = PlayerPrefsX.GetColor("SkinColor");
         Vector3 skinColorV3 = new Vector4(skinColor.r, skinColor.g, skinColor.b);
         

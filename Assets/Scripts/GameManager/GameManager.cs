@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public PhotonView view;
 
-    private void Start()
+    private void Awake()
     {
         //Init game Events based on GameEventType definition
         view = GetComponent<PhotonView>();
@@ -151,9 +151,6 @@ public class GameManager : MonoBehaviour
         _resultsData.domeEnergy = (int)domeEnergy;
         _resultsData.enemiesKilled =  enemyKills;
         _resultsData.nDeaths = nDeaths;
-        
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
     }
 
     private void ShowGameResults()
