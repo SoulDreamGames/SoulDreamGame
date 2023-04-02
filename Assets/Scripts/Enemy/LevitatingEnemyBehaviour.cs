@@ -24,7 +24,6 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected float DefaultTargetChangeDistance = 20.0f; // Change default target when near the current one
     protected float TooFarAwayDistance = 100.0f;
     protected int TooFarAwayCounter = 0;
-
     private PhotonView _view;
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
@@ -179,6 +178,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
     public override bool ReceiveDamage(int damage)
     {
+        base.ReceiveDamage(damage);
         Hitpoints -= damage;
         bool died = (Hitpoints <= 0);
         if (died) OnDeath();

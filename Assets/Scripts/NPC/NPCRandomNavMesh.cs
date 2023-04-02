@@ -77,7 +77,23 @@ public class NPCRandomNavMesh : MonoBehaviour
 
             Vector3 newTemporalPos = transform.position + 5* Vector3.Normalize(dirToPlayer);
 
-            agent.SetDestination(newTemporalPos);
+            // agent.SetDestination(newTemporalPos);
+
+
+
+            NavMeshPath navMeshPath = new NavMeshPath();
+            //create path and check if it can be done
+            // and check if navMeshAgent can reach its target
+            if (agent.CalculatePath(newTemporalPos, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
+            {
+                //move to target
+                agent.SetDestination(newTemporalPos);
+            }
+            else
+            {
+                agent.SetDestination(NPCtarget.position);
+            }
+            
 
 
             // UnityEngine.Debug.Log(agent.destination);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
+using Photon.Pun;
 
 public class NPCManager : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class NPCManager : MonoBehaviour
 
     public int peopleEvacuated = 0;
     public int peopleDied = 0;
+    
+
     
     public void Initialize(GameManager gameManager)
     {
@@ -57,21 +60,28 @@ public class NPCManager : MonoBehaviour
     public void SpawnNPC(GameObject npcToSpawn, Vector3 spawnPoint)
     {
         //Spawn new enemy
-        GameObject npc = Instantiate(npcToSpawn, spawnPoint, Quaternion.identity);
+        //GameObject npc = Instantiate(npcToSpawn, spawnPoint, Quaternion.identity);
 
-        float dist = 9999999.0f;
-        int index = -1;
-
-        for (int i = 0;i < safeZones.Count;i++)
+        if (PhotonNetwork.IsMasterClient) 
         {
-            if (Vector3.Distance(spawnPoint, safeZones[i].position)< dist)
+            GameObject npc = PhotonNetwork.Instantiate(npcToSpawn.name, spawnPoint, Quaternion.identity);
+
+            float dist = 9999999.0f;
+            int index = -1;
+
+            for (int i = 0;i < safeZones.Count;i++)
             {
-                index = i;
+                if (Vector3.Distance(spawnPoint, safeZones[i].position)< dist)
+                {
+                    index = i;
+                }
             }
+
+            npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[index]);
+            _npcsSpawned.Add(npc.GetComponent<NPCRandomNavMesh>());
         }
 
-        npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[index]);
-        _npcsSpawned.Add(npc.GetComponent<NPCRandomNavMesh>());
+
     }
     
     
@@ -85,7 +95,15 @@ public class NPCManager : MonoBehaviour
         //Invoke corresponding event
         _gameManager.InvokeEvent(GameEventType.onNPCDied);
 
-        Destroy(npc.gameObject);
+        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
+        {
+            if (PhotonNetwork.IsMasterClient) 
+            {
+
+                PhotonNetwork.Destroy(view);
+            }
+        }
+
         peopleDied++;
     }
     
@@ -93,7 +111,20 @@ public class NPCManager : MonoBehaviour
     {
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
-        Destroy(npc.gameObject);
+
+
+        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
+        {
+            if (PhotonNetwork.IsMasterClient) 
+            {
+
+                PhotonNetwork.Destroy(view);
+            }
+        }
+
         peopleEvacuated++;
     }
+    
+
+
 }

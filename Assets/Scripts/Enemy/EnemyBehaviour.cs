@@ -16,7 +16,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
     public virtual void stopLookingForTargets() { LookingForTargets = false; }
     public virtual void startLookingForTargets() { LookingForTargets = true; }
     public abstract void ChangeToDefaultTarget();
-    
+    private Animator animator;
     
     void Start()
     {
@@ -24,6 +24,13 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
         _EnemiesManager = FindObjectOfType<EnemiesManager>();
         _EnemiesManager.AddSpawnedEnemy(this);
+
+        animator = GetComponent<Animator>();
+
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", true);
+        }
     }
     
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
@@ -49,7 +56,11 @@ public abstract class EnemyBehaviour : EnemySpawnable
         transform.localScale = new Vector3(scale, scale, scale);
     }
     /* Returns true if the enemy died with the damage done */
-    public abstract bool ReceiveDamage(int damage);
+    public virtual bool ReceiveDamage(int damage)
+    {
+        animator.SetTrigger("Injured");
+        return false;
+    }
 
     /* Notifies to the game manager that "someone" has died -> player / NPC */
     public abstract void NotifyHasEatenSomeone(GameObject someone);
