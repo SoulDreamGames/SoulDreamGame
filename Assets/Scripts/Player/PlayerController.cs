@@ -292,11 +292,8 @@ public class PlayerController : MonoBehaviour
 
     public void ReceiveDamage(float damage)
     {
-        Debug.Log("Previous player energy is: " + PlayerEnergy);
-        Debug.Log("Receive dmg + " + damage);
         PlayerEnergy =  PlayerEnergy - damage;
-        Debug.Log("new Player energy is: " + PlayerEnergy);
-        
+
         if (PlayerEnergy <= 0f)
         {
             HandleDeath();
@@ -311,7 +308,7 @@ public class PlayerController : MonoBehaviour
         _flightMovement.ResetMovement();
         _groundMovement.ResetMovement();
 
-        view.RPC("SetScaleForRespawn", RpcTarget.All, 0.0f);
+        view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
         playersManager.PlayerDied(this);
     }
 
@@ -319,16 +316,19 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Respawn");
         
-        view.RPC("SetScaleForRespawn", RpcTarget.All, 1.0f);
+        view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{1.0f, false});
         transform.position = position;
         
         _thirdPersonCam.SwapToPlayerTarget();
     }
 
     [PunRPC]
-    private void SetScaleForRespawn(float scale)
+    private void SetScaleForRespawn(float scale, bool hideObject)
     {
         transform.localScale = Vector3.one * scale;
+        
+        if(hideObject)
+            transform.position = Vector3.zero;
     }
     
     #endregion
