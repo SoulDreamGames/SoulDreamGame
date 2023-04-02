@@ -27,7 +27,6 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
     private PhotonView _view;
 
-
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         base.Initialize(enemiesManager, defaultTarget);
@@ -43,17 +42,14 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     protected virtual void FixedUpdate()
     {
         if (!PhotonNetwork.IsMasterClient) return;
         
         if (_Target == null)  ChangeToDefaultTarget();
+
+        if (!LookingForTargets && _Target == null)
+            Debug.LogError("ChangeToDefault target does not work on this enemy: "+this.name);
         
         if (!LookingForTargets){
             FollowTarget(_Target);
@@ -65,13 +61,13 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
                 const float GiveUpTime = 5.0f; // seconds
                 if (TooFarAwayCounter >= FixedUpdateFPS * GiveUpTime) 
                 {
-                    ChangeToDefaultTarget();
                     if (_Target.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
                     {
                         npc._enemyFollowing = null;
                         npc.isTargeted = false;
                     }
                     _Target = null;
+                    ChangeToDefaultTarget();
                 }
             }
             else TooFarAwayCounter = 0;
