@@ -17,6 +17,15 @@ public abstract class EnemyBehaviour : EnemySpawnable
     public virtual void startLookingForTargets() { LookingForTargets = true; }
     public abstract void ChangeToDefaultTarget();
     
+    
+    void Start()
+    {
+        if (PhotonNetwork.IsMasterClient) return;
+
+        _EnemiesManager = FindObjectOfType<EnemiesManager>();
+        _EnemiesManager.AddSpawnedEnemy(this);
+    }
+    
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         Debug.Log("Assigning default target");
@@ -24,6 +33,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
         _view = GetComponent<PhotonView>();
         _DefaultTarget = defaultTarget;
         _EnemiesManager = enemiesManager;
+        _EnemiesManager.AddSpawnedEnemy(this);
 
         if (PhotonNetwork.IsMasterClient) 
         {
@@ -59,11 +69,8 @@ public abstract class EnemyBehaviour : EnemySpawnable
     {
         Debug.Log("On destroy enemy");
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            _EnemiesManager.EnemyKilled(this);
-        }
-
+        _EnemiesManager.EnemyKilled(this);
+        
         if (_Target == null) return;
 
         if (_Target.TryGetComponent(out NPCRandomNavMesh npc))
