@@ -251,6 +251,12 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!view.IsMine) return;
+
+        if (other.CompareTag("Water"))
+        {
+            HandleDeath();
+        }
+        
         if ((enemyMask & (1 << other.gameObject.layer)) == 0) return;
         
         //Enemy is triggering

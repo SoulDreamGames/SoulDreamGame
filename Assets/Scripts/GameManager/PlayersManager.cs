@@ -9,7 +9,7 @@ public class PlayersManager : MonoBehaviour
     //GameManager
     private GameManager _gameManager;
 
-    [SerializeField] private List<Vector3> respawnPoints = new List<Vector3>();
+    [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
     public List<PlayerController> players;
 
     [SerializeField] private float _respawnTime = 5.0f;
@@ -69,7 +69,7 @@ public class PlayersManager : MonoBehaviour
         Vector3 pos = Vector3.zero;
         if (respawnPoints.Count > 0)
         {
-            pos = respawnPoints[rnd];
+            pos = respawnPoints[rnd].transform.position;
         }
         pc.Respawn(pos);
     }

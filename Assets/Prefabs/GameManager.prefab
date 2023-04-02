@@ -83,9 +83,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameStateTimes:
   - gameState: 0
-    time: 1
+    time: 30
   - gameState: 1
-    time: 1
+    time: 30
   - gameState: 2
     time: 120
   - gameState: 3
