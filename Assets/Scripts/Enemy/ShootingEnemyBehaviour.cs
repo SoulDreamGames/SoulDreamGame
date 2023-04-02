@@ -57,6 +57,7 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
 
     public void Shoot()
     {
+        Debug.Log("Shooting");
         // Check if the target is out of range
         if (TargetDistance > ShootingRange) return;
         const float FixedUpdateFPS = 50.0f;

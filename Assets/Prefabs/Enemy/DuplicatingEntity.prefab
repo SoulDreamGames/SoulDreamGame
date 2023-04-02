@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2237967332201604489}
   - component: {fileID: 1621243062500675733}
   - component: {fileID: 3159053093961383059}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: spikes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 2787024789224615409}
   - component: {fileID: 2787024789224615408}
   - component: {fileID: 6472100811975188999}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 2787024790338653568}
   - component: {fileID: 6579314052268557928}
   - component: {fileID: 8369897563725665082}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: DuplicatingEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,7 +334,7 @@ MonoBehaviour:
   _DefaultTarget: {fileID: 0}
   _EnemiesManager: {fileID: 0}
   Hitpoints: 1
-  Mass: 1
+  Mass: 5
   AccelerationTime: 5
   MaxSpeed: 0.3
   HoverHeight: 1.5

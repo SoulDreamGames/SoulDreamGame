@@ -6,7 +6,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
 {
     public Vector3 Velocity;
     [SerializeField] private LayerMask TargetMask;
-    [SerializeField] private LayerMask EnemyMask;
+    [SerializeField] private LayerMask WallsMask;
     [SerializeField] private float Lifetime = 30;
     private int AliveFramecount = 0;
     public void Initialize(Vector3 StartingPosition, Vector3 ProjectileVelocity)
@@ -27,17 +27,16 @@ public class ShootingEnemyProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Check if the projectile has collided with an enemy
-        if ((EnemyMask.value & (1 << other.transform.gameObject.layer)) > 0) return;
-        Debug.Log("Projectile collision");
-
-        // Chekc if the projectile has collided with a target
-        if ((TargetMask.value & (1 << other.transform.gameObject.layer)) > 0) {
+        // Check if the projectile has collided with a target
+        if ((TargetMask.value & (1 << other.transform.gameObject.layer)) > 0)
+        {
             // TODO: Do damage to the target
             Debug.Log("Hit");
         }
-
-        // If the projectile hits something (different from an enemy), it is destroyed
-        Destroy(gameObject);
+        else if ((WallsMask.value & (1 << other.transform.gameObject.layer)) > 0)
+        {
+            // If the projectile hits a wall its destroyed
+            Destroy(gameObject);
+        }
     }
 }

@@ -39,16 +39,19 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        Debug.Log("Spawning enemies on new wave");
-        int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
-        for (int i = 0; i < 10; i++)
+        // Debug.Log("Spawning enemies on new wave");
+
+        int NumSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? enemiesPerWave[_gameManager.currentWave] : 10;
+
+        for (int i = 0; i < NumSpawnedEnemies; i++)
         {
+            /* Choose random spawn and attak points for each enemy */
             int enemyIndex = UnityEngine.Random.Range(0, enemiesToSpawn.Count);
             int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
             int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
-            SpawnEnemy(enemiesToSpawn[2], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
+
+            SpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
-        // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
         
         remainingWaveEnemies = _enemiesSpawned.Count;
     }
@@ -99,8 +102,8 @@ public class EnemiesManager : MonoBehaviour
     }
     public void AddSpawnedEnemy(EnemyBehaviour enemy)
     {
-        remainingWaveEnemies++;
         _enemiesSpawned.Add(enemy);
+        remainingWaveEnemies = _enemiesSpawned.Count;
     }
 
     public void GetNewDefaultTarget(ref GameObject lastTarget)
