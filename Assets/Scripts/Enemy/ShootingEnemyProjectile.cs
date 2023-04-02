@@ -38,7 +38,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
             // TODO: Do damage to the target
             if (other.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
             {
-                npc.life -= damage;
+                npc.life -= 0.1f;
                 if (npc.life <= 0.0f) { ParentEnemy.NotifyHasEatenSomeone(other.gameObject);  }
                 // Destroy(gameObject);
                 PhotonDestroy();

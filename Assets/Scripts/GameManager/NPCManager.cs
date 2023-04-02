@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
 
@@ -19,6 +20,7 @@ public class NPCManager : MonoBehaviour
     public List<NPCRandomNavMesh> _npcsSpawned;
 
     public int peopleEvacuated = 0;
+    public int peopleDied = 0;
     
     public void Initialize(GameManager gameManager)
     {
@@ -42,9 +44,11 @@ public class NPCManager : MonoBehaviour
     {
         //for
 
-        for (int i = 0; i < spawnPoints.Count; i++)
+        UnityEngine.Debug.Log("Waveeee");
+
+        for (int i = 0; i < 100; i++)
         {
-            SpawnNPC(npcPrefab, spawnPoints[i].position);
+            SpawnNPC(npcPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position);
         }
 
          //etc...
@@ -54,7 +58,19 @@ public class NPCManager : MonoBehaviour
     {
         //Spawn new enemy
         GameObject npc = Instantiate(npcToSpawn, spawnPoint, Quaternion.identity);
-        npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[UnityEngine.Random.Range(0, safeZones.Count)]);
+
+        float dist = 9999999.0f;
+        int index = -1;
+
+        for (int i = 0;i < safeZones.Count;i++)
+        {
+            if (Vector3.Distance(spawnPoint, safeZones[i].position)< dist)
+            {
+                index = i;
+            }
+        }
+
+        npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[index]);
         _npcsSpawned.Add(npc.GetComponent<NPCRandomNavMesh>());
     }
     
@@ -69,13 +85,15 @@ public class NPCManager : MonoBehaviour
         //Invoke corresponding event
         _gameManager.InvokeEvent(GameEventType.onNPCDied);
 
-        //Destroy(npc);
+        Destroy(npc.gameObject);
+        peopleDied++;
     }
     
     public void OnSafePoint(NPCRandomNavMesh npc)
     {
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
+        Destroy(npc.gameObject);
         peopleEvacuated++;
     }
 }
