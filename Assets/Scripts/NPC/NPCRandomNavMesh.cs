@@ -28,6 +28,24 @@ public class NPCRandomNavMesh : MonoBehaviour
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
 
+    
+    void Start()
+    {
+        if (PhotonNetwork.IsMasterClient) return;
+
+        _npcManager = FindObjectOfType<NPCManager>();
+        agent = FindObjectOfType<NavMeshAgent>();
+        _npcManager._npcsSpawned.Add(this);
+
+        animController = GetComponent<Animator>();
+
+        life = 1.0f;
+        isTargeted = false;
+        _enemyFollowing = null;
+
+    }
+
+
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
         agent = GetComponent<NavMeshAgent>();
@@ -45,7 +63,6 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     void Update()
     {
-
         Vector3 curMove = transform.position - previousPosition;
         curSpeed = curMove.magnitude / Time.deltaTime;
 
