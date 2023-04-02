@@ -58,7 +58,10 @@ public abstract class EnemyBehaviour : EnemySpawnable
     /* Returns true if the enemy died with the damage done */
     public virtual bool ReceiveDamage(int damage)
     {
-        animator.SetTrigger("Injured");
+        if (animator != null ) {
+            animator.SetTrigger("Injured");
+        }
+
         return false;
     }
 
@@ -82,6 +85,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
         if (_EnemiesManager == null)
             Debug.LogError("This enemy does not have enemy manager reference " + this.name);
+
         _EnemiesManager.EnemyKilled(this);
         
         if (_Target == null) return;

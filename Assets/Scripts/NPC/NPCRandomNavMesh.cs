@@ -63,7 +63,6 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     void Update()
     {
-
         Vector3 curMove = transform.position - previousPosition;
         curSpeed = curMove.magnitude / Time.deltaTime;
 
