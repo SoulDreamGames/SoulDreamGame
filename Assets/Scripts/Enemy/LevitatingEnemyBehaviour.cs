@@ -56,6 +56,11 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
                 if (TooFarAwayCounter >= FixedUpdateFPS * GiveUpTime) 
                 {
                     ChangeToDefaultTarget();
+                    if (_Target.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+                    {
+                        npc._enemyFollowing = null;
+                        npc.isTargeted = false;
+                    }
                     _Target = null;
                 }
             }

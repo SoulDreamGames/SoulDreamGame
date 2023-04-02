@@ -320,7 +320,7 @@ MonoBehaviour:
   _initialMoveSpeed: 5
   _thresholdSpeed: 10
   _maxMoveSpeed: 100
-  _moveType: 0
+  moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
   playerEnergyLost: 0.5
@@ -340,6 +340,12 @@ MonoBehaviour:
   view: {fileID: 0}
   _inputAxis: {x: 0, y: 0}
   _godlike: 0
+  animator: {fileID: 0}
+  moveSpeedID: 0
+  jumpID: 0
+  isFlyingID: 0
+  isGroundedID: 0
+  moveSpeedDamp: 0
 --- !u!114 &3306631969650677190
 MonoBehaviour:
   m_ObjectHideFlags: 0

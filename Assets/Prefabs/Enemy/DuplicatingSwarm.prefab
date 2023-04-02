@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1378950066543773414}
   - component: {fileID: 1378950066543773415}
+  - component: {fileID: 7147429747036097966}
+  - component: {fileID: 5016317633497726143}
   m_Layer: 0
   m_Name: DuplicatingSwarm
   m_TagString: Untagged
@@ -44,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c28a286ccfd5f3469047273298aba27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num_enemies: 0
+  NumEnemies: 5
   swarm_stiffness: 0.005
   swarm_distance_apart: 5
   _SwarmTarget: {fileID: 0}
@@ -57,3 +59,59 @@ MonoBehaviour:
   SwarmPrefab: {fileID: 6579314052268557928, guid: 33555a32b89c05c429e6fb290fb5254f, type: 3}
   DuplicatingTimeDelay: 5
   MaxNumMembers: 10
+--- !u!114 &7147429747036097966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378950066543773412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 5016317633497726143}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5016317633497726143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378950066543773412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PositionModel:
+    SynchronizeEnabled: 1
+    TeleportEnabled: 1
+    TeleportIfDistanceGreaterThan: 3
+    InterpolateOption: 2
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 1
+    ExtrapolateOption: 0
+    ExtrapolateSpeed: 1
+    ExtrapolateIncludingRoundTripTime: 1
+    ExtrapolateNumberOfStoredPositions: 1
+  m_RotationModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 1
+    InterpolateRotateTowardsSpeed: 180
+    InterpolateLerpSpeed: 5
+  m_ScaleModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 0
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 0
