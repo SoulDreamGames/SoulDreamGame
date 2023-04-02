@@ -80,6 +80,8 @@ public abstract class EnemyBehaviour : EnemySpawnable
     {
         Debug.Log("On destroy enemy");
 
+        if (_EnemiesManager == null)
+            Debug.LogError("This enemy does not have enemy manager reference " + this.name);
         _EnemiesManager.EnemyKilled(this);
         
         if (_Target == null) return;
