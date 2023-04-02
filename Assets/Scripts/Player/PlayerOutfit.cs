@@ -32,7 +32,7 @@ public class PlayerOutfit : MonoBehaviourPunCallbacks
             skinColorV3,                                    //Skin color
             PlayerPrefs.GetInt("Trail", 0)     //Trail color
         };
-        _view.RPC("UpdateOutfit", RpcTarget.All, attributes);
+        _view.RPC("UpdateOutfit", RpcTarget.AllBuffered, attributes);
     }
 
     [PunRPC]
