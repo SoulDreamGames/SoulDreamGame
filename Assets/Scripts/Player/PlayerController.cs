@@ -68,6 +68,11 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public int isGroundedID;
     [HideInInspector] public float moveSpeedDamp;
     
+    
+    //CD attacked
+    private bool _isInvulnerable = false;
+    [SerializeField] private float invulnerabilityTime = 1.0f;
+    
     #endregion
 
     #region Properties
@@ -224,6 +229,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!view.IsMine) return;
         Debug.Log("Can collide is: " + _canCollide);
         if (MoveType.Equals(MovementType.Air) && _canCollide)
         {
@@ -242,8 +248,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!view.IsMine) return;
         if ((enemyMask & (1 << other.gameObject.layer)) == 0) return;
-
+        
+        //Enemy is triggering
         if ((IsAttacking || IsHomingAttacking) && MoveSpeed >= EnemySpeedThreshold)
         {
             var enemy = other.GetComponent<EnemyBehaviour>();
@@ -254,28 +262,41 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (_isInvulnerable) return;
+            
             //If collision without attacking or not enough velocity
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
             
+            //Player is attacked
+            _isInvulnerable = true;
+            Debug.Log("Dmg rcv: " +  enemy.ContactDamage);
             ReceiveDamage(enemy.ContactDamage);
+            Invoke(nameof(ResetInvulnerability), invulnerabilityTime);   //Invulnerability cd
+            
         }
 
         //Reset velocity and energy in player
         MoveSpeed = 0.0f;
-        PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;
     
         //ToDo: recheck this?
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
 
     }
+    
+    private void ResetInvulnerability()
+    {
+        _isInvulnerable = false;
+    }
 
     public void ReceiveDamage(float damage)
     {
+        Debug.Log("Previous player energy is: " + PlayerEnergy);
         Debug.Log("Receive dmg + " + damage);
-        PlayerEnergy -= damage;
-
+        PlayerEnergy =  PlayerEnergy - damage;
+        Debug.Log("new Player energy is: " + PlayerEnergy);
+        
         if (PlayerEnergy <= 0f)
         {
             HandleDeath();
@@ -290,19 +311,24 @@ public class PlayerController : MonoBehaviour
         _flightMovement.ResetMovement();
         _groundMovement.ResetMovement();
 
-        //ToDo: rpcs?
-        
-        transform.localScale = Vector3.zero;
+        view.RPC("SetScaleForRespawn", RpcTarget.All, 0.0f);
         playersManager.PlayerDied(this);
     }
 
     public void Respawn(Vector3 position)
     {
         Debug.Log("Respawn");
-        transform.localScale = Vector3.one;
+        
+        view.RPC("SetScaleForRespawn", RpcTarget.All, 1.0f);
         transform.position = position;
         
         _thirdPersonCam.SwapToPlayerTarget();
+    }
+
+    [PunRPC]
+    private void SetScaleForRespawn(float scale)
+    {
+        transform.localScale = Vector3.one * scale;
     }
     
     #endregion
