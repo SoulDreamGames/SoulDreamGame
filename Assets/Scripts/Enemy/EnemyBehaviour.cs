@@ -6,6 +6,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
 {
     public GameObject _Target;
     public GameObject _DefaultTarget;
+    public float ContactDamage = 10.0f;
     [SerializeField] protected EnemiesManager _EnemiesManager;
     [SerializeField] protected int Hitpoints = 1;
 
@@ -27,9 +28,14 @@ public abstract class EnemyBehaviour : EnemySpawnable
         _EnemiesManager = enemiesManager;
         _DefaultTarget = defaultTarget;
         enemiesManager.AddSpawnedEnemy(this);
+        SetScale(UnityEngine.Random.Range(1.0f, 2.0f));
         startLookingForTargets();
     }
 
+    public void SetScale(float scale)
+    {
+        transform.localScale = new Vector3(scale, scale, scale);
+    }
     /* Returns true if the enemy died with the damage done */
     public abstract bool ReceiveDamage(int damage);
 

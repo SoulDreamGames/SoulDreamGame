@@ -10,12 +10,12 @@ public abstract class EnemySwarm : EnemySpawnable
     public uint num_enemies = 5;
     public float swarm_stiffness = 0.001f;
     public float swarm_distance_apart = 5.0f;
-    public GameObject swarm_target;
+    public GameObject _SwarmTarget;
     public List<LevitatingEnemyBehaviour> swarmMembers;
 
     [SerializeField] protected GameObject swarm_default_target;
     [SerializeField] protected EnemiesManager _enemy_manager;
-    public bool swarm_has_active_target = false;
+    public bool SwarmHasActiveTarget = false;
     // Start is called before the first frame update
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget){
@@ -60,31 +60,30 @@ public abstract class EnemySwarm : EnemySpawnable
     {
         /* Makes all swarm members change target to the swarm's target */
         for (int i = 0; i < num_enemies; i++){
-            swarmMembers[i].setTarget(swarm_target);
+            swarmMembers[i].setTarget(_SwarmTarget);
         }
     }
     public void updateTargets()
     {
         /* Checks weather a member of the swarm has spotted a target
         *  and updates the swarm's target accordingly */
-        bool someone_spotted_target = false;
-        for (int i = 0; i < num_enemies; i++){
-            if (!swarmMembers[i].isLookingForTargets()) {
-                // Someone spotted an enemy
-                swarm_target = swarmMembers[i]._Target;
-                someone_spotted_target = true;
-                swarm_has_active_target = true;
-                break;
+        if (!SwarmHasActiveTarget)
+        {
+            foreach (EnemyBehaviour Enemy in swarmMembers)
+            {
+                if (!Enemy.isLookingForTargets())
+                {
+                    _SwarmTarget = Enemy._Target;
+                    SwarmHasActiveTarget = true;
+                    updateSwarmTarget();
+                    return;
+                }
             }
+        } 
+        else
+        {
+            updateSwarmDefaultTarget();
         }
-        if (!someone_spotted_target && swarm_has_active_target) {
-            swarm_target = swarm_default_target;
-            updateSwarmTarget();
-        }
-
-        if (!swarm_has_active_target) return;
-
-        updateSwarmTarget();
     }
 
     public Vector3 calculateAveragePosition() {

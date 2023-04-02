@@ -115,7 +115,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             Vector3 ColliderSize = hit.collider.bounds.extents;
             Vector3 collision_point = hit.point;
             Vector3 offset = collision_point - center;
-            offset.y = Mathf.Abs(offset.y) * 10.0f;
+            offset.y = Mathf.Abs(offset.y) * 4.0f;
             const float DodgeForce = 20.0f;
 
             repulsion =  DodgeForce * offset.normalized / (hit.distance * hit.distance);
@@ -129,7 +129,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 direction = - Vector3.up;
 
         float MaxDist = MinDist;
-        float GroundRepulsionCoeff = 5.0f;
+        float GroundRepulsionCoeff = 2.0f;
 
         Debug.DrawRay(transform.position, MaxDist * direction, Color.magenta);
 
@@ -143,7 +143,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
     public virtual void OnTriggerEnter(Collider collider)
     {
-        const float contact_repulsion_kik = 3.0f;
+        const float contact_repulsion_kik = 10.0f;
         if ((TargetMask.value & (1 << collider.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
@@ -161,7 +161,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     public override void NotifyHasEatenSomeone(GameObject someone)
     {
         if (someone == _Target) {
-            startLookingForTargets();
+            ChangeToDefaultTarget();
         }
     }
 
@@ -186,4 +186,5 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     {
         startLookingForTargets();
     }
+
 }
