@@ -308,8 +308,8 @@ ModelImporter:
       name: Armature|Jumping
       takeName: Armature|Jumping
       internalID: 0
-      firstFrame: 0
-      lastFrame: 95
+      firstFrame: 36
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

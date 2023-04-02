@@ -66,6 +66,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     private void OnDrawGizmos()
     {
+        if (!UnityEditor.EditorApplication.isPlaying) return;
+        
         var tr = _movementComponents.PlayerController.PlayerObject.transform;
         var pos = tr.position;
         Gizmos.color = Color.blue;
@@ -199,7 +201,10 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, 0f, pc.MoveSpeed);
             rb.velocity = rb.velocity.normalized * pc.MoveSpeed;
             if (pc.MoveSpeed < pc.ThresholdSpeed - _tolerance)
+            {
                 _internalState = InternalState.Levitate;
+                pc.animator.SetFloat(pc.moveSpeedID, 0f);
+            }
         }
         else
         {
@@ -217,6 +222,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
         //Switch to ground movement after too much time levitating
         _timeSinceStartedLevitating = 0f;
+
         pc.SwitchState(MovementType.Ground);
         return true;
     }
@@ -252,6 +258,13 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         // Minimum speed tolerance before changing to Ground movement
         _usedTolerance = input.y == 0f ? Mathf.Lerp(_usedTolerance, 0.25f, Time.fixedDeltaTime) : 1f;
         pc.MoveSpeed = Mathf.Clamp(velocity.magnitude, _initialMoveSpeed - _usedTolerance, _maxMoveSpeed);
+        
+        //Set MoveSpeed to animator
+        var currentSpeed = (pc.MoveSpeed - _initialMoveSpeed) / (_maxMoveSpeed - _initialMoveSpeed) + 1f;
+        Debug.Log("Current speed now is: " + currentSpeed);
+        pc.animator.SetFloat(pc.moveSpeedID, 
+            Mathf.SmoothDamp(pc.animator.GetFloat(pc.moveSpeedID), 
+                currentSpeed, ref pc.moveSpeedDamp, 0.1f));
     }
 
     private void PerformLightningBreak(in PlayerController pc, in Transform orientation)

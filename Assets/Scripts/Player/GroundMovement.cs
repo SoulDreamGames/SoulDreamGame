@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
@@ -60,6 +61,12 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     {
         // Check if the player is grounded
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _movementComponents.PlayerController.GroundMask);
+        
+        Debug.Log("Ground check");
+        //Set Grounded to animator
+        var pc = _movementComponents.PlayerController;
+        pc.animator.SetBool(pc.isGroundedID, _isGrounded);
+        
         // Apply ground drag to the player rigidbody if it's grounded
         _movementComponents.Rigidbody.drag = _isGrounded ? _groundDrag : 0.0f;
     }
@@ -109,14 +116,21 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 
             _internalState = InternalState.Idle;
             pc.MoveSpeed = 0f;
+            
+            //Smoothly decrease speed to 0
+            pc.animator.SetFloat(pc.moveSpeedID, 
+                Mathf.SmoothDamp(pc.animator.GetFloat(pc.moveSpeedID), 
+                    0f, ref pc.moveSpeedDamp, 0.1f));
+            
             return true;
         }
 
         return false;
     }
-
+    
     private void MovePlayer(in PlayerController pc)
     {
+        Debug.Log("Move player");
         if (pc.InputAxis != Vector2.zero)
         {
             // We only consider player is moving state if it's grounded,
@@ -128,6 +142,14 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
             pc.MoveSpeed += direction * _groundAcceleration * Time.fixedDeltaTime;
             pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, _initialMoveSpeed, _maxMoveSpeed);
 
+            Debug.Log("MoveSpeed now is: " +  pc.MoveSpeed);
+            //Set MoveSpeed to animator
+            var currentSpeed = (pc.MoveSpeed - _initialMoveSpeed) / (_maxMoveSpeed - _initialMoveSpeed) + 1f; //Between 5 and 10 is 1-2
+            Debug.Log("Current speed now is: " + currentSpeed);
+            pc.animator.SetFloat(pc.moveSpeedID, 
+                Mathf.SmoothDamp(pc.animator.GetFloat(pc.moveSpeedID), 
+                currentSpeed, ref pc.moveSpeedDamp, 0.1f)); 
+            
             //Calculate movement dir
             var orientation = _movementComponents.Orientation;
             Vector3 moveDirection = orientation.forward * pc.InputAxis.y + orientation.right * pc.InputAxis.x;
@@ -151,6 +173,10 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 
     private void Jump()
     {
+        //Trigger Jump on animator
+        var pc = _movementComponents.PlayerController;
+        pc.animator.SetTrigger(pc.jumpID);
+        
         var rb = _movementComponents.Rigidbody;
         Vector3 vel = rb.velocity;
         vel.y = 0.0f;
@@ -176,12 +202,20 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     {
         var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
+        
         void StartFlying()
         {
             Debug.Log("Switch state");
+            
+            //Set Grounded false to animator and jump again to fly
+            var pc = _movementComponents.PlayerController;
+            
             pc.SwitchState(MovementType.Air);
+            pc.animator.SetTrigger(pc.jumpID);
+            
             rb.AddForce(_jumpForce * 40.0f * transform.up, ForceMode.Force);
         }
+        
         void PerformJump()
         {
             _jumpPressed = true;

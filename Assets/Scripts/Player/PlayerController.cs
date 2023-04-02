@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _thresholdSpeed = 20.0f;
     [SerializeField] private float _maxMoveSpeed = 100.0f;
     //State
-    [SerializeField] private MovementType _moveType = MovementType.Ground;
+    [SerializeField] public MovementType moveType = MovementType.Ground;
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
@@ -59,6 +59,15 @@ public class PlayerController : MonoBehaviour
     [Header("Debug Info")]
     [SerializeField] private Vector2 _inputAxis; // Input
     [SerializeField] private bool _godlike = false;
+    
+    //Animator
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public int moveSpeedID;
+    [HideInInspector] public int jumpID;
+    [HideInInspector] public int isFlyingID;
+    [HideInInspector] public int isGroundedID;
+    [HideInInspector] public float moveSpeedDamp;
+    
     #endregion
 
     #region Properties
@@ -82,7 +91,7 @@ public class PlayerController : MonoBehaviour
     }
     public MovementType MoveType
     {
-        get => _moveType;
+        get => moveType;
     }
 
     // Input
@@ -117,6 +126,21 @@ public class PlayerController : MonoBehaviour
 
         MoveSpeed = InitialMoveSpeed;
         PlayerEnergy = 0.0f;
+
+        animator = GetComponent<Animator>();
+        SetAnimatorProperties();
+        
+        //ToDo:
+        //_animator.SetBool(_animIDGrounded, Grounded);
+    }
+
+    //Animator properties to hash
+    void SetAnimatorProperties()
+    {
+        moveSpeedID = Animator.StringToHash("MoveSpeed");
+        jumpID = Animator.StringToHash("Jump");
+        isFlyingID = Animator.StringToHash("isFlying");
+        isGroundedID = Animator.StringToHash("isGrounded");
     }
 
     void Start()
@@ -200,7 +224,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (MoveType.Equals(MovementType.Air))
+        Debug.Log("Can collide is: " + _canCollide);
+        if (MoveType.Equals(MovementType.Air) && _canCollide)
         {
             PlayerEnergy = 0f;
             SwitchState(MovementType.Ground);
@@ -230,7 +255,7 @@ public class PlayerController : MonoBehaviour
             bool isDead = enemy.ReceiveDamage(3);
             return;
         }
-        
+
         //Reset velocity and energy in player
         Debug.Log("Unsuccesfull attack");
         MoveSpeed = 0.0f;
@@ -251,16 +276,31 @@ public class PlayerController : MonoBehaviour
             _flightMovement.ResetMovement();
             _groundMovement.SetSubState(GroundMovement.InternalState.Falling);
             _thirdPersonCam.SwapCamera(MovementType.Ground);
+
+            animator.SetBool(isFlyingID, false);
         }
         else
         {
             _groundMovement.ResetMovement();
             _flightMovement.SetSubState(FlyMovement.InternalState.Levitate);
             _thirdPersonCam.SwapCamera(MovementType.Air);
+            
+            animator.SetBool(isFlyingID, true);
+            animator.SetBool(isGroundedID, false);
+
+            //Reset collisions
+            _canCollide = false;
+            Invoke(nameof(DisableCollisionInvulnerability), 0.75f);
         }
 
-        _moveType = newState;
+        moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
+    }
+
+    private bool _canCollide = true;
+    private void DisableCollisionInvulnerability()
+    {
+        _canCollide = true;
     }
 
     private void PerformGodlikeActions()
