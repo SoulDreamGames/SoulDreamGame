@@ -95,10 +95,13 @@ public class NPCManager : MonoBehaviour
         //Invoke corresponding event
         _gameManager.InvokeEvent(GameEventType.onNPCDied);
 
-        if (PhotonNetwork.IsMasterClient) 
+        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
         {
-            PhotonView view = GetComponent<PhotonView>();
-            PhotonNetwork.Destroy(view);
+            if (PhotonNetwork.IsMasterClient) 
+            {
+
+                PhotonNetwork.Destroy(view);
+            }
         }
 
         peopleDied++;
@@ -108,11 +111,17 @@ public class NPCManager : MonoBehaviour
     {
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
-        if (PhotonNetwork.IsMasterClient) 
+
+
+        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
         {
-            PhotonView view = GetComponent<PhotonView>();
-            PhotonNetwork.Destroy(view);
+            if (PhotonNetwork.IsMasterClient) 
+            {
+
+                PhotonNetwork.Destroy(view);
+            }
         }
+
         peopleEvacuated++;
     }
     
