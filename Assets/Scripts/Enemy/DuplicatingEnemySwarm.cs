@@ -34,6 +34,8 @@ public class DuplicatingEnemySwarm : EnemySwarm
         // RenderAll();
     }
     void FixedUpdate() {
+        if (!PhotonNetwork.IsMasterClient) return;
+
         apply_swarm_force();
         updateTargets();
 
