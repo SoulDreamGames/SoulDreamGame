@@ -213,7 +213,7 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
             pc.SwitchState(MovementType.Air);
             pc.animator.SetTrigger(pc.jumpID);
             
-            rb.AddForce(_jumpForce * 40.0f * transform.up, ForceMode.Force);
+            rb.AddForce(_jumpForce * 40.0f * _movementComponents.Orientation.up, ForceMode.Force);
         }
         
         void PerformJump()
