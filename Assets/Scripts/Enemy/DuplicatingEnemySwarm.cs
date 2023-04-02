@@ -67,6 +67,8 @@ public class DuplicatingEnemySwarm : EnemySwarm
 
     public void ChangeToDefaultTarget()
     {
+        if (!SwarmHasActiveTarget) return;
+
         foreach(LevitatingEnemyBehaviour enemy in swarmMembers)
         {
             enemy._Target = null;
