@@ -201,6 +201,7 @@ GameObject:
   - component: {fileID: 1178050435792598589}
   - component: {fileID: 5551516106879617800}
   - component: {fileID: 9161321765751773339}
+  - component: {fileID: -2510472326908649146}
   m_Layer: 8
   m_Name: BloodArrow2
   m_TagString: Player
@@ -469,6 +470,22 @@ MonoBehaviour:
     Rigidbody: {fileID: 0}
     Orientation: {fileID: 0}
     PlayerController: {fileID: 0}
+--- !u!114 &-2510472326908649146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306631969650677198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters: []
+  m_SynchronizeLayers: []
 --- !u!1 &3306631970050166879
 GameObject:
   m_ObjectHideFlags: 0
