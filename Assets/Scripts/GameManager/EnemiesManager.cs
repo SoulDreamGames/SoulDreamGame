@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
+using Photon.Pun;
 
 public class EnemiesManager : MonoBehaviour
 {
@@ -50,7 +51,9 @@ public class EnemiesManager : MonoBehaviour
             int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
             int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
 
-            SpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
+            PhotonSpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
+
+            // SpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
         
         remainingWaveEnemies = _enemiesSpawned.Count;
@@ -59,9 +62,23 @@ public class EnemiesManager : MonoBehaviour
     public void SpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
     {
         // Spawn enemy in a selected position
-
         EnemySpawnable enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
         enemy.Initialize(this, targetPoint);
+        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
+    }
+    public void PhotonSpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        // Spawn enemy in a selected position
+        GameObject enemy = PhotonNetwork.Instantiate(enemyToSpawn.name, spawnPoint, Quaternion.identity);
+        if (enemy.TryGetComponent<EnemySpawnable>(out EnemySpawnable spawnable))
+        {
+            spawnable.Initialize(this, targetPoint);
+        }
+        else
+        {
+            Debug.LogError("Enemy prefab MUST be a EnemySpawnable");
+        }
         _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
     }
 

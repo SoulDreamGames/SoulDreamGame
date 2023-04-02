@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public abstract class EnemyBehaviour : EnemySpawnable
 {
@@ -28,10 +29,17 @@ public abstract class EnemyBehaviour : EnemySpawnable
         _EnemiesManager = enemiesManager;
         _DefaultTarget = defaultTarget;
         enemiesManager.AddSpawnedEnemy(this);
-        SetScale(UnityEngine.Random.Range(1.0f, 2.0f));
+
+        if (PhotonNetwork.IsMasterClient) 
+        {
+            PhotonView view = GetComponent<PhotonView>();
+            if (view.IsMine) view.RPC("SetScale", RpcTarget.All, UnityEngine.Random.Range(1.0f, 2.0f));
+        }
+        // SetScale(UnityEngine.Random.Range(1.0f, 2.0f));
         startLookingForTargets();
     }
 
+    [PunRPC]
     public void SetScale(float scale)
     {
         transform.localScale = new Vector3(scale, scale, scale);
@@ -44,7 +52,13 @@ public abstract class EnemyBehaviour : EnemySpawnable
 
     protected virtual void OnDeath()
     {
-        Destroy(gameObject);
+        // Destroy(gameObject);
+
+        if (PhotonNetwork.IsMasterClient) 
+        {
+            PhotonView view = GetComponent<PhotonView>();
+            PhotonNetwork.Destroy(view);
+        }
     }
 
     private void OnDestroy()

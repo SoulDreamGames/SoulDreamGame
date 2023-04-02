@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
 {
@@ -65,9 +66,23 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
         ShootFramecount = 0;
 
         // Actual shoot
-        ShootingEnemyProjectile current_projectile = Instantiate<ShootingEnemyProjectile>(ProjectilePrefab, transform.position, Quaternion.identity);
+        // ShootingEnemyProjectile current_projectile = Instantiate<ShootingEnemyProjectile>(ProjectilePrefab, transform.position, Quaternion.identity);
+        // Vector3 ProjectileVelocity = ProjectileSpeed * (TargetPos - transform.position).normalized;
+        // current_projectile.Initialize(transform.position, ProjectileVelocity, this);
+        PhotonInstantiateShoot();
+    }
+
+    private void PhotonInstantiateShoot()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        PhotonView view = GetComponent<PhotonView>();
+        GameObject projectileObject = PhotonNetwork.Instantiate(ProjectilePrefab.name, transform.position, Quaternion.identity);
         Vector3 ProjectileVelocity = ProjectileSpeed * (TargetPos - transform.position).normalized;
-        current_projectile.Initialize(transform.position, ProjectileVelocity, this);
+        if (projectileObject.TryGetComponent<ShootingEnemyProjectile>(out ShootingEnemyProjectile CurrentProjectile))
+        {
+            CurrentProjectile.Initialize(transform.position, ProjectileVelocity, this);
+        }
     }
 
 }
