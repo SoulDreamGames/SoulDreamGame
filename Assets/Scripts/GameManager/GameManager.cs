@@ -177,7 +177,6 @@ public class GameManager : MonoBehaviour
     public void InvokeEvent(GameEventType eventType)
     {
         onGameEvents[(int)eventType].Invoke();
-        
     }
 
     public void UpdateGameState()
@@ -297,6 +296,7 @@ public class GameManager : MonoBehaviour
     private void UpdateDomeEnergy(float energy)
     {
         domeEnergy += energy;
+        Debug.Log("New dome energy: " + domeEnergy);
         domeEnergy = Math.Clamp(domeEnergy, 0f, maxDomeEnergy);
 
         if (domeEnergy >= maxDomeEnergy)
