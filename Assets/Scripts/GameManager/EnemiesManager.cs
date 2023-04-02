@@ -74,10 +74,7 @@ public class EnemiesManager : MonoBehaviour
         {
             spawnable.Initialize(this, targetPoint);
         }
-        else
-        {
-            Debug.LogError("Enemy prefab MUST be a EnemySpawnable");
-        }
+        
         _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
     }
 
