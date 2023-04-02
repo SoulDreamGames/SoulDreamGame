@@ -10,29 +10,29 @@ public abstract class EnemyBehaviour : EnemySpawnable
     public float ContactDamage = 10.0f;
     [SerializeField] protected EnemiesManager _EnemiesManager;
     [SerializeField] protected int Hitpoints = 1;
-
+    private PhotonView _view;
     protected bool LookingForTargets = true;
     public bool isLookingForTargets() { return LookingForTargets; }
     public virtual void stopLookingForTargets() { LookingForTargets = false; }
     public virtual void startLookingForTargets() { LookingForTargets = true; }
     public abstract void ChangeToDefaultTarget();
-
+    
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         Debug.Log("Assigning default target");
-        _EnemiesManager = enemiesManager;
+        
+        _view = GetComponent<PhotonView>();
         _DefaultTarget = defaultTarget;
-        enemiesManager.AddSpawnedEnemy(this);
+        _EnemiesManager = enemiesManager;
 
         if (PhotonNetwork.IsMasterClient) 
         {
-            PhotonView view = GetComponent<PhotonView>();
-            view.RPC("SetScale", RpcTarget.All, UnityEngine.Random.Range(1.0f, 2.0f));
+            _view.RPC("SetScale", RpcTarget.All, UnityEngine.Random.Range(1.0f, 2.0f));
         }
         // SetScale(UnityEngine.Random.Range(1.0f, 2.0f));
         startLookingForTargets();
     }
-
+    
     [PunRPC]
     public void SetScale(float scale)
     {
@@ -58,7 +58,11 @@ public abstract class EnemyBehaviour : EnemySpawnable
     private void OnDestroy()
     {
         Debug.Log("On destroy enemy");
-        _EnemiesManager.EnemyKilled(this);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _EnemiesManager.EnemyKilled(this);
+        }
 
         if (_Target == null) return;
 
