@@ -20,6 +20,7 @@ public class NPCManager : MonoBehaviour
     public List<NPCRandomNavMesh> _npcsSpawned;
 
     public int peopleEvacuated = 0;
+    public int peopleDied = 0;
     
     public void Initialize(GameManager gameManager)
     {
@@ -85,6 +86,7 @@ public class NPCManager : MonoBehaviour
         _gameManager.InvokeEvent(GameEventType.onNPCDied);
 
         Destroy(npc.gameObject);
+        peopleDied++;
     }
     
     public void OnSafePoint(NPCRandomNavMesh npc)

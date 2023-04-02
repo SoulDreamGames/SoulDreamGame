@@ -30,8 +30,6 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
-        UnityEngine.Debug.Log("NPC init");
-
         agent = GetComponent<NavMeshAgent>();
 
 
@@ -89,7 +87,7 @@ public class NPCRandomNavMesh : MonoBehaviour
             agent.SetDestination(NPCtarget.position);
         }
 
-        if (((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f) && !isTargeted) //done with path
+        if ((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f) //done with path
         {
 
             if (_enemyFollowing != null)
