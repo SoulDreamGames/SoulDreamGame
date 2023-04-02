@@ -36,17 +36,15 @@ public class NPCRandomNavMesh : MonoBehaviour
 
         isTargeted = false;
         _enemyFollowing = null;
-
-        _npcManager._npcsSpawned.Add(this);
     }
 
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
-        //_npcManager = npcManager;
-        //NPCtarget = targetPoint;
-        //agent.SetDestination(targetPoint.position);
-        //ToDo: call this on died
-        //_npcManager.NPCDied(this);
+        _npcManager = npcManager;
+        NPCtarget = targetPoint;
+        agent.SetDestination(targetPoint.position);
+    //ToDo: call this on died
+        _npcManager.NPCDied(this);
     }
 
     void Update()
@@ -86,17 +84,9 @@ public class NPCRandomNavMesh : MonoBehaviour
             agent.SetDestination(NPCtarget.position);
         }
 
-        if (agent.remainingDistance <= agent.stoppingDistance) //done with path
+        if ((agent.remainingDistance <= agent.stoppingDistance) && !isTargeted) //done with path
         {
             _npcManager.OnSafePoint(this);
-
-            if (isTargeted)
-            {
-                if (_enemyFollowing.TryGetComponent<EnemyBehaviour>(out EnemyBehaviour enemy))
-                {
-                    enemy.startLookingForTargets();
-                }
-            }
         }
     }
 }
