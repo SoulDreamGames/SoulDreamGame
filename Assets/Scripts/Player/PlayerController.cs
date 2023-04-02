@@ -255,6 +255,14 @@ public class PlayerController : MonoBehaviour
             bool isDead = enemy.ReceiveDamage(3);
             return;
         }
+        else
+        {
+            //If collision without attacking or not enough velocity
+            var enemy = other.GetComponent<EnemyBehaviour>();
+            if (enemy == null) return;
+            
+            ReceiveDamage(enemy.ContactDamage);
+        }
 
         //Reset velocity and energy in player
         Debug.Log("Unsuccesfull attack");
@@ -266,6 +274,22 @@ public class PlayerController : MonoBehaviour
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
 
     }
+
+    public void ReceiveDamage(float damage)
+    {
+        PlayerEnergy -= damage;
+
+        if (PlayerEnergy <= 0f)
+        {
+            HandleDeath();
+        }
+    }
+
+    private void HandleDeath()
+    {
+        Debug.Log("dead");
+    }
+    
     #endregion
 
     #region Functions
