@@ -242,13 +242,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if ((enemyMask & (1 << other.gameObject.layer)) != 0) return;
+        if ((enemyMask & (1 << other.gameObject.layer)) == 0) return;
 
-        Debug.Log("Enemy hitted");
-
-        if ((IsAttacking || IsHomingAttacking) & MoveSpeed >= EnemySpeedThreshold)
+        if ((IsAttacking || IsHomingAttacking) && MoveSpeed >= EnemySpeedThreshold)
         {
-            Debug.Log("Attacking enemy");
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
             
@@ -265,7 +262,6 @@ public class PlayerController : MonoBehaviour
         }
 
         //Reset velocity and energy in player
-        Debug.Log("Unsuccesfull attack");
         MoveSpeed = 0.0f;
         PlayerEnergy = 0.0f;
         InputAxis = Vector2.zero;
@@ -277,6 +273,7 @@ public class PlayerController : MonoBehaviour
 
     public void ReceiveDamage(float damage)
     {
+        Debug.Log("Receive dmg + " + damage);
         PlayerEnergy -= damage;
 
         if (PlayerEnergy <= 0f)
@@ -284,10 +281,28 @@ public class PlayerController : MonoBehaviour
             HandleDeath();
         }
     }
-
+    
     private void HandleDeath()
     {
-        Debug.Log("dead");
+        Debug.Log("player is dead");
+        _thirdPersonCam.SwapToFixedTarget();
+        
+        _flightMovement.ResetMovement();
+        _groundMovement.ResetMovement();
+
+        //ToDo: rpcs?
+        
+        transform.localScale = Vector3.zero;
+        playersManager.PlayerDied(this);
+    }
+
+    public void Respawn(Vector3 position)
+    {
+        Debug.Log("Respawn");
+        transform.localScale = Vector3.one;
+        transform.position = position;
+        
+        _thirdPersonCam.SwapToPlayerTarget();
     }
     
     #endregion
