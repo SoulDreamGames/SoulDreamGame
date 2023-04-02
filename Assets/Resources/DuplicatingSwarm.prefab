@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c28a286ccfd5f3469047273298aba27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NumEnemies: 5
   swarm_stiffness: 0.005
   swarm_distance_apart: 5
   _SwarmTarget: {fileID: 0}

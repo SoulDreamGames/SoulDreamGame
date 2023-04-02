@@ -8,7 +8,6 @@ such that they movement seems like a swarm of insects */
 public abstract class EnemySwarm : EnemySpawnable
 {
 
-    public uint NumEnemies = 5;
     public float swarm_stiffness = 0.001f;
     public float swarm_distance_apart = 5.0f;
     public GameObject _SwarmTarget;
@@ -39,8 +38,8 @@ public abstract class EnemySwarm : EnemySpawnable
         /* Makes the enemies be slightly repelled from one another when close and slightly 
         attracted when close */
 
-        for (int i = 0; i < NumEnemies; i++){
-            for (int j = i+1; j < NumEnemies; j++){
+        for (int i = 0; i < swarmMembers.Count; i++){
+            for (int j = i+1; j < swarmMembers.Count; j++){
                 Vector3 delta_pos = (swarmMembers[i].transform.position - swarmMembers[j].transform.position);
                 float distance = delta_pos.magnitude;
                 Vector3 force = - swarm_stiffness * (distance - swarm_distance_apart) * delta_pos / distance;
@@ -54,15 +53,14 @@ public abstract class EnemySwarm : EnemySpawnable
     {
         /* Makes all swarm members change default target to the swarm's default target */
         Debug.Log("updating swarm default target");
-        NumEnemies = (uint) swarmMembers.Count;
-        for (int i = 0; i < NumEnemies; i++){
+        for (int i = 0; i < swarmMembers.Count; i++){
             swarmMembers[i]._DefaultTarget = SwarmDefaultTarget;
         }
     }
     public void updateSwarmTarget()
     {
         /* Makes all swarm members change target to the swarm's target */
-        for (int i = 0; i < NumEnemies; i++){
+        for (int i = 0; i < swarmMembers.Count; i++){
             swarmMembers[i].setTarget(_SwarmTarget);
         }
     }

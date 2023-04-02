@@ -62,7 +62,6 @@ public class DuplicatingEnemySwarm : EnemySwarm
         // swarmMembers.Add(newMember);
         PhotonInstantiateNewMember(position);
 
-        NumEnemies = (uint) swarmMembers.Count;
     }
 
     public void ChangeToDefaultTarget()
@@ -82,6 +81,7 @@ public class DuplicatingEnemySwarm : EnemySwarm
     private void PhotonInstantiateNewMember(Vector3 position)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+
         Debug.Log("Creating new duplicating member");
         GameObject memberObject = PhotonNetwork.Instantiate(SwarmPrefab.name, position, Quaternion.identity);
         if (memberObject.TryGetComponent<DuplicatingEnemyEntity>(out DuplicatingEnemyEntity NewDuplicatingEntity))
