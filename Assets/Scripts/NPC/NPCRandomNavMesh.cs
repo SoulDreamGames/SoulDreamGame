@@ -28,6 +28,24 @@ public class NPCRandomNavMesh : MonoBehaviour
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
 
+    
+    void Start()
+    {
+        if (PhotonNetwork.IsMasterClient) return;
+
+        _npcManager = FindObjectOfType<NPCManager>();
+
+        _npcManager._npcsSpawned.Add(this);
+
+        animController = GetComponent<Animator>();
+
+        life = 1.0f;
+        isTargeted = false;
+        _enemyFollowing = null;
+
+    }
+
+
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
         agent = GetComponent<NavMeshAgent>();
