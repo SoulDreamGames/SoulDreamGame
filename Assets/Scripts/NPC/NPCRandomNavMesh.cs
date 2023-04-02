@@ -108,7 +108,10 @@ public class NPCRandomNavMesh : MonoBehaviour
             }
             else
             {
-                agent.SetDestination(NPCtarget.position);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    agent.SetDestination(NPCtarget.position);
+                }
             }
             
 
@@ -117,10 +120,13 @@ public class NPCRandomNavMesh : MonoBehaviour
         }
         else
         {
-            agent.SetDestination(NPCtarget.position);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                agent.SetDestination(NPCtarget.position);
+            }
         }
 
-        if ((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f) //done with path
+        if (NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f)) //done with path
         {
 
             if (_enemyFollowing != null)
