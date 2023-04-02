@@ -79,12 +79,12 @@ public class GameManager : MonoBehaviour
     private int enemyKills = 0;
     private int nDeaths = 0;
 
-    private PhotonView _view;
+    [HideInInspector] public PhotonView view;
 
     private void Start()
     {
         //Init game Events based on GameEventType definition
-        _view = GetComponent<PhotonView>();
+        view = GetComponent<PhotonView>();
         
         onGameEvents = new List<UnityEvent>(Enum.GetNames(typeof(GameEventType)).Length);
         for (int i = 0; i < onGameEvents.Capacity; i++)
@@ -179,19 +179,10 @@ public class GameManager : MonoBehaviour
 
     public void InvokeEvent(GameEventType eventType)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        
-        //Debug.Log("Called event + " + eventType.ToString());
-        _view.RPC("InvokeEventRPC", RpcTarget.All, (int)eventType);
+        onGameEvents[(int)eventType].Invoke();
         
     }
 
-    [PunRPC]
-    private void InvokeEventRPC(int eventId)
-    {
-        onGameEvents[eventId].Invoke();
-    }
-    
     public void UpdateGameState()
     {
         switch (currentGameState)

@@ -63,11 +63,18 @@ public class EnemiesManager : MonoBehaviour
         // Spawn enemy in a selected position
         EnemySpawnable enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
         enemy.Initialize(this, targetPoint);
+    }
+
+    [PunRPC]
+    private void SpawnedEnemyRPC()
+    {
         _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
     }
+    
     public void PhotonSpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        
         // Spawn enemy in a selected position
         GameObject enemy = PhotonNetwork.Instantiate(enemyToSpawn.name, spawnPoint, Quaternion.identity);
         if (enemy.TryGetComponent<EnemySpawnable>(out EnemySpawnable spawnable))
@@ -75,7 +82,7 @@ public class EnemiesManager : MonoBehaviour
             spawnable.Initialize(this, targetPoint);
         }
         
-        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
+        _gameManager.view.RPC("SpawnedEnemyRPC", RpcTarget.All);
     }
 
     //ToDo: both onEnemySpawned and onEnemyDied are yet subscribed by other components - Eg. use it on UI
@@ -104,7 +111,13 @@ public class EnemiesManager : MonoBehaviour
 
 
         //Invoke Enemy Died event
-        _gameManager.InvokeEvent(GameEventType.onEnemyDied);
+        _gameManager.view.RPC("EnemyDiedRPC", RpcTarget.All);
+    }
+    
+    [PunRPC]
+    private void EnemyDiedRPC()
+    {
+        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
         
         //Decrease enemyCount and check if all enemies are cleared on this wave
         remainingWaveEnemies--;
@@ -113,6 +126,7 @@ public class EnemiesManager : MonoBehaviour
             _gameManager.InvokeEvent(GameEventType.onWaveEnd);
         } 
     }
+
     public void AddSpawnedEnemy(EnemyBehaviour enemy)
     {
         _enemiesSpawned.Add(enemy);
