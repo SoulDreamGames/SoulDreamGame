@@ -79,9 +79,13 @@ public class GameManager : MonoBehaviour
     private int enemyKills = 0;
     private int nDeaths = 0;
 
+    [HideInInspector] public PhotonView view;
+
     private void Start()
     {
         //Init game Events based on GameEventType definition
+        view = GetComponent<PhotonView>();
+        
         onGameEvents = new List<UnityEvent>(Enum.GetNames(typeof(GameEventType)).Length);
         for (int i = 0; i < onGameEvents.Capacity; i++)
         {
@@ -175,8 +179,8 @@ public class GameManager : MonoBehaviour
 
     public void InvokeEvent(GameEventType eventType)
     {
-        //Debug.Log("Called event + " + eventType.ToString());
         onGameEvents[(int)eventType].Invoke();
+        
     }
 
     public void UpdateGameState()

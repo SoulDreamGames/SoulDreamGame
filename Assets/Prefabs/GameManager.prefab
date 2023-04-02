@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7368224080682761782}
   - component: {fileID: 7368224080682761781}
   - component: {fileID: 7368224080682761780}
+  - component: {fileID: -5693580312130712454}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -67,6 +68,7 @@ MonoBehaviour:
   targetableEnemy: {fileID: 0}
   resultsScene: GameResults
   _resultsData: {fileID: 11400000, guid: 271b512d792ab2b43aac35fbf2654e93, type: 2}
+  view: {fileID: 0}
 --- !u!114 &7368224080682761783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,9 +83,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameStateTimes:
   - gameState: 0
-    time: 30
+    time: 1
   - gameState: 1
-    time: 30
+    time: 1
   - gameState: 2
     time: 120
   - gameState: 3
@@ -120,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemiesToSpawn:
   - {fileID: 1833742901523320678, guid: 3b505f2a4d8ea27438b329fb5c44b80b, type: 3}
-  - {fileID: 2745822330047797927, guid: be4bea60dbdc31742a73a9404770c1d6, type: 3}
+  - {fileID: 8622727489622837505, guid: ee3dec08feabaca479441de3f85c3885, type: 3}
   - {fileID: 1378950066543773415, guid: ed44341849b678e41bd276fddc1b14cf, type: 3}
   _enemiesSpawned: []
   respawnPoints:
@@ -152,7 +154,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcPrefab: {fileID: 2262894242641886616, guid: 609851faeea031b49ac1248992f4d263, type: 3}
-  spawnPoints: []
-  safeZones: []
+  spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  safeZones:
+  - {fileID: 0}
+  - {fileID: 0}
   _npcsSpawned: []
   peopleEvacuated: 0
+  peopleDied: 0
+--- !u!114 &-5693580312130712454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7368224080682761778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

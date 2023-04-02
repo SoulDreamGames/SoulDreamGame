@@ -42,6 +42,11 @@ MonoBehaviour:
   - UpdateOutfit
   - SetScaleForRespawn
   - SetScale
+  - SetEnemiesManager
+  - InvokeEventRPC
+  - PlayerDiedEventRPC
+  - SpawnedEnemyRPC
+  - EnemyDiedRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

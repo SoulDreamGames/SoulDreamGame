@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
 
@@ -43,9 +44,17 @@ public class PlayersManager : MonoBehaviour
     //ToDo: call this method from playerController on dead
     public void PlayerDied(PlayerController pc)
     {
-        _gameManager.InvokeEvent(GameEventType.onPlayerDied);
+        //Called only by isMine (from player controller)
+        _gameManager.view.RPC("PlayerDiedEventRPC", RpcTarget.All);
+        
         //Call respawn coroutine
         StartCoroutine(Respawn(_respawnTime, pc));
+    }
+
+    [PunRPC]
+    private void PlayerDiedEventRPC()
+    {
+        _gameManager.InvokeEvent(GameEventType.onPlayerDied);
     }
 
     IEnumerator Respawn(float time, PlayerController pc)

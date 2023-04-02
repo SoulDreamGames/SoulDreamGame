@@ -313,6 +313,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
     public void OnHomingAttack(InputAction.CallbackContext context)
     {
+        Debug.Log("Homing attack ");
         var pc = _movementComponents.PlayerController;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsHomingAttacking) return;

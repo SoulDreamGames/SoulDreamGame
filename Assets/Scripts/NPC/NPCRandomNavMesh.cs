@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 using System.Security.Cryptography;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using Photon.Pun;
 
 public class NPCRandomNavMesh : MonoBehaviour
 {
@@ -26,7 +27,6 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
-
 
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
