@@ -11,12 +11,6 @@ public abstract class EnemyBehaviour : EnemySpawnable
     [SerializeField] protected EnemiesManager _EnemiesManager;
     [SerializeField] protected int Hitpoints = 1;
 
-
-    void Start()
-    {
-        _EnemiesManager._enemiesSpawned.Add(this);
-    }
-
     protected bool LookingForTargets = true;
     public bool isLookingForTargets() { return LookingForTargets; }
     public virtual void stopLookingForTargets() { LookingForTargets = false; }
