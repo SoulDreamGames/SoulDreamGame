@@ -54,6 +54,7 @@ public abstract class EnemySwarm : EnemySpawnable
     {
         /* Makes all swarm members change default target to the swarm's default target */
         Debug.Log("updating swarm default target");
+        NumEnemies = (uint) swarmMembers.Count;
         for (int i = 0; i < NumEnemies; i++){
             swarmMembers[i]._DefaultTarget = SwarmDefaultTarget;
         }
