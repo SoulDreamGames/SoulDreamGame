@@ -309,6 +309,6 @@ public class GameManager : MonoBehaviour
     
     public List<EnemyBehaviour> GetEnemiesSpawnedList()
     {
-        return _enemiesManager._enemiesSpawned;
+        return _enemiesManager.GetEnemiesSpawned();
     }
 }

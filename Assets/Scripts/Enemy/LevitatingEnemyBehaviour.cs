@@ -45,6 +45,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     }
 
     protected virtual void FixedUpdate() {
+        if (_Target == null)  ChangeToDefaultTarget();
         if (!LookingForTargets){
             FollowTarget(_Target);
             // Leave chase if the target is too far away for too long

@@ -13,8 +13,7 @@ public class EnemiesManager : MonoBehaviour
 
     [SerializeField]
     private List<EnemySpawnable> enemiesToSpawn = new List<EnemySpawnable>();
-
-    public List<EnemyBehaviour> _enemiesSpawned;
+    [SerializeField] private List<EnemyBehaviour> _enemiesSpawned;
     
     //Spawn points list
     [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
@@ -40,7 +39,7 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        // Debug.Log("Spawning enemies on new wave");
+        Debug.Log("Spawning enemies on new wave");
 
         int NumSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? enemiesPerWave[_gameManager.currentWave] : 10;
 
@@ -138,5 +137,8 @@ public class EnemiesManager : MonoBehaviour
         }
         lastTarget = targetPoints[index];
     }
-
+    public List<EnemyBehaviour> GetEnemiesSpawned()
+    {
+        return _enemiesSpawned;
+    }
 }
