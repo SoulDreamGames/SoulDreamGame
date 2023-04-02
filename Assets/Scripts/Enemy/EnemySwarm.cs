@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 /* Enemy swarm must controll a group of enemies 
 such that they movement seems like a swarm of insects */
@@ -24,6 +25,7 @@ public abstract class EnemySwarm : EnemySpawnable
     }
 
     void FixedUpdate() {
+        if (!PhotonNetwork.IsMasterClient) return;
         apply_swarm_force();
         updateTargets();
     }

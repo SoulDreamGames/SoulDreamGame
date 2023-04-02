@@ -27,7 +27,7 @@ public abstract class EnemyBehaviour : EnemySpawnable
         if (PhotonNetwork.IsMasterClient) 
         {
             PhotonView view = GetComponent<PhotonView>();
-            if (view.IsMine) view.RPC("SetScale", RpcTarget.All, UnityEngine.Random.Range(1.0f, 2.0f));
+            view.RPC("SetScale", RpcTarget.All, UnityEngine.Random.Range(1.0f, 2.0f));
         }
         // SetScale(UnityEngine.Random.Range(1.0f, 2.0f));
         startLookingForTargets();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyView : MonoBehaviour
 {
-    public LevitatingEnemyBehaviour parent_enemy;
+    [SerializeField] private LevitatingEnemyBehaviour parent_enemy;
     public LayerMask target_mask;
     // Start is called before the first frame update
     void Start()
