@@ -8,11 +8,14 @@ public class ShootingEnemyProjectile : MonoBehaviour
     [SerializeField] private LayerMask TargetMask;
     [SerializeField] private LayerMask WallsMask;
     [SerializeField] private float Lifetime = 30;
+    [SerializeField] private float damage = 1;
     private int AliveFramecount = 0;
-    public void Initialize(Vector3 StartingPosition, Vector3 ProjectileVelocity)
+    private ShootingEnemyBehaviour ParentEnemy;
+    public void Initialize(Vector3 StartingPosition, Vector3 ProjectileVelocity, ShootingEnemyBehaviour parent)
     {
         transform.position = StartingPosition;
         Velocity = ProjectileVelocity;
+        ParentEnemy = parent;
     }
 
     void FixedUpdate()
@@ -32,6 +35,15 @@ public class ShootingEnemyProjectile : MonoBehaviour
         {
             // TODO: Do damage to the target
             Debug.Log("Hit");
+            if (other.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
+            {
+                npc.life -= damage;
+                if (npc.life <= 0.0f) { ParentEnemy.NotifyHasEatenSomeone(other.gameObject);  }
+            }
+            else if (other.gameObject.TryGetComponent<PlayerController>(out PlayerController player))
+            {
+                // Deal damage to the player
+            }
         }
         else if ((WallsMask.value & (1 << other.transform.gameObject.layer)) > 0)
         {

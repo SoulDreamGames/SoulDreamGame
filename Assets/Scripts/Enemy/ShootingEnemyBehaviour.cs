@@ -57,7 +57,6 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
 
     public void Shoot()
     {
-        Debug.Log("Shooting");
         // Check if the target is out of range
         if (TargetDistance > ShootingRange) return;
         const float FixedUpdateFPS = 50.0f;
@@ -68,7 +67,7 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
         // Actual shoot
         ShootingEnemyProjectile current_projectile = Instantiate<ShootingEnemyProjectile>(ProjectilePrefab, transform.position, Quaternion.identity);
         Vector3 ProjectileVelocity = ProjectileSpeed * (TargetPos - transform.position).normalized;
-        current_projectile.Initialize(transform.position, ProjectileVelocity);
+        current_projectile.Initialize(transform.position, ProjectileVelocity, this);
     }
 
 }

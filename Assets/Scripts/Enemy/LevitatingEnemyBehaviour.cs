@@ -143,7 +143,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
     public virtual void OnTriggerEnter(Collider collider)
     {
-        const float contact_repulsion_kik = 5.0f;
+        const float contact_repulsion_kik = 10.0f;
         if ((TargetMask.value & (1 << collider.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
@@ -161,7 +161,7 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     public override void NotifyHasEatenSomeone(GameObject someone)
     {
         if (someone == _Target) {
-            startLookingForTargets();
+            ChangeToDefaultTarget();
         }
     }
 

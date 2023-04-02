@@ -47,13 +47,13 @@ MonoBehaviour:
   num_enemies: 0
   swarm_stiffness: 0.005
   swarm_distance_apart: 5
-  swarm_target: {fileID: 0}
+  _SwarmTarget: {fileID: 0}
   swarmMembers: []
   swarm_default_target: {fileID: 0}
   _enemy_manager: {fileID: 0}
-  swarm_has_active_target: 0
+  SwarmHasActiveTarget: 0
   DuplicatingEnemyMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   Material: {fileID: 2100000, guid: abcbc22405cb64c4883e72dad16be06d, type: 2}
   SwarmPrefab: {fileID: 6579314052268557928, guid: 33555a32b89c05c429e6fb290fb5254f, type: 3}
-  DuplicatingTimeDelay: 1
+  DuplicatingTimeDelay: 5
   MaxNumMembers: 10

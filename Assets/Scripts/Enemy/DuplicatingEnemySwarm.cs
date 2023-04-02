@@ -71,8 +71,8 @@ public class DuplicatingEnemySwarm : EnemySwarm
             enemy._Target = null;
             enemy._DefaultTarget = swarm_default_target;
             enemy.startLookingForTargets();
-            swarm_target = null;
-            swarm_has_active_target = false;
+            _SwarmTarget = null;
+            SwarmHasActiveTarget = false;
         }
     }
 }

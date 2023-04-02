@@ -121,4 +121,5 @@ public class EnemiesManager : MonoBehaviour
         }
         lastTarget = targetPoints[index];
     }
+
 }
