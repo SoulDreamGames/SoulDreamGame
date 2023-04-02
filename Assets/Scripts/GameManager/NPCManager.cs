@@ -18,6 +18,8 @@ public class NPCManager : MonoBehaviour
     [SerializeField] private List<Transform> safeZones = new List<Transform>();
     
     public List<NPCRandomNavMesh> _npcsSpawned;
+
+    public int peopleEvacuated = 0;
     
     public void Initialize(GameManager gameManager)
     {
@@ -90,5 +92,6 @@ public class NPCManager : MonoBehaviour
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
         Destroy(npc.gameObject);
+        peopleEvacuated++;
     }
 }

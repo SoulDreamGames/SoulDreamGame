@@ -26,9 +26,9 @@ public class PlayerController : MonoBehaviour
     //Speed attributes
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
-    [SerializeField] private float _maxMoveSpeed = 80.0f;
+    [SerializeField] private float _maxMoveSpeed = 100.0f;
     //State
-    [SerializeField] private MovementType _moveType = MovementType.Ground;
+    [SerializeField] public MovementType moveType = MovementType.Ground;
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
@@ -36,6 +36,10 @@ public class PlayerController : MonoBehaviour
     public float playerEnergyLost = 0.5f;
     [SerializeField, Tooltip("Energy lost on homing attack activation")] 
     public float playerEnergyLostOnHomingAttack = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")] 
+    public float playerEnergyLostOnBoost = 25f;
+    [SerializeField, Tooltip("Energy lost on boost activation")]
+    public float playerEnergyLostOnLightningBreak = 35f;
     [SerializeField] private float _maxEnergy = 100.0f;
     [SerializeField, Tooltip("Homing attack radius")] 
     public float homingRadius = 10f;
@@ -55,6 +59,15 @@ public class PlayerController : MonoBehaviour
     [Header("Debug Info")]
     [SerializeField] private Vector2 _inputAxis; // Input
     [SerializeField] private bool _godlike = false;
+    
+    //Animator
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public int moveSpeedID;
+    [HideInInspector] public int jumpID;
+    [HideInInspector] public int isFlyingID;
+    [HideInInspector] public int isGroundedID;
+    [HideInInspector] public float moveSpeedDamp;
+    
     #endregion
 
     #region Properties
@@ -78,7 +91,7 @@ public class PlayerController : MonoBehaviour
     }
     public MovementType MoveType
     {
-        get => _moveType;
+        get => moveType;
     }
 
     // Input
@@ -91,6 +104,8 @@ public class PlayerController : MonoBehaviour
     // Enemy bounds 
     public bool IsAttacking { get; set; }
     public bool IsHomingAttacking { get; set; }
+    public bool IsBoosting { get; set; }
+    public bool IsLightningBreaking { get; set; }
 
     public GameObject PlayerObject
     {
@@ -111,6 +126,21 @@ public class PlayerController : MonoBehaviour
 
         MoveSpeed = InitialMoveSpeed;
         PlayerEnergy = 0.0f;
+
+        animator = GetComponent<Animator>();
+        SetAnimatorProperties();
+        
+        //ToDo:
+        //_animator.SetBool(_animIDGrounded, Grounded);
+    }
+
+    //Animator properties to hash
+    void SetAnimatorProperties()
+    {
+        moveSpeedID = Animator.StringToHash("MoveSpeed");
+        jumpID = Animator.StringToHash("Jump");
+        isFlyingID = Animator.StringToHash("isFlying");
+        isGroundedID = Animator.StringToHash("isGrounded");
     }
 
     void Start()
@@ -182,7 +212,7 @@ public class PlayerController : MonoBehaviour
         //Add a visual effect based on a prefab
         if (pDashEffect != null)
         {
-            Transform dashEffect = Instantiate(pDashEffect, transform.position, quaternion.identity);
+            Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
         }
 
         //Finally, move to desired position
@@ -194,6 +224,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("Can collide is: " + _canCollide);
+        if (MoveType.Equals(MovementType.Air) && _canCollide)
+        {
+            PlayerEnergy = 0f;
+            SwitchState(MovementType.Ground);
+        }
         if ((GroundMask & (1 << collision.gameObject.layer)) != 0) return;
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
 
@@ -202,7 +238,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Layer is: " + collision.gameObject.layer);
         MoveSpeed = 0.0f;
         InputAxis = Vector2.zero;
-        if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -216,11 +251,19 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Attacking enemy");
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
-
+            
             bool isDead = enemy.ReceiveDamage(3);
             return;
         }
-        
+        else
+        {
+            //If collision without attacking or not enough velocity
+            var enemy = other.GetComponent<EnemyBehaviour>();
+            if (enemy == null) return;
+            
+            ReceiveDamage(enemy.ContactDamage);
+        }
+
         //Reset velocity and energy in player
         Debug.Log("Unsuccesfull attack");
         MoveSpeed = 0.0f;
@@ -231,6 +274,22 @@ public class PlayerController : MonoBehaviour
         if (MoveType.Equals(MovementType.Air)) SwitchState(MovementType.Ground);
 
     }
+
+    public void ReceiveDamage(float damage)
+    {
+        PlayerEnergy -= damage;
+
+        if (PlayerEnergy <= 0f)
+        {
+            HandleDeath();
+        }
+    }
+
+    private void HandleDeath()
+    {
+        Debug.Log("dead");
+    }
+    
     #endregion
 
     #region Functions
@@ -239,16 +298,33 @@ public class PlayerController : MonoBehaviour
         if (newState.Equals(MovementType.Ground))
         {
             _flightMovement.ResetMovement();
+            _groundMovement.SetSubState(GroundMovement.InternalState.Falling);
             _thirdPersonCam.SwapCamera(MovementType.Ground);
+
+            animator.SetBool(isFlyingID, false);
         }
         else
         {
             _groundMovement.ResetMovement();
+            _flightMovement.SetSubState(FlyMovement.InternalState.Levitate);
             _thirdPersonCam.SwapCamera(MovementType.Air);
+            
+            animator.SetBool(isFlyingID, true);
+            animator.SetBool(isGroundedID, false);
+
+            //Reset collisions
+            _canCollide = false;
+            Invoke(nameof(DisableCollisionInvulnerability), 0.75f);
         }
 
-        _moveType = newState;
+        moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
+    }
+
+    private bool _canCollide = true;
+    private void DisableCollisionInvulnerability()
+    {
+        _canCollide = true;
     }
 
     private void PerformGodlikeActions()

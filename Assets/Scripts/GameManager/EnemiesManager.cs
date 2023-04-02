@@ -39,16 +39,19 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
-        Debug.Log("Spawning enemies on new wave");
-        int NumSpawnedEnemies = enemiesPerWave[_gameManager.currentWave];
-        for (int i = 0; i < 10; i++)
+        // Debug.Log("Spawning enemies on new wave");
+
+        int NumSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? enemiesPerWave[_gameManager.currentWave] : 10;
+
+        for (int i = 0; i < NumSpawnedEnemies; i++)
         {
+            /* Choose random spawn and attak points for each enemy */
             int enemyIndex = UnityEngine.Random.Range(0, enemiesToSpawn.Count);
             int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
             int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
-            SpawnEnemy(enemiesToSpawn[2], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
+
+            SpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
-        // SpawnEnemy(enemiesToSpawn[0], Vector3.zero); //etc...
         
         remainingWaveEnemies = _enemiesSpawned.Count;
     }
@@ -67,17 +70,26 @@ public class EnemiesManager : MonoBehaviour
     //ToDo: call this method when enemy killed/destroyed - Call inside the OnDestroy method from the enemy
     public void EnemyKilled(EnemyBehaviour enemy)
     {
-        _enemiesSpawned.Remove(enemy);
-        if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
+        if(!_gameManager) return;
+
+        if (!_enemiesSpawned.Remove(enemy)) return;
+        if (_gameManager.nearestEnemy != null)
         {
-            _gameManager.nearestEnemy = null;
+            if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
+            {
+                _gameManager.nearestEnemy = null;
+            }
         }
-        if (_gameManager.targetableEnemy.Equals(enemy.gameObject))
+
+        if (_gameManager.targetableEnemy != null)
         {
-            _gameManager.targetableEnemy = null;
+            if (_gameManager.targetableEnemy.Equals(enemy.gameObject))
+            {
+                _gameManager.targetableEnemy = null;
+            }
         }
-            
-        
+
+
         //Invoke Enemy Died event
         _gameManager.InvokeEvent(GameEventType.onEnemyDied);
         
@@ -90,8 +102,8 @@ public class EnemiesManager : MonoBehaviour
     }
     public void AddSpawnedEnemy(EnemyBehaviour enemy)
     {
-        remainingWaveEnemies++;
         _enemiesSpawned.Add(enemy);
+        remainingWaveEnemies = _enemiesSpawned.Count;
     }
 
     public void GetNewDefaultTarget(ref GameObject lastTarget)
@@ -109,4 +121,5 @@ public class EnemiesManager : MonoBehaviour
         }
         lastTarget = targetPoints[index];
     }
+
 }

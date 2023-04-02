@@ -24,6 +24,12 @@ public class MiniMap : MonoBehaviour
         if (!_gameManager)
         {
             enemyIcon.enabled = false;
+            return;
+        }
+
+        if (!_gameManager.targetableEnemy)
+        {
+            enemyIcon.enabled = false;
         }
     }
     private void Update()

@@ -67,7 +67,7 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
         // Actual shoot
         ShootingEnemyProjectile current_projectile = Instantiate<ShootingEnemyProjectile>(ProjectilePrefab, transform.position, Quaternion.identity);
         Vector3 ProjectileVelocity = ProjectileSpeed * (TargetPos - transform.position).normalized;
-        current_projectile.Initialize(transform.position, ProjectileVelocity);
+        current_projectile.Initialize(transform.position, ProjectileVelocity, this);
     }
 
 }

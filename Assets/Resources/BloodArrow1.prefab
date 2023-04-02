@@ -218,12 +218,14 @@ MonoBehaviour:
   _orientation: {fileID: 3306631970050166878}
   _initialMoveSpeed: 5
   _thresholdSpeed: 10
-  _maxMoveSpeed: 80
-  _moveType: 0
+  _maxMoveSpeed: 100
+  moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
   playerEnergyLost: 0.5
   playerEnergyLostOnHomingAttack: 25
+  playerEnergyLostOnBoost: 25
+  playerEnergyLostOnLightningBreak: 35
   _maxEnergy: 100
   homingRadius: 50
   playersManager: {fileID: 0}
@@ -237,6 +239,12 @@ MonoBehaviour:
   view: {fileID: 0}
   _inputAxis: {x: 0, y: 0}
   _godlike: 0
+  animator: {fileID: 0}
+  moveSpeedID: 0
+  jumpID: 0
+  isFlyingID: 0
+  isGroundedID: 0
+  moveSpeedDamp: 0
 --- !u!114 &3306631969650677190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +262,7 @@ MonoBehaviour:
   _jumpForce: 8
   _jumpCooldown: 1
   _airMultiplier: 1
+  _fallingAcceleration: 2.5
   _playerHeight: 2
   _movementComponents:
     Rigidbody: {fileID: 0}
@@ -343,12 +352,14 @@ MonoBehaviour:
   _strafeSpeed: 7.5
   _hoverSpeed: 10
   _maxMoveSpeed: 100
+  _boostActiveTime: 3
   _forwardAccel: 2.5
   _strafeAccel: 2
   _hoverAccel: 2
   _accelDamping: 0.6
   _speedLossRate: 4
   _tolerance: 0.3
+  _levitatingTime: 5
   _usedTolerance: 1
   _lastForward: {x: 0, y: 0, z: 0}
   _originalForward: {x: 0, y: 0, z: 0}

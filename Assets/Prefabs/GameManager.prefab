@@ -55,11 +55,18 @@ MonoBehaviour:
   cityEnergy: 100
   energyLostOnPlayer: 5
   energyLostOnCivilian: 0.5
+  domeEnergy: 0
+  maxDomeEnergy: 100
+  energyGainedOnKill: 1
+  energyLostOnDeath: 10
   currentGameState: 0
   gameStarted: 0
   localPlayer: {fileID: 0}
   enemyMarker: {fileID: 0}
   nearestEnemy: {fileID: 0}
+  targetableEnemy: {fileID: 0}
+  resultsScene: GameResults
+  _resultsData: {fileID: 11400000, guid: 271b512d792ab2b43aac35fbf2654e93, type: 2}
 --- !u!114 &7368224080682761783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,6 +89,8 @@ MonoBehaviour:
   - gameState: 3
     time: 30
   _defaultStateTime: 120
+  timerText: {fileID: 0}
+  bgText: {fileID: 0}
 --- !u!114 &7368224080682761782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,11 +118,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc088e66517041b7bf9628d823dfd48a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemiesToSpawn: []
+  enemiesToSpawn:
+  - {fileID: 2787024790338653575, guid: d5a98acf2b41bf8418865547e4b8d7f4, type: 3}
+  - {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
+  - {fileID: 1378950066543773415, guid: bf7db9699ad683d4f9c6ace3760ffdcd, type: 3}
   _enemiesSpawned: []
-  respawnPoints: []
-  targetPoints: []
-  enemiesPerWave: 
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  targetPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  enemiesPerWave: 0a00000014000000190000001e000000280000003200000032000000
 --- !u!114 &7368224080682761780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,3 +155,4 @@ MonoBehaviour:
   spawnPoints: []
   safeZones: []
   _npcsSpawned: []
+  peopleEvacuated: 0
