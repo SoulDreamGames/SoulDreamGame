@@ -118,11 +118,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc088e66517041b7bf9628d823dfd48a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemiesToSpawn: []
+  enemiesToSpawn:
+  - {fileID: 2787024790338653575, guid: d5a98acf2b41bf8418865547e4b8d7f4, type: 3}
+  - {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
+  - {fileID: 1378950066543773415, guid: bf7db9699ad683d4f9c6ace3760ffdcd, type: 3}
   _enemiesSpawned: []
-  respawnPoints: []
-  targetPoints: []
-  enemiesPerWave: 
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  targetPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  enemiesPerWave: 0a00000014000000190000001e000000280000003200000032000000
 --- !u!114 &7368224080682761780
 MonoBehaviour:
   m_ObjectHideFlags: 0
