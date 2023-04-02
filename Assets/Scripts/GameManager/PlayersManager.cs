@@ -57,8 +57,12 @@ public class PlayersManager : MonoBehaviour
     {
         //Respawn player into a random position in the map
         int rnd = Random.Range(0, respawnPoints.Count);
-        //pc.Spawn(respawnPoints[rnd]);
-        //ToDo: uncomment this and add this method to playerController
+        Vector3 pos = Vector3.zero;
+        if (respawnPoints.Count > 0)
+        {
+            pos = respawnPoints[rnd];
+        }
+        pc.Respawn(pos);
     }
 
     public Vector3 GetLocalNearestEnemy()
@@ -92,10 +96,6 @@ public class PlayersManager : MonoBehaviour
         {
             _gameManager.nearestEnemy = nearestEnemy;
             _gameManager.targetableEnemy = minDistance <= attackRadius ? nearestEnemy : null;
-            
-            Debug.Log("Nearest enemy is: " + _gameManager.nearestEnemy.name);
-            if(_gameManager.targetableEnemy)
-                Debug.Log("Targetable enemy is: " + _gameManager.targetableEnemy.name);
         }
     }
 }

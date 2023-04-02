@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class DuplicatingEnemySwarm : EnemySwarm
 {
@@ -41,9 +42,6 @@ public class DuplicatingEnemySwarm : EnemySwarm
     public void MemberDied(DuplicatingEnemyEntity member)
     {
         swarmMembers.Remove(member);
-        num_enemies--;
-        Destroy(member);
-        if (swarmMembers.Count == 0) Destroy(gameObject);
     }
     
     private void forceCreateNewMember(Vector3 position) {
@@ -56,12 +54,13 @@ public class DuplicatingEnemySwarm : EnemySwarm
         if (framecout / FixedUpdateFPS  < DuplicatingTimeDelay) return;
         if (swarmMembers.Count == MaxNumMembers) return;
         framecout = 0;
-        DuplicatingEnemyEntity newMember = Instantiate<DuplicatingEnemyEntity>(SwarmPrefab, position, Quaternion.identity, transform);
-        newMember.Initialize(_enemy_manager, swarm_default_target, this);
+        // DuplicatingEnemyEntity newMember = Instantiate<DuplicatingEnemyEntity>(SwarmPrefab, position, Quaternion.identity, transform);
+        // newMember.Initialize(_enemy_manager, swarm_default_target, this);
 
-        swarmMembers.Add(newMember);
+        // swarmMembers.Add(newMember);
+        PhotonInstantiateNewMember(position);
 
-        num_enemies = (uint) swarmMembers.Count;
+        NumEnemies = (uint) swarmMembers.Count;
     }
 
     public void ChangeToDefaultTarget()
@@ -69,11 +68,28 @@ public class DuplicatingEnemySwarm : EnemySwarm
         foreach(LevitatingEnemyBehaviour enemy in swarmMembers)
         {
             enemy._Target = null;
-            enemy._DefaultTarget = swarm_default_target;
+            enemy._DefaultTarget = SwarmDefaultTarget;
             enemy.startLookingForTargets();
             _SwarmTarget = null;
             SwarmHasActiveTarget = false;
         }
+    }
+
+    private void PhotonInstantiateNewMember(Vector3 position)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        Debug.Log("Creating new duplicating member");
+        GameObject memberObject = PhotonNetwork.Instantiate(SwarmPrefab.name, position, Quaternion.identity);
+        if (memberObject.TryGetComponent<DuplicatingEnemyEntity>(out DuplicatingEnemyEntity NewDuplicatingEntity))
+        {
+            NewDuplicatingEntity.Initialize(_EnemyManager, SwarmDefaultTarget, this);
+            swarmMembers.Add(NewDuplicatingEntity);
+        }
+        else
+        {
+            Debug.LogError("Duplicating Enemy Entity prefab is not correct");
+        }
+
     }
 }
 

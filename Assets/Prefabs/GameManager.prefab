@@ -119,9 +119,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesToSpawn:
-  - {fileID: 2787024790338653575, guid: d5a98acf2b41bf8418865547e4b8d7f4, type: 3}
-  - {fileID: 2745822330047797927, guid: efc6f7b94cf9bd3478546fc7caf46ece, type: 3}
-  - {fileID: 1378950066543773415, guid: bf7db9699ad683d4f9c6ace3760ffdcd, type: 3}
+  - {fileID: 2787024790338653575, guid: ab5e71a6914f0cc4ab2a9aeb04fe5b2c, type: 3}
+  - {fileID: 2745822330047797927, guid: be4bea60dbdc31742a73a9404770c1d6, type: 3}
+  - {fileID: 1378950066543773415, guid: ed44341849b678e41bd276fddc1b14cf, type: 3}
   _enemiesSpawned: []
   respawnPoints:
   - {fileID: 0}

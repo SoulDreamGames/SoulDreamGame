@@ -7,20 +7,20 @@ such that they movement seems like a swarm of insects */
 public abstract class EnemySwarm : EnemySpawnable
 {
 
-    public uint num_enemies = 5;
+    public uint NumEnemies = 5;
     public float swarm_stiffness = 0.001f;
     public float swarm_distance_apart = 5.0f;
     public GameObject _SwarmTarget;
     public List<LevitatingEnemyBehaviour> swarmMembers;
 
-    [SerializeField] protected GameObject swarm_default_target;
-    [SerializeField] protected EnemiesManager _enemy_manager;
+    [SerializeField] protected GameObject SwarmDefaultTarget;
+    [SerializeField] protected EnemiesManager _EnemyManager;
     public bool SwarmHasActiveTarget = false;
     // Start is called before the first frame update
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget){
-        _enemy_manager = enemiesManager;
-        swarm_default_target = defaultTarget;
+        _EnemyManager = enemiesManager;
+        SwarmDefaultTarget = defaultTarget;
     }
 
     void FixedUpdate() {
@@ -37,8 +37,8 @@ public abstract class EnemySwarm : EnemySpawnable
         /* Makes the enemies be slightly repelled from one another when close and slightly 
         attracted when close */
 
-        for (int i = 0; i < num_enemies; i++){
-            for (int j = i+1; j < num_enemies; j++){
+        for (int i = 0; i < NumEnemies; i++){
+            for (int j = i+1; j < NumEnemies; j++){
                 Vector3 delta_pos = (swarmMembers[i].transform.position - swarmMembers[j].transform.position);
                 float distance = delta_pos.magnitude;
                 Vector3 force = - swarm_stiffness * (distance - swarm_distance_apart) * delta_pos / distance;
@@ -52,14 +52,14 @@ public abstract class EnemySwarm : EnemySpawnable
     {
         /* Makes all swarm members change default target to the swarm's default target */
         Debug.Log("updating swarm default target");
-        for (int i = 0; i < num_enemies; i++){
-            swarmMembers[i]._DefaultTarget = swarm_default_target;
+        for (int i = 0; i < NumEnemies; i++){
+            swarmMembers[i]._DefaultTarget = SwarmDefaultTarget;
         }
     }
     public void updateSwarmTarget()
     {
         /* Makes all swarm members change target to the swarm's target */
-        for (int i = 0; i < num_enemies; i++){
+        for (int i = 0; i < NumEnemies; i++){
             swarmMembers[i].setTarget(_SwarmTarget);
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Photon.Pun;
 using UnityEngine;
 
 public class ThirdPersonCam : MonoBehaviour
@@ -50,9 +51,25 @@ public class ThirdPersonCam : MonoBehaviour
             cameraBehaviours[1].gameObject.SetActive(true);
         }
     }
+
+    private bool _isFixed = false;
+    public void SwapToFixedTarget()
+    {
+        _isFixed = true;
+        
+        cameraBehaviours[0].gameObject.SetActive(false);
+        cameraBehaviours[1].gameObject.SetActive(false);
+    }
+
+    public void SwapToPlayerTarget()
+    {
+        _isFixed = false;
+        cameraBehaviours[0].gameObject.SetActive(true);
+    }
+    
     private void Update()
     {
-
+        if (_isFixed) return;
         if (player == null) return;
         
         // Rotate orientation

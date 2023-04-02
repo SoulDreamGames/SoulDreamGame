@@ -48,7 +48,6 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
             Debug.Log("Duplicating");
         }
     }
-
     protected override void OnDeath()
     {
         mySwarm.MemberDied(this);
