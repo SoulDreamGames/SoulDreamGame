@@ -34,7 +34,7 @@ public class NPCRandomNavMesh : MonoBehaviour
         if (PhotonNetwork.IsMasterClient) return;
 
         _npcManager = FindObjectOfType<NPCManager>();
-
+        agent = FindObjectOfType<NavMeshAgent>();
         _npcManager._npcsSpawned.Add(this);
 
         animController = GetComponent<Animator>();
