@@ -404,7 +404,6 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 5551516106879617800}
   - {fileID: -2510472326908649146}
-  - {fileID: 3757383057502724375}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -613,7 +612,30 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4049eafc4f5b00541abea1f13347aacc, type: 3}
   m_PrefabInstance: {fileID: 308034288277990948}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3757383057502724375
+--- !u!114 &7201972650629827270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614515247016711029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 5511255249322075208}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5511255249322075208
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -638,7 +660,7 @@ MonoBehaviour:
     ExtrapolateNumberOfStoredPositions: 1
   m_RotationModel:
     SynchronizeEnabled: 1
-    InterpolateOption: 2
+    InterpolateOption: 1
     InterpolateRotateTowardsSpeed: 180
     InterpolateLerpSpeed: 5
   m_ScaleModel:
