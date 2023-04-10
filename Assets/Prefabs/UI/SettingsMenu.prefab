@@ -561,10 +561,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 7757826980443501619}
   m_HandleRect: {fileID: 7757826980332266401}
   m_Direction: 0
-  m_MinValue: -80
-  m_MaxValue: 0
+  m_MinValue: 0.001
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.001
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1539,6 +1539,9 @@ MonoBehaviour:
   vSyncToggle: {fileID: 7757826980142986925}
   quitGame: {fileID: 0}
   volumeRect: {fileID: 7757826980332266401}
+  ourStudioButton: {fileID: 0}
+  creditsObject: {fileID: 0}
+  headerButtons: {fileID: 0}
 --- !u!1 &7757826980285179083
 GameObject:
   m_ObjectHideFlags: 0
