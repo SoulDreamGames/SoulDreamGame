@@ -24,14 +24,12 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
     protected float DefaultTargetChangeDistance = 20.0f; // Change default target when near the current one
     protected float TooFarAwayDistance = 100.0f;
     protected int TooFarAwayCounter = 0;
-    private PhotonView _view;
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {
         base.Initialize(enemiesManager, defaultTarget);
         
         RB = GetComponent<Rigidbody>();
-        _view = GetComponent<PhotonView>();
         Velocity = new Vector3(0,0,0);
 
         Drag = Mass / AccelerationTime;
@@ -154,6 +152,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
     public virtual void OnTriggerEnter(Collider collider)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         const float contact_repulsion_kik = 10.0f;
         if ((TargetMask.value & (1 << collider.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
@@ -176,13 +176,21 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         }
     }
 
-    public override bool ReceiveDamage(int damage)
+    public override void ReceiveDamage(int damage)
     {
         base.ReceiveDamage(damage);
+        View.RPC("OnReceiveDamageRPC", RpcTarget.MasterClient, damage);
+    }
+    
+    [PunRPC]
+    public void OnReceiveDamageRPC(int damage)
+    {
         Hitpoints -= damage;
-        bool died = (Hitpoints <= 0);
-        if (died) OnDeath();
-        return died;
+        bool died = Hitpoints <= 0;
+        
+        if (died) {
+            OnDeath();
+        }
     }
 
     public void setTarget(GameObject newTarget) {

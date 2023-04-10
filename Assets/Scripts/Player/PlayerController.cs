@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(GroundMovement))]
 [RequireComponent(typeof(FlyMovement))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPunObservable
 {
     #region Variables
     //Components
@@ -265,7 +265,7 @@ public class PlayerController : MonoBehaviour
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
             
-            bool isDead = enemy.ReceiveDamage(3);
+            enemy.ReceiveDamage(3);
             return;
         }
         else
@@ -325,7 +325,13 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Respawn");
         
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{1.0f, false});
+        
+        //Reset transforms
         transform.position = position;
+        transform.rotation = Quaternion.identity;
+        _playerObject.transform.rotation = Quaternion.identity;
+
+        _rb.useGravity = true;
         
         _thirdPersonCam.SwapToPlayerTarget();
     }
@@ -406,4 +412,19 @@ public class PlayerController : MonoBehaviour
         }
     }
     #endregion
+
+    //Sync playerAttacks
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(IsAttacking);
+            stream.SendNext(IsHomingAttacking);
+        }
+        else if (stream.IsReading)
+        {
+            IsAttacking = (bool)stream.ReceiveNext();
+            IsHomingAttacking = (bool)stream.ReceiveNext();
+        }
+    }
 }

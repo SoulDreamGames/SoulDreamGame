@@ -6,6 +6,11 @@ using Photon.Pun;
 
 public class EnemiesManager : MonoBehaviour
 {
+    //ToDo: Sync enemies HP (for receive damage + die)
+    //ToDo: call KillEnemy with Master and then Pun.Destroy
+    //ToDo: delete from list in every client
+    //ToDo: sync dome energy 
+    
     //GameManager
     private GameManager _gameManager;
 
@@ -19,6 +24,7 @@ public class EnemiesManager : MonoBehaviour
     [SerializeField] private List<Transform> respawnPoints = new List<Transform>();
     [SerializeField] private List<GameObject> targetPoints = new List<GameObject>();
     [SerializeField] private List<int> enemiesPerWave = new List<int>();
+    [SerializeField] private int defaultNEnemiesPerWave = 10;
     public void Initialize(GameManager gameManager)
     {
         //Init gameManager
@@ -39,42 +45,28 @@ public class EnemiesManager : MonoBehaviour
 
     void SpawnOnNewWave()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
         Debug.Log("Spawning enemies on new wave");
-
-        int NumSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? enemiesPerWave[_gameManager.currentWave] : 10;
-
-        for (int i = 0; i < NumSpawnedEnemies; i++)
+        
+        int numSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? 
+            enemiesPerWave[_gameManager.currentWave] : 
+            defaultNEnemiesPerWave;
+        
+        for (int i = 0; i < numSpawnedEnemies; i++)
         {
-            /* Choose random spawn and attak points for each enemy */
+            /* Choose random spawn and attack points for each enemy */
             int enemyIndex = UnityEngine.Random.Range(0, enemiesToSpawn.Count);
             int spawnIndex = UnityEngine.Random.Range(0, respawnPoints.Count);
             int targetIndex = UnityEngine.Random.Range(0, targetPoints.Count);
-
-            PhotonSpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
-
-            // SpawnEnemy(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
+        
+            SpawnEnemySynced(enemiesToSpawn[enemyIndex], respawnPoints[spawnIndex].position, targetPoints[targetIndex]);
         }
         
         remainingWaveEnemies = _enemiesSpawned.Count;
     }
 
-    public void SpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
+    public void SpawnEnemySynced(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
     {
-        // Spawn enemy in a selected position
-        EnemySpawnable enemy = Instantiate(enemyToSpawn, spawnPoint, Quaternion.identity);
-        enemy.Initialize(this, targetPoint);
-    }
-
-    [PunRPC]
-    private void SpawnedEnemyRPC()
-    {
-        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
-    }
-    
-    public void PhotonSpawnEnemy(EnemySpawnable enemyToSpawn, Vector3 spawnPoint, GameObject targetPoint)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-        
         // Spawn enemy in a selected position
         GameObject enemy = PhotonNetwork.Instantiate(enemyToSpawn.name, spawnPoint, Quaternion.identity);
         if (enemy.TryGetComponent<EnemySpawnable>(out EnemySpawnable spawnable))
@@ -85,14 +77,26 @@ public class EnemiesManager : MonoBehaviour
         _gameManager.view.RPC("SpawnedEnemyRPC", RpcTarget.All);
     }
 
+    [PunRPC]
+    private void SpawnedEnemyRPC()
+    {
+        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
+    }
+    
     //ToDo: both onEnemySpawned and onEnemyDied are yet subscribed by other components - Eg. use it on UI
     
     //ToDo: call this method when enemy killed/destroyed - Call inside the OnDestroy method from the enemy
     public void EnemyKilled(EnemyBehaviour enemy)
     {
+        Debug.Log("------Enemy killed-----");
         if(!_gameManager) return;
 
-        if (!_enemiesSpawned.Remove(enemy)) return;
+        Debug.Log("------Remove and invoke-----");
+        _enemiesSpawned.Remove(enemy);
+        
+        //Invoke Enemy Died event
+        _gameManager.view.RPC("EnemyDiedRPC", RpcTarget.All);
+        
         if (_gameManager.nearestEnemy != null)
         {
             if (_gameManager.nearestEnemy.Equals(enemy.gameObject))
@@ -108,23 +112,27 @@ public class EnemiesManager : MonoBehaviour
                 _gameManager.targetableEnemy = null;
             }
         }
-
-
-        //Invoke Enemy Died event
-        _gameManager.view.RPC("EnemyDiedRPC", RpcTarget.All);
     }
     
     [PunRPC]
     private void EnemyDiedRPC()
     {
-        _gameManager.InvokeEvent(GameEventType.onEnemySpawned);
+        _gameManager.InvokeEvent(GameEventType.onEnemyDied);
         
-        //Decrease enemyCount and check if all enemies are cleared on this wave
+        //Decrease enemyCount and check if all enemies are cleared on this wave with master client
         remainingWaveEnemies--;
+
+        if (!PhotonNetwork.IsMasterClient) return;
         if (remainingWaveEnemies <= 0)
         {
-            _gameManager.InvokeEvent(GameEventType.onWaveEnd);
+            _gameManager.view.RPC("WaveEndRPC", RpcTarget.All);
         } 
+    }
+
+    [PunRPC]
+    public void WaveEndRPC()
+    {
+        _gameManager.InvokeEvent(GameEventType.onWaveEnd);
     }
 
     public void AddSpawnedEnemy(EnemyBehaviour enemy)

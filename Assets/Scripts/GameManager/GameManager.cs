@@ -12,7 +12,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayersManager))]
 [RequireComponent(typeof(EnemiesManager))] 
 [RequireComponent(typeof(NPCManager))]
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IPunObservable
 {
     public enum GameEventType
     {
@@ -316,5 +316,19 @@ public class GameManager : MonoBehaviour
     public float getStateTime(GameState state)
     {
         return _timeManager.GetStateTime(state);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(cityEnergy);
+            stream.SendNext(domeEnergy);
+        }
+        else if (stream.IsReading)
+        {
+            cityEnergy = (float)stream.ReceiveNext();
+            domeEnergy = (float)stream.ReceiveNext();
+        }
     }
 }

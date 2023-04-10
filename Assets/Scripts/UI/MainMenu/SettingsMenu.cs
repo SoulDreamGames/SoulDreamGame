@@ -73,7 +73,9 @@ public class SettingsMenu : MonoBehaviour
         //ToDo: Change this to logarithmic
         float scale = 1.0f + (audioSlider.value - audioSlider.minValue) / (audioSlider.maxValue - audioSlider.minValue);
         volumeRect.localScale = new Vector3(scale, scale, scale);
-        masterMixer.SetFloat("Volume", volume);
+
+        float logVolume = 20 * Mathf.Log10(volume);
+        masterMixer.SetFloat("Volume", logVolume);
         PlayerPrefs.SetFloat("Volume", volume);
     }
 

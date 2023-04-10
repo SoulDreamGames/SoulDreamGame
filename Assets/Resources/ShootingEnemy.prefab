@@ -136,12 +136,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2368156668567159527}
-  - component: {fileID: 8520050895375227037}
-  - component: {fileID: 6549799932499406233}
-  - component: {fileID: 7691539275155317498}
-  - component: {fileID: 4358829529676105799}
-  - component: {fileID: 4503319497007805186}
   - component: {fileID: 8622727489622837505}
+  - component: {fileID: 8520050895375227037}
+  - component: {fileID: 4503319497007805186}
+  - component: {fileID: 6549799932499406233}
+  - component: {fileID: 4358829529676105799}
+  - component: {fileID: 7691539275155317498}
+  - component: {fileID: 9169476862541590810}
   m_Layer: 11
   m_Name: ShootingEnemy
   m_TagString: Untagged
@@ -167,6 +168,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8622727489622837505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3140892807168481373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc95111f1a2542a4ba741b5cab6da952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Target: {fileID: 0}
+  _DefaultTarget: {fileID: 0}
+  ContactDamage: 10
+  _EnemiesManager: {fileID: 0}
+  Hitpoints: 1
+  Mass: 5
+  AccelerationTime: 5
+  MaxSpeed: 0.2
+  HoverHeight: 1.5
+  WallsMask:
+    serializedVersion: 2
+    m_Bits: 192
+  TargetMask:
+    serializedVersion: 2
+    m_Bits: 256
+  ShootingDistance: 50
+  ShootingDelay: 5
+  ShootingRange: 60
+  ProjectilePrefab: {fileID: 2656332332183209069, guid: c9f94b8888f31a64bb0d4a35bc315463, type: 3}
+  ProjectileSpeed: 1
 --- !u!95 &8520050895375227037
 Animator:
   serializedVersion: 5
@@ -187,6 +220,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+--- !u!135 &4503319497007805186
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3140892807168481373}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.5
+  m_Center: {x: 0, y: 0.28, z: 0}
 --- !u!54 &6549799932499406233
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -203,6 +249,30 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4358829529676105799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3140892807168481373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 7691539275155317498}
+  - {fileID: 9169476862541590810}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &7691539275155317498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,7 +306,7 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
---- !u!114 &4358829529676105799
+--- !u!114 &9169476862541590810
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,65 +315,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 3140892807168481373}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 7691539275155317498}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!135 &4503319497007805186
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3140892807168481373}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.5
-  m_Center: {x: 0, y: 0.28, z: 0}
---- !u!114 &8622727489622837505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3140892807168481373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc95111f1a2542a4ba741b5cab6da952, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Target: {fileID: 0}
-  _DefaultTarget: {fileID: 0}
-  ContactDamage: 10
-  _EnemiesManager: {fileID: 0}
-  Hitpoints: 1
-  Mass: 5
-  AccelerationTime: 5
-  MaxSpeed: 0.2
-  HoverHeight: 1.5
-  WallsMask:
-    serializedVersion: 2
-    m_Bits: 192
-  TargetMask:
-    serializedVersion: 2
-    m_Bits: 256
-  ShootingDistance: 50
-  ShootingDelay: 5
-  ShootingRange: 60
-  ProjectilePrefab: {fileID: 2656332332183209069, guid: c9f94b8888f31a64bb0d4a35bc315463, type: 3}
-  ProjectileSpeed: 1
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: isMoving
+  - Type: 9
+    SynchronizeType: 1
+    Name: Injured
+  - Type: 9
+    SynchronizeType: 1
+    Name: Attack
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!1 &3190617668678034527
 GameObject:
   m_ObjectHideFlags: 0

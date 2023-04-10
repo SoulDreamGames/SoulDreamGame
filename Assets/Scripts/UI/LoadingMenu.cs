@@ -18,7 +18,8 @@ public class LoadingMenu : MonoBehaviour
         float volume = PlayerPrefs.GetFloat("Volume", -100f);
         if (volume > -100.0f)
         {
-            masterMixer.SetFloat("Volume", volume);
+            float logVolume = 20 * Mathf.Log10(volume);
+            masterMixer.SetFloat("Volume", logVolume);
         }
         
         //Graphics level
