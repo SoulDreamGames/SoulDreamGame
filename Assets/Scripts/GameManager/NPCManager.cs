@@ -1,36 +1,44 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using GameEventType = GameManager.GameEventType;
 using Photon.Pun;
+using Debug = UnityEngine.Debug;
 
-public class NPCManager : MonoBehaviour
+public class NPCManager : MonoBehaviour, IPunObservable
 {
     //GameManager
     private GameManager _gameManager;
 
 
     [SerializeField] private GameObject npcPrefab;
+
     //Spawn points list
     [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
-    
+
     //Safe zones points list
     [SerializeField] private List<Transform> safeZones = new List<Transform>();
     
+    [SerializeField] private int npcsSpawnedPerWave = 100;
+    private float _waitTimePerNpc;
+
     public List<NPCRandomNavMesh> _npcsSpawned;
 
     public int peopleEvacuated = 0;
     public int peopleDied = 0;
-    
 
-    
+
     public void Initialize(GameManager gameManager)
     {
         //Init gameManager
         _gameManager = gameManager;
         _npcsSpawned = new List<NPCRandomNavMesh>();
         _gameManager.SubscribeToEvent(GameEventType.onWaveStart, SpawnOnNewWave);
+        
+        _waitTimePerNpc = gameManager.getStateTime(GameManager.GameState.OnWave) * 0.5f / npcsSpawnedPerWave;
+        Debug.Log("Wait time: " + _waitTimePerNpc);
     }
 
     public void OnUpdate()
@@ -42,89 +50,89 @@ public class NPCManager : MonoBehaviour
     {
         ////
     }
-    
+
     void SpawnOnNewWave()
     {
-        //for
+        if (!PhotonNetwork.IsMasterClient) return;
 
-        UnityEngine.Debug.Log("Waveeee");
+        //Coroutine for spawning each time
+        StartCoroutine(spawnNPCS(_waitTimePerNpc));
 
-        for (int i = 0; i < 100; i++)
-        {
-            SpawnNPC(npcPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position);
-        }
-
-         //etc...
+        //etc...
     }
-    
+
     public void SpawnNPC(GameObject npcToSpawn, Vector3 spawnPoint)
     {
         //Spawn new enemy
-        //GameObject npc = Instantiate(npcToSpawn, spawnPoint, Quaternion.identity);
+        GameObject npc = PhotonNetwork.Instantiate(npcToSpawn.name, spawnPoint, Quaternion.identity);
 
-        if (PhotonNetwork.IsMasterClient) 
+        float dist = 9999999.0f;
+        int index = -1;
+
+        for (int i = 0; i < safeZones.Count; i++)
         {
-            GameObject npc = PhotonNetwork.Instantiate(npcToSpawn.name, spawnPoint, Quaternion.identity);
-
-            float dist = 9999999.0f;
-            int index = -1;
-
-            for (int i = 0;i < safeZones.Count;i++)
+            if (Vector3.Distance(spawnPoint, safeZones[i].position) < dist)
             {
-                if (Vector3.Distance(spawnPoint, safeZones[i].position)< dist)
-                {
-                    index = i;
-                }
+                index = i;
             }
-
-            npc.GetComponent<NPCRandomNavMesh>().Initialize(this, safeZones[index]);
-            _npcsSpawned.Add(npc.GetComponent<NPCRandomNavMesh>());
         }
 
-
+        NPCRandomNavMesh npcRandomNavMesh = npc.GetComponent<NPCRandomNavMesh>();
+        npcRandomNavMesh.Initialize(this, safeZones[index]);
+        _npcsSpawned.Add(npcRandomNavMesh);
     }
-    
-    
-    
+
+    IEnumerator spawnNPCS(float waitTime)
+    {
+        for (int i = 0; i < npcsSpawnedPerWave; i++)
+        {
+            SpawnNPC(npcPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position);
+            yield return new WaitForSeconds(waitTime);
+        }
+    }
+
+
     //ToDo: Call this method every time a civilian is about to die (inside OnDestroy)
     public void NPCDied(NPCRandomNavMesh npc)
     {
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
-        
-        //Invoke corresponding event
-        _gameManager.InvokeEvent(GameEventType.onNPCDied);
 
-        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
-        {
-            if (PhotonNetwork.IsMasterClient) 
-            {
+        //Invoke corresponding event on All clients
+        _gameManager.view.RPC("NPCDiedEventRPC", RpcTarget.All);
 
-                PhotonNetwork.Destroy(view);
-            }
-        }
+        PhotonNetwork.Destroy(npc.view);
 
         peopleDied++;
     }
-    
+
+    [PunRPC]
+    private void NPCDiedEventRPC()
+    {
+        _gameManager.InvokeEvent(GameEventType.onNPCDied);
+    }
+
     public void OnSafePoint(NPCRandomNavMesh npc)
     {
         //Remove npc from active npcs list
         _npcsSpawned.Remove(npc);
-
-
-        if (npc.TryGetComponent<PhotonView>(out PhotonView view))
-        {
-            if (PhotonNetwork.IsMasterClient) 
-            {
-
-                PhotonNetwork.Destroy(view);
-            }
-        }
+        PhotonNetwork.Destroy(npc.view);
 
         peopleEvacuated++;
     }
-    
 
-
+    //Sync peopleDied and peopleEvacuated events
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(peopleDied);
+            stream.SendNext(peopleEvacuated);
+        }
+        else if (stream.IsReading)
+        {
+            peopleDied = (int)stream.ReceiveNext();
+            peopleEvacuated = (int)stream.ReceiveNext();
+        }
+    }
 }

@@ -27,42 +27,39 @@ public class NPCRandomNavMesh : MonoBehaviour
 
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
-
     
-    void Start()
+    //PhotonView
+    [HideInInspector] public PhotonView view;
+
+    private bool _isInitialized = false;
+
+
+    private void Awake()
     {
-        if (PhotonNetwork.IsMasterClient) return;
-
-        _npcManager = FindObjectOfType<NPCManager>();
-        agent = FindObjectOfType<NavMeshAgent>();
-        _npcManager._npcsSpawned.Add(this);
-
+        view = GetComponent<PhotonView>();
         animController = GetComponent<Animator>();
-
-        life = 1.0f;
-        isTargeted = false;
-        _enemyFollowing = null;
-
+        agent = GetComponent<NavMeshAgent>();
     }
-
-
+    
     public void Initialize(NPCManager npcManager, Transform targetPoint)
     {
-        agent = GetComponent<NavMeshAgent>();
-
-
         _npcManager = npcManager;
         NPCtarget = targetPoint;
-        animController = GetComponent<Animator>();
+        
         life = 1.0f;
         isTargeted = false;
         _enemyFollowing = null;
 
         agent.SetDestination(targetPoint.position);
+
+        _isInitialized = true;
     }
 
     void Update()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        if (!_isInitialized) return;
+        
         Vector3 curMove = transform.position - previousPosition;
         curSpeed = curMove.magnitude / Time.deltaTime;
 
@@ -70,7 +67,7 @@ public class NPCRandomNavMesh : MonoBehaviour
 
         float velocity = agent.velocity.magnitude / agent.speed;
 
-        animController.SetFloat("Blend", curSpeed);
+        animController.SetFloat("MoveSpeed", curSpeed);
 
         if (life <= 0.0f)
         {
@@ -126,7 +123,7 @@ public class NPCRandomNavMesh : MonoBehaviour
             }
         }
 
-        if (NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position))< 10.0f)) //done with path
+        if (NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position)) < 10.0f)) //done with path
         {
 
             if (_enemyFollowing != null)

@@ -131,4 +131,9 @@ public class TimeManager : MonoBehaviour
         hash.Add("Time", _time);
         _room.SetCustomProperties(hash);
     }
+
+    public float GetStateTime(GameState state)
+    {
+        return _gameStateTimes[_gameManager.currentGameState];
+    }
 }

@@ -41,13 +41,12 @@ public class PlayersManager : MonoBehaviour
         GetPositionToNearestEnemy(enemies, _gameManager.localPlayer.homingRadius);
     }
     
-    //ToDo: call this method from playerController on dead
     public void PlayerDied(PlayerController pc)
     {
         //Called only by isMine (from player controller)
         _gameManager.view.RPC("PlayerDiedEventRPC", RpcTarget.All);
         
-        //Call respawn coroutine
+        //Call respawn coroutine only on local
         StartCoroutine(Respawn(_respawnTime, pc));
     }
 
@@ -55,6 +54,7 @@ public class PlayersManager : MonoBehaviour
     private void PlayerDiedEventRPC()
     {
         _gameManager.InvokeEvent(GameEventType.onPlayerDied);
+        Debug.Log("------------ Player DIED --------");
     }
 
     IEnumerator Respawn(float time, PlayerController pc)

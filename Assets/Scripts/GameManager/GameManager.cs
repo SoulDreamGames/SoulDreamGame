@@ -296,9 +296,9 @@ public class GameManager : MonoBehaviour
     private void UpdateDomeEnergy(float energy)
     {
         domeEnergy += energy;
-        Debug.Log("New dome energy: " + domeEnergy);
         domeEnergy = Math.Clamp(domeEnergy, 0f, maxDomeEnergy);
-
+        Debug.Log("New dome energy: " + domeEnergy);
+        
         if (domeEnergy >= maxDomeEnergy)
         {
             //Call gameEnd as shield has been fully charged
@@ -311,5 +311,10 @@ public class GameManager : MonoBehaviour
     public List<EnemyBehaviour> GetEnemiesSpawnedList()
     {
         return _enemiesManager.GetEnemiesSpawned();
+    }
+
+    public float getStateTime(GameState state)
+    {
+        return _timeManager.GetStateTime(state);
     }
 }
