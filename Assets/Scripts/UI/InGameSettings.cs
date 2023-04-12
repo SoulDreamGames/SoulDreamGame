@@ -115,18 +115,18 @@ public class InGameSettings : MonoBehaviour
         QualitySettings.SetQualityLevel(_qualityLevel);
         PlayerPrefs.SetInt("Graphics", _qualityLevel);
         
-        //Windowed
-        Screen.fullScreen = !_isWindowed;
-        PlayerPrefs.SetInt("Windowed", _isWindowed ? 1 : 0);
-        
         //Resolution
-        Screen.SetResolution(_resolutions[_resolutionLevel].width, _resolutions[_resolutionLevel].height, Screen.fullScreen);
+        Screen.SetResolution(_resolutions[_resolutionLevel].width, _resolutions[_resolutionLevel].height, !_isWindowed);
         PlayerPrefs.SetInt("Resolution", _resolutionLevel);
-        
+
+        //Windowed
+        Screen.fullScreenMode = _isWindowed ? FullScreenMode.Windowed : FullScreenMode.ExclusiveFullScreen;
+        PlayerPrefs.SetInt("Windowed", _isWindowed ? 1 : 0);
+
         //Sync
         QualitySettings.vSyncCount = _isSynced ? 1 : 0;
         PlayerPrefs.SetInt("VSync", _isSynced ? 1 : 0);
-        
+
         inGameMenu.SwitchMenu();
     }
 
