@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6537720628769195646}
   - component: {fileID: 9033747031387599540}
   - component: {fileID: -2456420828872230012}
-  - component: {fileID: 7396816390746575757}
   m_Layer: 0
   m_Name: SM_hight_tree_01
   m_TagString: Untagged
@@ -94,21 +93,8 @@ MeshCollider:
   m_GameObject: {fileID: 7376524004312961889}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7568602397917838555, guid: 6c73baf180f4f0e47bb02d4777dcabc6, type: 3}
---- !u!65 &7396816390746575757
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7376524004312961889}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.92474633, y: 5.1239467, z: 0.91848266}
-  m_Center: {x: 0.007620007, y: 2.5380714, z: 0.0133346915}

@@ -2,17 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Photon.Realtime;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(TimeManager))]
 [RequireComponent(typeof(PlayersManager))]
 [RequireComponent(typeof(EnemiesManager))] 
 [RequireComponent(typeof(NPCManager))]
-public class GameManager : MonoBehaviour, IPunObservable
+public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public enum GameEventType
     {
@@ -330,5 +332,17 @@ public class GameManager : MonoBehaviour, IPunObservable
             cityEnergy = (float)stream.ReceiveNext();
             domeEnergy = (float)stream.ReceiveNext();
         }
+    }
+    
+    //Called whenever a player leaves the room
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("Leaving");
+    }
+
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene("Menu");
+        base.OnLeftRoom();
     }
 }
