@@ -14,12 +14,17 @@ public class CreateAndJoinRoomsMenu : MonoBehaviourPunCallbacks
     [SerializeField] private Button joinRoom;
 
     [SerializeField] private Text usernameText;
+
+    [SerializeField] private GameObject headerMenu;
+    [SerializeField] private Button howToPlayButton;
+    [SerializeField] private GameObject howToPlayMenu;
     
     void Awake()
     {
         //Button listeners
         createRoom.onClick.AddListener(CreateRoom);
         joinRoom.onClick.AddListener(JoinRoom);
+        howToPlayButton.onClick.AddListener(ShowHowToPlayMenu);
     }
 
     void Start()
@@ -65,5 +70,12 @@ public class CreateAndJoinRoomsMenu : MonoBehaviourPunCallbacks
         base.OnJoinRoomFailed(returnCode, message);
         joinRoom.interactable = true;
         createRoom.interactable = true;
+    }
+
+    public void ShowHowToPlayMenu()
+    {
+        howToPlayMenu.SetActive(true);
+        headerMenu.SetActive(false);
+        gameObject.SetActive(false);
     }
 }
