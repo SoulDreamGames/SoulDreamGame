@@ -89,6 +89,9 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 AtraccionForce = TargetForce * (target_pos - transform.position).normalized;
         Vector3 acceleration = (repulsion + AtraccionForce - Drag * Velocity + ExternalForces) / Mass;
 
+        // Clamp to high accelerations
+        float AccelerationMagnitude = acceleration.magnitude;
+        acceleration = acceleration / AccelerationMagnitude * Mathf.Clamp(AccelerationMagnitude, 0.0f, 10.0f);
         // Euler integration
         Velocity = Velocity + acceleration;
 
@@ -138,13 +141,16 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         Vector3 direction = - Vector3.up;
 
         float MaxDist = MinDist;
-        float GroundRepulsionCoeff = 2.0f;
+        float GroundRepulsionCoeff = 0.1f;
 
         Debug.DrawRay(transform.position, MaxDist * direction, Color.magenta);
 
         if (Physics.Raycast(transform.position, direction, out hit, MaxDist, WallsMask)) {
             float y = transform.position.y - hit.point.y;
             repulsion = GroundRepulsionCoeff * (2 * (y - MaxDist) * Mathf.Log(y / MaxDist) + (y - MaxDist) * (y - MaxDist) * MaxDist / y) * Vector3.up;
+            float repulsionMagnitude = repulsion.magnitude;
+            
+            repulsion = repulsion / repulsionMagnitude * Mathf.Clamp(repulsionMagnitude, 0.0f, 20.0f);
         }
 
         return repulsion;
@@ -158,11 +164,13 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
         if ((TargetMask.value & (1 << collider.gameObject.layer)) > 0) {
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             ExternalForces += contact_repulsion_kik * direction;
-
+            if (_animator != null)
+                _animator.SetTrigger("Attack");
 
             if (collider.gameObject.TryGetComponent<NPCRandomNavMesh>(out NPCRandomNavMesh npc))
             {
                 npc.life -= 0.1f;
+                InstantiateBloodHeare(npc.transform.position + transform.up);
                 if (npc.life <= 0.0f) { NotifyHasEatenSomeone(collider.gameObject);  }
             }
         }

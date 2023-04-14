@@ -85,6 +85,11 @@ public class NPCRandomNavMesh : MonoBehaviour
 
         if (isTargeted)
         {
+            if (_enemyFollowing == null) 
+            {
+                isTargeted = false;
+                return;
+            }
             Vector3 dirToPlayer = transform.position - _enemyFollowing.transform.position;
 
             //dirToPlayer.y = transform.position.y;

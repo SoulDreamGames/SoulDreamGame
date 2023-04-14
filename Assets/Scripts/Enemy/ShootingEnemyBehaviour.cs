@@ -61,14 +61,15 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
         // Check if the target is out of range
         if (TargetDistance > ShootingRange) return;
         const float FixedUpdateFPS = 50.0f;
+
         // Check if has passed enough time since the last shot
         if (ShootFramecount / FixedUpdateFPS < ShootingDelay) return;
+
+        _animator.SetTrigger("Attack");
+
         ShootFramecount = 0;
 
         // Actual shoot
-        // ShootingEnemyProjectile current_projectile = Instantiate<ShootingEnemyProjectile>(ProjectilePrefab, transform.position, Quaternion.identity);
-        // Vector3 ProjectileVelocity = ProjectileSpeed * (TargetPos - transform.position).normalized;
-        // current_projectile.Initialize(transform.position, ProjectileVelocity, this);
         PhotonInstantiateShoot();
     }
 

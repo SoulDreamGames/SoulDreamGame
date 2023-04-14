@@ -12,7 +12,7 @@ public abstract class EnemyBehaviour : EnemySpawnable, IPunObservable
     [SerializeField] protected int Hitpoints = 1;
     protected PhotonView View;
     protected bool LookingForTargets = true;
-    private Animator _animator;
+    protected Animator _animator;
 
 
     public bool isLookingForTargets()
@@ -92,14 +92,13 @@ public abstract class EnemyBehaviour : EnemySpawnable, IPunObservable
     protected virtual void OnDeath()
     {
         if (!PhotonNetwork.IsMasterClient) return;
-        
+        InstantiateBloodHeare(transform.position);
         PhotonNetwork.Destroy(View);
     }
 
     private void OnDestroy()
     {
         Debug.Log("On destroy enemy");
-
         if (_EnemiesManager)
             _EnemiesManager.EnemyKilled(this);
 
@@ -107,6 +106,7 @@ public abstract class EnemyBehaviour : EnemySpawnable, IPunObservable
         if (!_Target.TryGetComponent(out NPCRandomNavMesh npc)) return;
         npc.isTargeted = false;
         npc._enemyFollowing = null;
+        Debug.Log("Removed NPC target");
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -119,5 +119,12 @@ public abstract class EnemyBehaviour : EnemySpawnable, IPunObservable
         {
             Hitpoints = (int)stream.ReceiveNext();
         }
+    }
+
+    public void InstantiateBloodHeare(Vector3 position)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        Debug.Log("Instancing bloood!");
+        PhotonNetwork.Instantiate("BloodPS", position, Quaternion.identity);
     }
 }
