@@ -123,6 +123,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         _input = new MoveInput();
         _rb = GetComponent<Rigidbody>();
+        view = GetComponent<PhotonView>();
 
         _flightMovement = GetComponent<FlyMovement>();
         _groundMovement = GetComponent<GroundMovement>();
@@ -147,10 +148,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
         isFlyingID = Animator.StringToHash("isFlying");
         isGroundedID = Animator.StringToHash("isGrounded");
     }
-
+    
     void Start()
     {
-        view = GetComponent<PhotonView>();
         _menu = FindObjectOfType<InGameMenu>();
 
         playersManager = FindObjectOfType<PlayersManager>();
@@ -229,7 +229,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!view) return;
         if (!view.IsMine) return;
         
         Debug.Log("Can collide is: " + _canCollide);
@@ -310,20 +309,29 @@ public class PlayerController : MonoBehaviour, IPunObservable
     
     private void HandleDeath()
     {
-        Debug.Log("player is dead");
-        _thirdPersonCam.SwapToFixedTarget();
+        view.RPC("HandleDeathRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void HandleDeathRPC()
+    {
+        if (!view.IsMine) return;
         
+        Debug.Log("player is dead");   
+        _thirdPersonCam.SwapToFixedTarget();
+
         _flightMovement.ResetMovement();
         _groundMovement.ResetMovement();
-
+            
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
         playersManager.PlayerDied(this);
     }
 
     public void Respawn(Vector3 position)
     {
-        Debug.Log("Respawn");
+        if (!view.IsMine) return;
         
+        Debug.Log("Respawn");
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{1.0f, false});
         
         //Reset transforms

@@ -8,13 +8,13 @@ using UnityEngine;
 public class ThirdPersonCam : MonoBehaviour
 {
     [Header("Reference Objects")]
-    public Transform orientation;
-    public Transform player;
-    public Transform playerObj;
+    [HideInInspector] public Transform orientation;
+    [HideInInspector] public Transform player;
+    [HideInInspector] public Transform playerObj;
 
-    public PlayerController pc;
+    [HideInInspector] public PlayerController pc;
     
-    public float rotationSpeed;
+    [SerializeField] private float rotationSpeed;
 
     [SerializeField]
     private CinemachineFreeLook[] cameraBehaviours = new CinemachineFreeLook[2];
@@ -63,8 +63,8 @@ public class ThirdPersonCam : MonoBehaviour
 
     public void SwapToPlayerTarget()
     {
-        _isFixed = false;
         cameraBehaviours[0].gameObject.SetActive(true);
+        _isFixed = false;
     }
     
     private void Update()

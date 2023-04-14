@@ -78,14 +78,14 @@ public class ResultsMenu : MonoBehaviourPunCallbacks
             playerSkins[id].SetActive(true);
             Debug.Log("skin loaded:  "+ id);
             
+            _animator = selectedSkin.GetComponent<Animator>();
+            
             Color colorSkin = PlayerPrefsX.GetColor("SkinColor");
 
             if (!(colorSkin.r >= 0.0f)) return;
             
             selectedSkin.GetComponent<MaterialChanger>().SetMaterialColor(colorSkin);
             Debug.Log("color loaded:  "+ colorSkin);
-
-            _animator = selectedSkin.GetComponent<Animator>();
         }
     }
 }

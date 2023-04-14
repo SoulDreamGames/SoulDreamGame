@@ -14,6 +14,8 @@ public class ShootingEnemyProjectile : MonoBehaviour
     private ShootingEnemyBehaviour ParentEnemy;
     public void Initialize(Vector3 StartingPosition, Vector3 ProjectileVelocity, ShootingEnemyBehaviour parent)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         transform.position = StartingPosition;
         Velocity = ProjectileVelocity;
         ParentEnemy = parent;
@@ -21,6 +23,8 @@ public class ShootingEnemyProjectile : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         transform.position += Velocity;
         // Check and destroy the projectile if it passed it's current lifetime
         AliveFramecount++;
@@ -32,6 +36,8 @@ public class ShootingEnemyProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         // Check if the projectile has collided with a target
         if ((TargetMask.value & (1 << other.transform.gameObject.layer)) > 0)
         {
