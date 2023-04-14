@@ -105,7 +105,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3db7e256ce64059ac02697af597dbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  respawnPoints: []
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   players: []
   _respawnTime: 5
 --- !u!114 &7368224080682761781
@@ -140,7 +146,15 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   enemiesPerWave: 0a00000014000000190000001e000000280000003200000032000000
+  defaultNEnemiesPerWave: 10
 --- !u!114 &7368224080682761780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,6 +194,7 @@ MonoBehaviour:
   safeZones:
   - {fileID: 0}
   - {fileID: 0}
+  npcsSpawnedPerWave: 100
   _npcsSpawned: []
   peopleEvacuated: 0
   peopleDied: 0
@@ -201,7 +216,9 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 7368224080682761779}
+  - {fileID: 7368224080682761780}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

@@ -253,6 +253,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
         if (other.CompareTag("Water"))
         {
+            PhotonNetwork.Instantiate("WaterDropsPs", transform.position + transform.up, quaternion.identity);
             HandleDeath();
         }
         
@@ -300,6 +301,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public void ReceiveDamage(float damage)
     {
         PlayerEnergy =  PlayerEnergy - damage;
+        PhotonNetwork.Instantiate("BloodPS", transform.position, quaternion.identity);
 
         if (PlayerEnergy <= 0f)
         {
