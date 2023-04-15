@@ -47,11 +47,11 @@ public class ShootingEnemyProjectile : MonoBehaviour
                 npc.life -= 0.1f;
                 if (npc.life <= 0.0f) { ParentEnemy.NotifyHasEatenSomeone(other.gameObject);  }
                 // Destroy(gameObject);
-                PhotonDestroy();
             }
             else if (other.gameObject.TryGetComponent<PlayerController>(out PlayerController player))
             {
                 // Deal damage to the player
+                Debug.Log("Projectile damage: " + damage.ToString());
                 player.ReceiveDamage(damage);
             }
         }

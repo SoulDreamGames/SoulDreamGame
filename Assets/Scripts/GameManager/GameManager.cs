@@ -345,4 +345,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         SceneManager.LoadScene("Menu");
         base.OnLeftRoom();
     }
+
+    public int GetNumPlayers()
+    {
+        return _playersManager.players.Count;
+    }
 }

@@ -52,7 +52,9 @@ public class EnemiesManager : MonoBehaviour
         int numSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? 
             enemiesPerWave[_gameManager.currentWave] : 
             defaultNEnemiesPerWave;
-        
+
+        numSpawnedEnemies *= _gameManager.GetNumPlayers();
+
         for (int i = 0; i < numSpawnedEnemies; i++)
         {
             /* Choose random spawn and attack points for each enemy */

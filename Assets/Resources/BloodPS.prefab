@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 910d85c1867a2bf4ab9c545ce3b1d8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsFromPool: 0
 --- !u!198 &8975886223342252827
 ParticleSystem:
   m_ObjectHideFlags: 0

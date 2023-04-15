@@ -68,8 +68,8 @@ MonoBehaviour:
   WallsMask:
     serializedVersion: 2
     m_Bits: 192
-  Lifetime: 30
-  damage: 1
+  Lifetime: 20
+  damage: 70
 --- !u!114 &1402579687858099460
 MonoBehaviour:
   m_ObjectHideFlags: 0
