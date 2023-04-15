@@ -15,6 +15,8 @@ public class BloodPool : MonoBehaviour
         for (int i = 0; i < PoolAmount; i++)
         {
             GameObject temp = PhotonNetwork.Instantiate(ObjectPrefab.name, Vector3.zero, Quaternion.identity);
+            BloodSplashScript blood = temp.GetComponent<BloodSplashScript>();
+            blood.IsFromPool = true;
             PooledObjects.Add(temp);
         }
     }
