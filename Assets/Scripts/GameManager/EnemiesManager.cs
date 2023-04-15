@@ -16,6 +16,7 @@ public class EnemiesManager : MonoBehaviour
 
     private int remainingWaveEnemies = 10;
 
+    [SerializeField] public BloodPool _BloodPool;
     [SerializeField]
     private List<EnemySpawnable> enemiesToSpawn = new List<EnemySpawnable>();
     [SerializeField] private List<EnemyBehaviour> _enemiesSpawned;
