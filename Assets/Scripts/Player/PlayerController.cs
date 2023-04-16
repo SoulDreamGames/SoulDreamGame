@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
     [SerializeField] private float _maxMoveSpeed = 100.0f;
+    [SerializeField] public ParticleSystem CloudPS;
     //State
     [SerializeField] public MovementType moveType = MovementType.Ground;
     //Angle limits on air
@@ -138,6 +139,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
         
         //ToDo:
         //_animator.SetBool(_animIDGrounded, Grounded);
+
+        // Cloud Particle System
+        CloudPS = Instantiate(CloudPS, Vector3.zero, quaternion.identity);
     }
 
     //Animator properties to hash

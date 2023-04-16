@@ -321,6 +321,7 @@ MonoBehaviour:
   _initialMoveSpeed: 5
   _thresholdSpeed: 10
   _maxMoveSpeed: 100
+  CloudPS: {fileID: 787246426975740149, guid: 89dbc57acc81b924a8cecd496f100ec5, type: 3}
   moveType: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
@@ -402,6 +403,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 3306631969650677189}
   - {fileID: 5551516106879617800}
   - {fileID: -2510472326908649146}
   sceneViewId: 0

@@ -344,6 +344,12 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         _timeSinceLastBoost = 0f;
         _activeForwardSpeed = _maxMoveSpeed;
         pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+
+        // Boost particle system.
+        pc.CloudPS.transform.position = pc.transform.position;
+        pc.CloudPS.Clear();
+        pc.CloudPS.Play();
+        
     }
 
     public void OnLightningBreak(InputAction.CallbackContext context)
