@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6a222952a14f74e8105ebef595ee06, type: 3}
+  m_Name: BloodArrowAudio
+  m_EditorClassIdentifier: 
+  _audios:
+  - IDName: FlightFast
+    Audio: {fileID: 8300000, guid: 2bd730281fcb6ec4583a4327562dea56, type: 3}
+  - IDName: FlightBase
+    Audio: {fileID: 8300000, guid: cf4f7c5f62c3e9a4c801260bbe1cbf7a, type: 3}
+  - IDName: WindBase
+    Audio: {fileID: 8300000, guid: bef71e0c60672694396cb0f3126a201b, type: 3}
+  - IDName: Slash1
+    Audio: {fileID: 8300000, guid: 2d444444605f8e24b8dc7c5255e9121a, type: 3}
+  - IDName: Slash2
+    Audio: {fileID: 8300000, guid: 3fc36500a86ce4943afe553b3ec4d728, type: 3}
+  - IDName: Slash3
+    Audio: {fileID: 8300000, guid: 88269cb8e2d62504bb7744a774427a4d, type: 3}
+  - IDName: Slash4
+    Audio: {fileID: 8300000, guid: 503f49ff4c266ed46b810acb7f11fbd6, type: 3}
+  - IDName: StepsRun
+    Audio: {fileID: 8300000, guid: bb3010df087d8574697fc42e744123fa, type: 3}
+  - IDName: StepsWalk
+    Audio: {fileID: 8300000, guid: d12dc7091d996de47882ff45b283593e, type: 3}

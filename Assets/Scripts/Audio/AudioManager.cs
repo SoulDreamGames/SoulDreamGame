@@ -13,11 +13,26 @@ public class AudioManager : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         audioList.Initialize();
     }
-    
+
     public void PlayAudioButton(string s)
     {
-        AudioClip audio = audioList.GetAudio(s);
-        if(audio)
-            _audioSource.PlayOneShot(audio);
+        AudioClip audioClip = audioList.GetAudio(s);
+        if (!audioClip) return;
+            
+        _audioSource.PlayOneShot(audioClip);
+    }
+
+    public void PlayAudioLoop(string s)
+    {
+        AudioClip audioClip = audioList.GetAudio(s);
+        if (!audioClip) return;
+
+        _audioSource.clip = audioClip;
+        _audioSource.Play();
+    }
+
+    public void StopPlayingAll()
+    {
+        _audioSource.Stop();
     }
 }
