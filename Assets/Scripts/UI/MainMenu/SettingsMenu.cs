@@ -9,17 +9,20 @@ using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour
 {
-    [SerializeField] private AudioMixer masterMixer;
+    [SerializeField] private AudioMixer musicMixer;
+    [SerializeField] private AudioMixer sfxMixer;
     
     //UI Settings components
-    [SerializeField] private Slider audioSlider;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
     [SerializeField] private Dropdown graphicsDrop;
     [SerializeField] private Dropdown resolutionDrop;
     [SerializeField] private Toggle windowedToggle;
     [SerializeField] private Toggle vSyncToggle;
     [SerializeField] private Button quitGame;
 
-    [SerializeField] private RectTransform volumeRect;
+    [SerializeField] private RectTransform musicRect;
+    [SerializeField] private RectTransform sfxRect;
     private Resolution[] _resolutions;
 
     [SerializeField] private Button ourStudioButton;
@@ -28,11 +31,17 @@ public class SettingsMenu : MonoBehaviour
 
     private void Awake()
     {
-        //Set graphics defaults
-        audioSlider.value = PlayerPrefs.GetFloat("Volume", 0.0f);
-        float scale = 1.0f + (audioSlider.value - audioSlider.minValue) / (audioSlider.maxValue - audioSlider.minValue);
-        volumeRect.localScale = new Vector3(scale, scale, scale);
+        //Music audio
+        musicSlider.value = PlayerPrefs.GetFloat("Volume", 0.0f);
+        float scale = 1.0f + (musicSlider.value - musicSlider.minValue) / (musicSlider.maxValue - musicSlider.minValue);
+        musicRect.localScale = new Vector3(scale, scale, scale);
         
+        //SFX audio
+        sfxSlider.value = PlayerPrefs.GetFloat("VolumeSFX", 0.0f);
+        scale = 1.0f + (sfxSlider.value - sfxSlider.minValue) / (sfxSlider.maxValue - sfxSlider.minValue);
+        sfxRect.localScale = new Vector3(scale, scale, scale);
+        
+        //Set graphics defaults
         graphicsDrop.value = PlayerPrefs.GetInt("Graphics", 4);
         windowedToggle.isOn = PlayerPrefs.GetInt("Windowed", 0) == 1;
         vSyncToggle.isOn = PlayerPrefs.GetInt("VSyncs", 0) != 0;
@@ -58,7 +67,8 @@ public class SettingsMenu : MonoBehaviour
         resolutionDrop.RefreshShownValue();
 
         resolutionDrop.onValueChanged.AddListener(SetResolution);
-        audioSlider.onValueChanged.AddListener(SetVolume);
+        musicSlider.onValueChanged.AddListener(SetVolumeMusic);
+        sfxSlider.onValueChanged.AddListener(SetVolumeSFX);
         graphicsDrop.onValueChanged.AddListener(SetGraphicsQuality);
         windowedToggle.onValueChanged.AddListener(SetWindowed);
         vSyncToggle.onValueChanged.AddListener(SetVerticalSync);
@@ -68,15 +78,24 @@ public class SettingsMenu : MonoBehaviour
         ourStudioButton.onClick.AddListener(ShowCredits);
     }
 
-    void SetVolume(float volume)
+    void SetVolumeMusic(float volume)
     {
-        //ToDo: Change this to logarithmic
-        float scale = 1.0f + (audioSlider.value - audioSlider.minValue) / (audioSlider.maxValue - audioSlider.minValue);
-        volumeRect.localScale = new Vector3(scale, scale, scale);
+        float scale = 1.0f + (musicSlider.value - musicSlider.minValue) / (musicSlider.maxValue - musicSlider.minValue);
+        musicRect.localScale = new Vector3(scale, scale, scale);
 
         float logVolume = 20 * Mathf.Log10(volume);
-        masterMixer.SetFloat("Volume", logVolume);
+        musicMixer.SetFloat("Volume", logVolume);
         PlayerPrefs.SetFloat("Volume", volume);
+    }
+    
+    void SetVolumeSFX(float volume)
+    {
+        float scale = 1.0f + (sfxSlider.value - sfxSlider.minValue) / (sfxSlider.maxValue - sfxSlider.minValue);
+        sfxRect.localScale = new Vector3(scale, scale, scale);
+        
+        float logVolume = 20 * Mathf.Log10(volume);
+        sfxMixer.SetFloat("Volume", logVolume);
+        PlayerPrefs.SetFloat("VolumeSFX", volume);
     }
 
     void SetGraphicsQuality(int quality)

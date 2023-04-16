@@ -135,4 +135,9 @@ public class NPCManager : MonoBehaviour, IPunObservable
             peopleEvacuated = (int)stream.ReceiveNext();
         }
     }
+
+    public int GetTotalSpawnedNPCs()
+    {
+        return npcsSpawnedPerWave * _gameManager.totalWaves;
+    }
 }
