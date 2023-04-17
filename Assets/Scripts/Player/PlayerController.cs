@@ -482,7 +482,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         // _TrailRenderer.enabled = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
 
         /// Trail fades in and out with a smooth transition from not flying to flying
-        bool TrailActive = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
+        bool TrailActive = (MoveSpeed > 1.3) && (moveType == MovementType.Air);
 
         float TrailAlphaMultiplier;
         const float FixedUpdateFPS = 50.0f;
@@ -500,9 +500,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
         }
         else
         {
-            TrailInactiveCounter++;
+            //TrailInactiveCounter++;
             TrailActiveCounter = 0;
-            TrailAlphaMultiplier = 1.0f - Mathf.SmoothStep(0.0f, 1.0f, TrailInactiveCounter * FadingTime);
+            // TrailAlphaMultiplier = 1.0f - Mathf.SmoothStep(0.0f, 1.0f, TrailInactiveCounter * FadingTime);
+            TrailAlphaMultiplier = 0;
         }
 
         /// Modify the alpha channel of the trail
