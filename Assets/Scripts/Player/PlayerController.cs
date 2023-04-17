@@ -68,11 +68,16 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector] public int isFlyingID;
     [HideInInspector] public int isGroundedID;
     [HideInInspector] public float moveSpeedDamp;
+
+    // Trail
+    [HideInInspector] private TrailRenderer _TrailRenderer;
+    [HideInInspector] private int TrailActiveCounter = 0, TrailInactiveCounter = 1000;
     
     
     //CD attacked
     private bool _isInvulnerable = false;
     [SerializeField] private float invulnerabilityTime = 1.0f;
+
     
     #endregion
 
@@ -140,8 +145,12 @@ public class PlayerController : MonoBehaviour, IPunObservable
         //ToDo:
         //_animator.SetBool(_animIDGrounded, Grounded);
 
-        // Cloud Particle System
+        // Boost cloud particle system
         CloudPS = Instantiate(CloudPS, Vector3.zero, quaternion.identity);
+
+        // Trail renderer
+        _TrailRenderer = GetComponentInChildren<TrailRenderer>();
+        
     }
 
     //Animator properties to hash
@@ -213,6 +222,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         }
 
         SpeedUI.UpdateUIBars();
+
+        HandleTrail();
     }
 
     //ToDo: add a list of effects for lightning break + homing attack
@@ -440,5 +451,42 @@ public class PlayerController : MonoBehaviour, IPunObservable
             IsAttacking = (bool)stream.ReceiveNext();
             IsHomingAttacking = (bool)stream.ReceiveNext();
         }
+    }
+
+    private void HandleTrail()
+    {
+        /// Simpler but no fading
+        // _TrailRenderer.enabled = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
+
+        /// Trail fades in and out with a smooth transition from not flying to flying
+        bool TrailActive = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
+
+        float TrailAlphaMultiplier;
+        const float FixedUpdateFPS = 50.0f;
+        const float FadingTime = 2.0f / FixedUpdateFPS; // 1 second
+
+        if (TrailActive) 
+        {
+            TrailActiveCounter++;
+            TrailInactiveCounter = 0;
+            TrailAlphaMultiplier = Mathf.SmoothStep(0.0f, 1.0f, TrailActiveCounter * FadingTime);
+        }
+        else
+        {
+            TrailInactiveCounter++;
+            TrailActiveCounter = 0;
+            TrailAlphaMultiplier = 1.0f - Mathf.SmoothStep(0.0f, 1.0f, TrailInactiveCounter * FadingTime);
+        }
+
+        /// Modify the alpha channel of the trail
+        GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
+        AlphaKeys[0] = new GradientAlphaKey(1.0f * TrailAlphaMultiplier, 0.0f);
+        AlphaKeys[1] = new GradientAlphaKey(0.7f * TrailAlphaMultiplier, 0.75f);
+        AlphaKeys[2] = new GradientAlphaKey(0.3f * TrailAlphaMultiplier, 1.0f);
+        // Debug.Log("Multiplier: " + TrailAlphaMultiplier + " ActiveCounter: " + TrailActiveCounter + " Inactive Counter: " + TrailInactiveCounter);
+        /// In order for the change to take effect we must create a new gradient
+        Gradient newGrad = new Gradient();
+        newGrad.SetKeys(_TrailRenderer.colorGradient.colorKeys, AlphaKeys);
+        _TrailRenderer.colorGradient = newGrad;
     }
 }
