@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector] public float moveSpeedDamp;
 
     public AudioManager audioManager;
+
     // Trail
     [HideInInspector] private TrailRenderer _TrailRenderer;
     [HideInInspector] private int TrailActiveCounter = 0, TrailInactiveCounter = 1000;
