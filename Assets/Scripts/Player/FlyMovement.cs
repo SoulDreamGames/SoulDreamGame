@@ -339,10 +339,12 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         {
             Debug.Log("Attack pressed: ");
             _movementComponents.PlayerController.IsAttacking = true;
+            pc.audioManager.PlayAudioLoop("PlayerAttacking");
             return;
         }
 
         Debug.Log("Attack released");
+        CheckAndPlayMoveAudio();
         _movementComponents.PlayerController.IsAttacking = false;
     }
 

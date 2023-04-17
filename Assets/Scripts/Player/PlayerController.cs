@@ -487,7 +487,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         float TrailAlphaMultiplier;
         const float FixedUpdateFPS = 50.0f;
         const float FadingTime = 1.0f / (2.0f * FixedUpdateFPS); // 2 seconds
-        const int TrailDelay =  1 * (int) FixedUpdateFPS; // 1 second
+        const int TrailDelay =  (int) (0.5f * FixedUpdateFPS); // 0.5 second
 
         if (TrailActive) 
         {
@@ -501,8 +501,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         else
         {
             //TrailInactiveCounter++;
-            TrailActiveCounter = 0;
             // TrailAlphaMultiplier = 1.0f - Mathf.SmoothStep(0.0f, 1.0f, TrailInactiveCounter * FadingTime);
+            TrailActiveCounter = 0;
             TrailAlphaMultiplier = 0;
         }
 
