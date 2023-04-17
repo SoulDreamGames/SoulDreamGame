@@ -172,7 +172,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.99
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -459,6 +459,7 @@ MonoBehaviour:
   isFlyingID: 0
   isGroundedID: 0
   moveSpeedDamp: 0
+  audioManager: {fileID: 5901628616362936611}
   invulnerabilityTime: 1
 --- !u!114 &3306631969650677190
 MonoBehaviour:
