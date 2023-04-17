@@ -5,6 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(GroundMovement))]
 [RequireComponent(typeof(FlyMovement))]
