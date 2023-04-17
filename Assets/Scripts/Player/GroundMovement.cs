@@ -93,14 +93,34 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
 
     public void SetSubState(InternalState newSubState)
     {
+        if (_internalState.Equals(newSubState)) return;
+        
         _internalState = newSubState;
+        
+        switch(_internalState)
+        {
+            case InternalState.Idle:
+                _movementComponents.PlayerController.audioManager.StopPlayingAll();
+                break;
+            case InternalState.Moving:
+                CheckAndPlayMoveAudio();
+                break;
+            case InternalState.Jumping:
+                break;
+            case InternalState.Falling:
+                PlayFallingAudio();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     private void HandleFalling(in PlayerController pc, in Rigidbody rb)
     {
         if (!_isGrounded && rb.velocity.y < 0f)
         {
-            _internalState = InternalState.Falling;
+            SetSubState(InternalState.Falling);
+            
             float gravityAccel = 0.2f * Physics.gravity.magnitude;
             pc.MoveSpeed += _fallingAcceleration * gravityAccel * Time.fixedDeltaTime;
             pc.MoveSpeed = Mathf.Clamp(pc.MoveSpeed, 0f, _maxMoveSpeed);
@@ -111,10 +131,9 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     {
         if (pc.InputAxis.y == 0 && _isGrounded)
         {
-            if (_internalState != InternalState.Idle)
-                Debug.Log("Enter Idling");
+            if (_internalState != InternalState.Idle) Debug.Log("Enter Idling");
 
-            _internalState = InternalState.Idle;
+            SetSubState(InternalState.Idle);
             pc.MoveSpeed = 0f;
             
             //Smoothly decrease speed to 0
@@ -136,7 +155,7 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
             // We only consider player is moving state if it's grounded,
             // although we want to be able to move it at any moment
             if (_isGrounded)
-                _internalState = InternalState.Moving;
+                SetSubState(InternalState.Moving);
 
             float direction = _isRunning ? 1f : -1f;
             pc.MoveSpeed += direction * _groundAcceleration * Time.fixedDeltaTime;
@@ -183,7 +202,7 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         rb.velocity = vel;
         rb.AddForce(_jumpForce * transform.up, ForceMode.Impulse);
 
-        _internalState = InternalState.Jumping;
+        SetSubState(InternalState.Jumping);
     }
 
     private void ResetJump()
@@ -192,16 +211,46 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         _jumpPressed = false;
         Debug.Log("Jump released");
     }
+
+    public void CheckAndPlayMoveAudio()
+    {
+        if (!_isGrounded) return;
+        if (_movementComponents.PlayerController.InputAxis != Vector2.zero)
+        {
+            _movementComponents.PlayerController.audioManager.PlayAudioLoop(_isRunning ? "StepsRun" : "StepsWalk");
+            return;
+        }
+        //If equals zero, then it is stopped
+        _movementComponents.PlayerController.audioManager.StopPlayingAll();
+    }
+
+    public void PlayFallingAudio()
+    {
+        _movementComponents.PlayerController.audioManager.PlayAudioLoop("WindBase");
+    }
+    
     #endregion
 
     #region InputSystemCallbacks
-    public void OnMove(InputAction.CallbackContext context) =>
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Ground)) return;
+        
         _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
+
+        if (!_isGrounded) return;
+        CheckAndPlayMoveAudio();
+        
+    }
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        var rb = _movementComponents.Rigidbody;
         var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Ground)) return;
+     
+        var rb = _movementComponents.Rigidbody;
         
         void StartFlying()
         {
@@ -211,6 +260,9 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
             var pc = _movementComponents.PlayerController;
             
             pc.SwitchState(MovementType.Air);
+            
+            _isGrounded = false;
+            pc.animator.SetBool(pc.isGroundedID, _isGrounded);
             pc.animator.SetTrigger(pc.jumpID);
             
             rb.AddForce(_jumpForce * 40.0f * _movementComponents.Orientation.up, ForceMode.Force);
@@ -260,6 +312,14 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
         }
     }
 
-    public void OnRun(InputAction.CallbackContext context) => _isRunning = context.performed;
+    public void OnRun(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Ground)) return;
+        
+        _isRunning = context.performed;
+        CheckAndPlayMoveAudio();
+    }
+
     #endregion
 }

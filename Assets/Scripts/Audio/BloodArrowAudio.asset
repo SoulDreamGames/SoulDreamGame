@@ -31,3 +31,9 @@ MonoBehaviour:
     Audio: {fileID: 8300000, guid: bb3010df087d8574697fc42e744123fa, type: 3}
   - IDName: StepsWalk
     Audio: {fileID: 8300000, guid: d12dc7091d996de47882ff45b283593e, type: 3}
+  - IDName: WaterSplash
+    Audio: {fileID: 8300000, guid: 8334abaac774614419bcbbc3ee431f63, type: 3}
+  - IDName: PlayerDie
+    Audio: {fileID: 8300000, guid: 703f7db2aa85ea845b6805643d542cb1, type: 3}
+  - IDName: PlayerHit
+    Audio: {fileID: 8300000, guid: c9794cce7be16ec49b14c20e9f5b3302, type: 3}

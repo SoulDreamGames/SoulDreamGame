@@ -18,7 +18,8 @@ public class AudioManager : MonoBehaviour
     {
         AudioClip audioClip = audioList.GetAudio(s);
         if (!audioClip) return;
-            
+        
+        Debug.Log("Playing audio clip: " + audioClip.name);
         _audioSource.PlayOneShot(audioClip);
     }
 
@@ -26,7 +27,9 @@ public class AudioManager : MonoBehaviour
     {
         AudioClip audioClip = audioList.GetAudio(s);
         if (!audioClip) return;
-
+        
+        if (_audioSource.clip == audioClip && _audioSource.isPlaying) return;
+        
         _audioSource.clip = audioClip;
         _audioSource.Play();
     }

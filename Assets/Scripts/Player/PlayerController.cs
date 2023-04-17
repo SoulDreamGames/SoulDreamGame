@@ -68,6 +68,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector] public int isFlyingID;
     [HideInInspector] public int isGroundedID;
     [HideInInspector] public float moveSpeedDamp;
+
+    public AudioManager audioManager;
     
     
     //CD attacked
@@ -258,6 +260,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (other.CompareTag("Water"))
         {
             PhotonNetwork.Instantiate("WaterDropsPs", transform.position + transform.up, quaternion.identity);
+            
+            //Play Water splash
+            audioManager.PlayAudioButton("WaterSplash");
+            
             HandleDeath();
         }
         
@@ -270,6 +276,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
             if (enemy == null) return;
             
             enemy.ReceiveDamage(3);
+            //Audio to attack
+            _flightMovement.PlayRandomAttackAudio();
             return;
         }
         else
@@ -305,6 +313,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public void ReceiveDamage(float damage)
     {
         PlayerEnergy =  PlayerEnergy - damage;
+        
+        //Play hit audio
+        audioManager.PlayAudioButton("PlayerHit");
+        
         PhotonNetwork.Instantiate("BloodPS", transform.position, quaternion.identity);
 
         if (PlayerEnergy <= 0f)
@@ -328,8 +340,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
         _flightMovement.ResetMovement();
         _groundMovement.ResetMovement();
-            
+        _inputAxis = Vector2.zero;
+        
+        //Play audio for death
+        audioManager.PlayAudioButton("PlayerDie");
+        
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
+
         playersManager.PlayerDied(this);
     }
 
@@ -364,6 +381,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
     #region Functions
     public void SwitchState(MovementType newState)
     {
+        //Firstly, stop playing all sounds
+        audioManager.StopPlayingAll();
+        
         if (newState.Equals(MovementType.Ground))
         {
             _flightMovement.ResetMovement();
@@ -371,6 +391,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
             _thirdPersonCam.SwapCamera(MovementType.Ground);
 
             animator.SetBool(isFlyingID, false);
+            _groundMovement.CheckAndPlayMoveAudio();
         }
         else
         {
@@ -384,8 +405,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
             //Reset collisions
             _canCollide = false;
             Invoke(nameof(DisableCollisionInvulnerability), 0.75f);
+            
+            _flightMovement.CheckAndPlayMoveAudio();
         }
-
+        
         moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
     }
