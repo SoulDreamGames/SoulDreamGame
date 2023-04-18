@@ -292,6 +292,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "InitScene",
+            "id": "c98fcd43-ed15-4a3b-a96b-cb4dbb3c8dfc",
+            "actions": [
+                {
+                    "name": "SkipScene",
+                    "type": "Button",
+                    "id": "dab217e1-7f48-4c7a-874a-4d3543d5eeb7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "638d1d8a-9e6d-435d-9566-f38efaa3febc",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SkipScene",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

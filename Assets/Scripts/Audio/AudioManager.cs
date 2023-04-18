@@ -19,8 +19,17 @@ public class AudioManager : MonoBehaviour
         AudioClip audioClip = audioList.GetAudio(s);
         if (!audioClip) return;
         
-        Debug.Log("Playing audio clip: " + audioClip.name);
+        //Debug.Log("Playing audio clip: " + audioClip.name);
         _audioSource.PlayOneShot(audioClip);
+    }
+    
+    public void PlayAudioButtonWithVolume(string s, float volume)
+    {
+        AudioClip audioClip = audioList.GetAudio(s);
+        if (!audioClip) return;
+        
+        //Debug.Log("Playing audio clip: " + audioClip.name);
+        _audioSource.PlayOneShot(audioClip, volume);
     }
 
     public void PlayAudioLoop(string s)

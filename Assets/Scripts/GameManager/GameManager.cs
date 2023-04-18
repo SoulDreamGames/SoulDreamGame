@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     //City energy, game ends when decreased to 0
     public float cityEnergy = 100.0f;
-    public float energyLostOnPlayer = 5.0f;
+    public float energyLostOnPlayer = 3.0f;
     public float energyLostOnCivilian = 0.5f;
 
     public float domeEnergy = 0.0f;
@@ -149,7 +149,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     void SaveDataToResults()
     {
         //Save data to scriptable object
-        _resultsData.evacuees = _npcManager.peopleEvacuated / _npcManager.GetTotalSpawnedNPCs() * 100;
+        _resultsData.evacuees = (int)((float)_npcManager.peopleEvacuated / (float)_npcManager.GetTotalSpawnedNPCs() * 100.0f);
         _resultsData.domeEnergy = (int)domeEnergy;
         _resultsData.enemiesKilled = enemyKills;
         _resultsData.nDeaths = nDeaths;
@@ -182,9 +182,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (cityEnergy <= 0.0f)
         {
-            InvokeEvent(GameEventType.onGameEnd);
+            //InvokeEvent(GameEventType.onGameEnd);
+            if (!PhotonNetwork.IsMasterClient) return;
             _gameVictory = false;
+            view.RPC("OnGameEndRPC", RpcTarget.All, _gameVictory);
         }
+    }
+
+    [PunRPC]
+    public void OnGameEndRPC(bool victory)
+    {
+        InvokeEvent(GameEventType.onGameEnd);
+        _gameVictory = victory;
     }
 
     public void SubscribeToEvent(GameEventType eventType, UnityAction action)
@@ -304,8 +313,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (domeEnergy >= maxDomeEnergy)
         {
             //Call gameEnd as shield has been fully charged
-            InvokeEvent(GameEventType.onGameEnd);
+            
+            //InvokeEvent(GameEventType.onGameEnd);
+            
+            if (!PhotonNetwork.IsMasterClient) return;
             _gameVictory = true;
+            view.RPC("OnGameEndRPC", RpcTarget.All, _gameVictory);
+
             //ToDo: this one is the real victory (charge the shield)
         }
     }
