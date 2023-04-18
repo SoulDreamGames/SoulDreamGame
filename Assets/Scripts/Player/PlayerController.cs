@@ -523,4 +523,20 @@ public class PlayerController : MonoBehaviour, IPunObservable
         newGrad.SetKeys(_TrailRenderer.colorGradient.colorKeys, AlphaKeys);
         _TrailRenderer.colorGradient = newGrad;
     }
+
+    public void SetTrailColor(Color color1, Color color2)
+    {
+        GradientColorKey[] ColorKeys = new GradientColorKey[3];
+        ColorKeys[0] = new GradientColorKey(color1, 0.0f);
+        ColorKeys[1] = new GradientColorKey(color2, 0.75f);
+        ColorKeys[2] = new GradientColorKey(color2, 1.0f);
+        GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
+        AlphaKeys[0] = new GradientAlphaKey(1.0f, 0.0f);
+        AlphaKeys[1] = new GradientAlphaKey(0.7f, 0.75f);
+        AlphaKeys[2] = new GradientAlphaKey(0.3f, 1.0f);
+
+        Gradient NewGradient = new Gradient();
+        NewGradient.SetKeys(ColorKeys, AlphaKeys);
+        _TrailRenderer.colorGradient = NewGradient;
+    }
 }
