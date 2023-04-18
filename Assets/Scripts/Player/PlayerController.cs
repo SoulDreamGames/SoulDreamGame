@@ -28,7 +28,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
     [SerializeField] private float _maxMoveSpeed = 100.0f;
-    [SerializeField] public ParticleSystem CloudPS;
     //State
     [SerializeField] public MovementType moveType = MovementType.Ground;
     //Angle limits on air
@@ -75,6 +74,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
     // Trail
     [HideInInspector] private TrailRenderer _TrailRenderer;
     [HideInInspector] private int TrailActiveCounter = 0, TrailInactiveCounter = 1000;
+
+    // Particle effects
+    [SerializeField] public ParticleSystem CloudPS;
+    [SerializeField] public ParticleSystem LightningPS;
     
     
     //CD attacked
@@ -155,6 +158,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
         // Boost cloud particle system
         CloudPS = Instantiate(CloudPS, Vector3.zero, quaternion.identity);
+        LightningPS = Instantiate(LightningPS, -10000*Vector3.up , quaternion.identity);
 
         // Trail renderer
         _TrailRenderer = GetComponentInChildren<TrailRenderer>();
@@ -235,12 +239,15 @@ public class PlayerController : MonoBehaviour, IPunObservable
     }
 
     //ToDo: add a list of effects for lightning break + homing attack
-    public void DashTo(Vector3 targetPosition, Transform pDashEffect)
+    public void DashTo(Vector3 targetPosition, ParticleSystem pDashEffect)
     {
         //Add a visual effect based on a prefab
         if (pDashEffect != null)
         {
-            Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
+            // Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
+            pDashEffect.transform.position = targetPosition;
+            pDashEffect.Clear();
+            pDashEffect.Play();
         }
 
         //Finally, move to desired position

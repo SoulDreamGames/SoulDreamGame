@@ -367,7 +367,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         
         //Get nearest enemy to anywhere
         pc.IsHomingAttacking = true;
-        pc.DashTo(nearestEnemyPosition, null);
+        pc.DashTo(nearestEnemyPosition, pc.LightningPS);
         pc.PlayerEnergy -= pc.playerEnergyLostOnHomingAttack;
 
         //ToDo: reset movement speed to zero on this case
