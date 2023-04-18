@@ -39,14 +39,9 @@ public class ThirdPersonCam : MonoBehaviour
         else //Switching to air
         {
             //Set current rot value to new component
-#if false
             float currentValue = cameraBehaviours[0].m_XAxis.Value;
-            
             cameraBehaviours[1].m_XAxis.Value = currentValue;
-            cameraBehaviours[1].m_XAxis.m_MaxValue = currentValue + pc.RotXLimit;
-            cameraBehaviours[1].m_XAxis.m_MinValue = currentValue - pc.RotXLimit;
-#endif
-                
+            
             cameraBehaviours[0].gameObject.SetActive(false);
             cameraBehaviours[1].gameObject.SetActive(true);
         }
@@ -65,6 +60,15 @@ public class ThirdPersonCam : MonoBehaviour
     {
         cameraBehaviours[0].gameObject.SetActive(true);
         _isFixed = false;
+    }
+
+    public void RotateCameraAfterLightningBreak(float degrees)
+    {
+        if (_isFixed) return;
+        if (player == null) return;
+
+        Debug.Log(string.Format("<color=#00FF00>{0}</color>", degrees));
+        cameraBehaviours[1].m_XAxis.Value += degrees;
     }
     
     private void Update()

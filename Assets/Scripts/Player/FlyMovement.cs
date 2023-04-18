@@ -277,6 +277,10 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         Vector3 dashPos = pos + dashInput.x * orientation.right + dashInput.y * orientation.up;
         pc.DashTo(dashPos, null);
         pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+        
+        Transform poTransform = pc.PlayerObject.transform;
+        float angle = Vector3.Angle((dashPos - pos).normalized, poTransform.forward) * Mathf.Sign(pc.InputAxis.x);
+        pc.ThirdPersonCam.RotateCameraAfterLightningBreak(angle);
         ResetLightningBreak();
     }
 
