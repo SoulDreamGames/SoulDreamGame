@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class SceneSequence : MonoBehaviour, MoveInput.IInitSceneActions
 {
     [SerializeField] private List<GameObject> imagesScenes = new List<GameObject>();
-    [SerializeField] private List<GameObject> textScenes = new List<GameObject>();
+    [SerializeField] private List<TextWrite> textScenes = new List<TextWrite>();
 
     private int _currentImage = 0;
     [SerializeField] private Button nextImage;
@@ -32,7 +32,7 @@ public class SceneSequence : MonoBehaviour, MoveInput.IInitSceneActions
     public void InitScene()
     {
         imagesScenes[0].SetActive(true);
-        textScenes[0].SetActive(true);
+        textScenes[0].gameObject.SetActive(true);
         keyboardButtons.SetActive(true);
         
         _audioManager.PlayAudioLoop("Intro");
@@ -43,13 +43,18 @@ public class SceneSequence : MonoBehaviour, MoveInput.IInitSceneActions
     {
         if (!_sceneInit) return;
         ShowNextImage(_currentImage);
-        _currentImage++;
     }
 
     private void ShowNextImage(int id)
     {
+        if (textScenes[id].IsWritting())
+        {
+            textScenes[id].StopWritting();
+            return;
+        }
+        
         imagesScenes[id].SetActive(false);
-        textScenes[id].SetActive(false);
+        textScenes[id].gameObject.SetActive(false);
 
         if (id + 1 >= imagesScenes.Count)
         {
@@ -58,7 +63,9 @@ public class SceneSequence : MonoBehaviour, MoveInput.IInitSceneActions
         }
         
         imagesScenes[id + 1].SetActive(true);
-        textScenes[id + 1].SetActive(true);
+        textScenes[id + 1].gameObject.SetActive(true);
+        
+        _currentImage++;
     }
     
     public void OnSkipScene(InputAction.CallbackContext context)

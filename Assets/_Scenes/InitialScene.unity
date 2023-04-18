@@ -231,21 +231,21 @@ MonoBehaviour:
   - {fileID: 983171480}
   - {fileID: 1851750051}
   textScenes:
-  - {fileID: 615626543}
-  - {fileID: 701613169}
-  - {fileID: 313716181}
-  - {fileID: 306259212}
-  - {fileID: 980870015}
-  - {fileID: 411335553}
-  - {fileID: 1933474216}
-  - {fileID: 1311561331}
-  - {fileID: 1833558821}
-  - {fileID: 569988355}
-  - {fileID: 539206023}
-  - {fileID: 879945361}
-  - {fileID: 533362391}
-  - {fileID: 843477931}
-  - {fileID: 295132143}
+  - {fileID: 615626547}
+  - {fileID: 701613173}
+  - {fileID: 313716185}
+  - {fileID: 306259216}
+  - {fileID: 980870019}
+  - {fileID: 411335557}
+  - {fileID: 1933474220}
+  - {fileID: 1311561335}
+  - {fileID: 1833558825}
+  - {fileID: 569988359}
+  - {fileID: 539206027}
+  - {fileID: 879945365}
+  - {fileID: 533362395}
+  - {fileID: 843477935}
+  - {fileID: 295132145}
   nextImage: {fileID: 116630325}
   nextSceneName: Loading
   keyboardButtons: {fileID: 1410301333}
@@ -274,7 +274,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2852,8 +2852,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Impatient and lacking trust, \rhumanity couldn't \nkeep their fingers
-    off their triggers\r\n and sent their weapons of \ndestruction towards the beast.\r"
+  m_Text: "Impatient and lacking trust, \rhumanity \ncouldn't keep their fingers
+    off their \ntriggers\r and sent their weapons of \ndestruction towards the beast.\r"
 --- !u!222 &1311561334
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3371,7 +3371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48903424d62db4b479db7da1cdc3c794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logoTimer: 7
+  logoTimer: 5
   sceneSequence: {fileID: 20065094}
   fadingObjects:
   - {fileID: 1459049607}
