@@ -511,12 +511,21 @@ public class PlayerController : MonoBehaviour, IPunObservable
             TrailActiveCounter = 0;
             TrailAlphaMultiplier = 0;
         }
+        float a1 = 1.0f * TrailAlphaMultiplier;
+        float a2 = 0.7f * TrailAlphaMultiplier;
+        float a3 = 0.3f * TrailAlphaMultiplier;
+        object[] attributes = new object[] {a1, a2, a3};
+        view.RPC("SetTrailAlphaRPC", RpcTarget.All, attributes);
+    }
 
+    [PunRPC]
+    private void SetTrailAlphaRPC(float a1, float a2, float a3)
+    {
         /// Modify the alpha channel of the trail
         GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
-        AlphaKeys[0] = new GradientAlphaKey(1.0f * TrailAlphaMultiplier, 0.0f);
-        AlphaKeys[1] = new GradientAlphaKey(0.7f * TrailAlphaMultiplier, 0.75f);
-        AlphaKeys[2] = new GradientAlphaKey(0.3f * TrailAlphaMultiplier, 1.0f);
+        AlphaKeys[0] = new GradientAlphaKey(a1, 0.0f);
+        AlphaKeys[1] = new GradientAlphaKey(a2, 0.75f);
+        AlphaKeys[2] = new GradientAlphaKey(a3, 1.0f);
         // Debug.Log("Multiplier: " + TrailAlphaMultiplier + " ActiveCounter: " + TrailActiveCounter + " Inactive Counter: " + TrailInactiveCounter);
         /// In order for the change to take effect we must create a new gradient
         Gradient newGrad = new Gradient();
@@ -524,12 +533,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
         _TrailRenderer.colorGradient = newGrad;
     }
 
-    public void SetTrailColor(Color color1, Color color2)
+    public void SetTrailColor(Color color1, Color color2, Color color3)
     {
         GradientColorKey[] ColorKeys = new GradientColorKey[3];
         ColorKeys[0] = new GradientColorKey(color1, 0.0f);
         ColorKeys[1] = new GradientColorKey(color2, 0.75f);
-        ColorKeys[2] = new GradientColorKey(color2, 1.0f);
+        ColorKeys[2] = new GradientColorKey(color3, 1.0f);
+
         GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
         AlphaKeys[0] = new GradientAlphaKey(1.0f, 0.0f);
         AlphaKeys[1] = new GradientAlphaKey(0.7f, 0.75f);
@@ -538,5 +548,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
         Gradient NewGradient = new Gradient();
         NewGradient.SetKeys(ColorKeys, AlphaKeys);
         _TrailRenderer.colorGradient = NewGradient;
+    }
+    public void SetTrailColor(Color color1, Color color2)
+    {
+        SetTrailColor(color1, color2, color2);
     }
 }

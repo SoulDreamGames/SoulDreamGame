@@ -12,12 +12,14 @@ public class PlayerOutfit : MonoBehaviourPunCallbacks
     private MaterialChanger _materialChanger;
     [SerializeField] private Text usernameText;
     private Camera _mainCamera;
+    private PlayerController _playerController;
 
     private void Awake()
     {
         _view = GetComponent<PhotonView>();
         _materialChanger = GetComponent<MaterialChanger>();
         _mainCamera = Camera.main;
+        _playerController = GetComponent<PlayerController>();
     }
 
     void Start()
@@ -54,6 +56,18 @@ public class PlayerOutfit : MonoBehaviourPunCallbacks
         int trailSkin = (int)attributes[1];
         //ToDo: apply to skin trail
         Debug.Log("Trail skin is: " + trailSkin);
+        switch(trailSkin)
+        {
+            case 0 :
+                _playerController.SetTrailColor(Color.red, Color.black);
+                break;
+            case 1 :
+                _playerController.SetTrailColor(Color.green, Color.blue, Color.white);
+                break;
+            case 2 :
+                _playerController.SetTrailColor(new Color(0.9f,0.4f,0.9f,1.0f), Color.white);
+                break;
+        }
     }
 
     private void Update()
