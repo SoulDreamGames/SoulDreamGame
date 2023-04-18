@@ -14,6 +14,7 @@ public class ShootingEnemyBehaviour : LevitatingEnemyBehaviour
     private int ShootFramecount;
     private float TargetDistance = 100000000.0f;
     private Vector3 TargetPos;
+    private AudioSource audiosource;
 
     public override void Initialize(EnemiesManager enemiesManager, GameObject defaultTarget)
     {

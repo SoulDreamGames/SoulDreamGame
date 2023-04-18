@@ -37,3 +37,5 @@ MonoBehaviour:
     Audio: {fileID: 8300000, guid: 703f7db2aa85ea845b6805643d542cb1, type: 3}
   - IDName: PlayerHit
     Audio: {fileID: 8300000, guid: c9794cce7be16ec49b14c20e9f5b3302, type: 3}
+  - IDName: PlayerAttacking
+    Audio: {fileID: 8300000, guid: e93a729165b4ae842bef942b0bb69ba5, type: 3}
