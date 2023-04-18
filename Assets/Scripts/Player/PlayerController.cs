@@ -97,6 +97,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         get => _maxMoveSpeed;
     }
+    public ThirdPersonCam ThirdPersonCam
+    {
+        get => _thirdPersonCam;
+    }
+
     public float MoveSpeed { get; set; }
     public float PlayerEnergy { get; set; }
     public float MaxEnergy
