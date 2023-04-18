@@ -9,7 +9,9 @@ public class TextWrite : MonoBehaviour
 {
     private Text _text;
     private string _fullText;
-    private float _charTime = 0.1f;
+    private float _charTime = 0.075f;
+
+    [SerializeField] private AudioManager audioManager;
 
     private void Awake()
     {
@@ -27,6 +29,9 @@ public class TextWrite : MonoBehaviour
     {
         foreach (var character in _fullText)
         {
+            if(audioManager)
+                audioManager.PlayAudioButtonWithVolume("Typewritter", 0.5f);
+            
             _text.text += character;   
             yield return new WaitForSeconds(timeSpacing);
         }
