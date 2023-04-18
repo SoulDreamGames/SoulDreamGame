@@ -17,6 +17,7 @@ public class BloodSplashScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(!View.IsMine) return;
         if (IsFromPool) return;
 
         counter++;

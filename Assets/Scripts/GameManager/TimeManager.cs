@@ -90,6 +90,8 @@ public class TimeManager : MonoBehaviour
 
     void UpdateTime()
     {
+        if (!_gameManager.gameStarted) return;
+        
         if (PhotonNetwork.IsMasterClient)
             UpdateTimer();
 
@@ -107,6 +109,7 @@ public class TimeManager : MonoBehaviour
     {
         //Update Room Time
         _time -= Time.deltaTime;
+        
         UpdateRoomTimeProperty();
         
         if (!(_time <= 0f)) return;

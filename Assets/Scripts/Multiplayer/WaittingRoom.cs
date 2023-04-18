@@ -60,7 +60,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
         }
         else
         {
-            _time = (double)_room.CustomProperties["Time"];
+            var time = _room.CustomProperties["Time"];
+            if(time != null)
+                _time = (double)time;
         }
         
         UpdatePlayers();
@@ -110,7 +112,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //Read timer for non-master clients
     void ReadTimer()
     {
-        _time = (double)_room.CustomProperties["Time"];
+        var time = _room.CustomProperties["Time"];
+        if(time != null)
+            _time = (double)time;
     }
 
     //Update Timer on UI

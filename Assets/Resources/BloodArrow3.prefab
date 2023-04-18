@@ -458,7 +458,7 @@ MonoBehaviour:
   isFlyingID: 0
   isGroundedID: 0
   moveSpeedDamp: 0
-  audioManager: {fileID: 0}
+  audioManager: {fileID: 6623171268276334004}
   CloudPS: {fileID: 787246426975740149, guid: 89dbc57acc81b924a8cecd496f100ec5, type: 3}
   LightningPS: {fileID: 4548427398933393805, guid: f4a58a1bc6e67694aaab0564bd356492, type: 3}
   invulnerabilityTime: 1

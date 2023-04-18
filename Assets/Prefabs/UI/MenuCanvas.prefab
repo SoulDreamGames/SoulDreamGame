@@ -3555,7 +3555,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '[E] Homing
+  m_Text: '[F] Homing
 
     Attack!'
 --- !u!1 &4994455869562762057
@@ -3798,7 +3798,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '[E] Homing
+  m_Text: '[F] Homing
 
     Attack!'
 --- !u!1 &5272546332984125002

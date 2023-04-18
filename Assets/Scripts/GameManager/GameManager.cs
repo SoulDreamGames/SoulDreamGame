@@ -141,9 +141,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         //Check game results and show ending depending on that
         gameStarted = false;
 
+        if (!PhotonNetwork.IsMasterClient) return;
         SaveDataToResults();
-
-        ShowGameResults();
+        Invoke(nameof(ShowGameResults), 5.0f);
     }
 
     void SaveDataToResults()
@@ -169,6 +169,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         _resultsData.victory = _gameVictory;
+
+        if (!PhotonNetwork.IsMasterClient) return;
+        object[] attributes = { _resultsData.evacuees, _resultsData.domeEnergy, 
+            _resultsData.enemiesKilled,  _resultsData.nDeaths, _resultsData.victory};
+        view.RPC("SetResultsRPC", RpcTarget.Others, attributes);
+    }
+
+    [PunRPC]
+    public void SetResultsRPC(object[] attribs)
+    {
+        _resultsData.evacuees = (int)attribs[0];
+        _resultsData.domeEnergy = (int)attribs[1];
+        _resultsData.enemiesKilled = (int)attribs[2];
+        _resultsData.nDeaths = (int)attribs[3];
+        _resultsData.victory = (bool)attribs[4];
     }
 
     private void ShowGameResults()
@@ -192,8 +207,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void OnGameEndRPC(bool victory)
     {
-        InvokeEvent(GameEventType.onGameEnd);
+        //Scene quit loads results and shows them
         _gameVictory = victory;
+        InvokeEvent(GameEventType.onSceneQuit);
     }
 
     public void SubscribeToEvent(GameEventType eventType, UnityAction action)
@@ -226,7 +242,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 InvokeEvent(GameEventType.onWaveEnd);
                 break;
             case GameState.EndingGame:
-                InvokeEvent(GameEventType.onSceneQuit);
+                view.RPC("OnGameEndRPC", RpcTarget.All, _gameVictory);
+                //InvokeEvent(GameEventType.onSceneQuit);
                 break;
         }
     }
@@ -340,11 +357,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             stream.SendNext(cityEnergy);
             stream.SendNext(domeEnergy);
+            stream.SendNext(currentWave);
         }
         else if (stream.IsReading)
         {
             cityEnergy = (float)stream.ReceiveNext();
             domeEnergy = (float)stream.ReceiveNext();
+            currentWave = (int)stream.ReceiveNext();
         }
     }
 
