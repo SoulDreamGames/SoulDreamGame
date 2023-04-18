@@ -241,13 +241,6 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
             return;
         }
 
-        if (_internalState == InternalState.LightningBreak)
-        {
-            if (input != Vector2.zero)
-                PerformLightningBreak(pc, orientation);
-            return;
-        }
-
         float realForwardSpeed = pc.IsBoosting ? _maxMoveSpeed : _forwardSpeed;
         float realDamping = 1.0f - _accelDamping;
         _activeForwardSpeed = Mathf.Lerp(_activeForwardSpeed, input.y * realForwardSpeed, _forwardAccel * realDamping * Time.fixedDeltaTime);
@@ -270,18 +263,16 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
                 currentSpeed, ref pc.moveSpeedDamp, 0.1f));
     }
 
-    private void PerformLightningBreak(in PlayerController pc, in Transform orientation)
+    private void PerformLightningBreak(in PlayerController pc, in Transform orientation, float dashInput)
     {
         Vector3 pos = transform.position;
-        Vector2 dashInput = 15f * pc.InputAxis;
-        Vector3 dashPos = pos + dashInput.x * orientation.right + dashInput.y * orientation.up;
+        Vector3 dashPos = pos + 15f * dashInput * orientation.right;
         pc.DashTo(dashPos, null);
-        pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
-        
+        pc.PlayerEnergy -= pc.playerEnergyLostOnLightningBreak;
+
         Transform poTransform = pc.PlayerObject.transform;
-        float angle = Vector3.Angle((dashPos - pos).normalized, poTransform.forward) * Mathf.Sign(pc.InputAxis.x);
+        float angle = Vector3.Angle((dashPos - pos).normalized, poTransform.forward) * Mathf.Sign(dashInput);
         pc.ThirdPersonCam.RotateCameraAfterLightningBreak(angle);
-        ResetLightningBreak();
     }
 
     private void ResetHomingAttack()
@@ -399,13 +390,17 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnLightningBreak(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        var orientation = _movementComponents.Orientation;
+        var dashInput = context.ReadValue<float>();
+
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsLightningBreaking) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnLightningBreak) return;
 
         pc.IsLightningBreaking = true;
         _internalState = InternalState.LightningBreak;
-        Invoke(nameof(ResetLightningBreak), 1.0f);
+        PerformLightningBreak(pc, orientation, dashInput);
+        Invoke(nameof(ResetLightningBreak), 0.2f);
     }
     #endregion
 }
