@@ -6,6 +6,7 @@ using UnityEngine;
 using GameEventType = GameManager.GameEventType;
 using Photon.Pun;
 using Debug = UnityEngine.Debug;
+using UnityEngine.AI;
 
 public class NPCManager : MonoBehaviour, IPunObservable
 {
@@ -82,11 +83,34 @@ public class NPCManager : MonoBehaviour, IPunObservable
         _npcsSpawned.Add(npcRandomNavMesh);
     }
 
+
+    Vector3 RandomPoint(Vector3 center, float range)
+    {
+        Vector3 result;
+        Vector3 randomPoint = center + UnityEngine.Random.insideUnitSphere * range; //random point in a sphere 
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas)) //documentation: https://docs.unity3d.com/ScriptReference/AI.NavMesh.SamplePosition.html
+        {
+            //the 1.0f is the max distance from the random point to a point on the navmesh, might want to increase if range is big
+            //or add a for loop like in the documentation
+            result = hit.position;
+            return result;
+        }
+
+        result = center;
+        return result;
+    }
+
     IEnumerator spawnNPCS(float waitTime)
     {
         for (int i = 0; i < npcsSpawnedPerWave; i++)
         {
-            SpawnNPC(npcPrefab, spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position);
+
+            Vector3 spawnPnt = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position;
+            Vector3 spawnPointWithOffset = RandomPoint(spawnPnt, 5.0f);
+
+
+            SpawnNPC(npcPrefab, spawnPointWithOffset);
             yield return new WaitForSeconds(waitTime);
         }
     }

@@ -462,8 +462,10 @@ MonoBehaviour:
   NPCtarget: {fileID: 0}
   runfrom: {fileID: 0}
   isTargeted: 0
+  hasPath: 0
   _enemyFollowing: {fileID: 0}
   _npcManager: {fileID: 0}
+  view: {fileID: 0}
 --- !u!195 &1217295136196832599
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -480,7 +482,7 @@ NavMeshAgent:
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 3.054
   m_BaseOffset: 0

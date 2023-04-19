@@ -23,6 +23,7 @@ public class NPCRandomNavMesh : MonoBehaviour
     public Transform runfrom;
 
     public bool isTargeted;
+    public bool hasPath;
     public GameObject _enemyFollowing;
 
     //NPCManager
@@ -50,15 +51,43 @@ public class NPCRandomNavMesh : MonoBehaviour
         isTargeted = false;
         _enemyFollowing = null;
 
-        agent.SetDestination(targetPoint.position);
+        try
+        {
+            agent.SetDestination(targetPoint.position);
+        }
+        catch (Exception)
+        {
+            UnityEngine.Debug.Log("initialize", gameObject);
+            throw;
+        }
+        
+        
 
         _isInitialized = true;
+    }
+
+    Vector3 RandomPoint(Vector3 center, float range)
+    {
+        Vector3 result;
+        Vector3 randomPoint = center + UnityEngine.Random.insideUnitSphere * range; //random point in a sphere 
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas)) //documentation: https://docs.unity3d.com/ScriptReference/AI.NavMesh.SamplePosition.html
+        {
+            //the 1.0f is the max distance from the random point to a point on the navmesh, might want to increase if range is big
+            //or add a for loop like in the documentation
+            result = hit.position;
+            return result;
+        }
+
+        result = Vector3.zero;
+        return result;
     }
 
     void Update()
     {
         if (!PhotonNetwork.IsMasterClient) return;
         if (!_isInitialized) return;
+        hasPath = agent.hasPath;
         
         Vector3 curMove = transform.position - previousPosition;
         curSpeed = curMove.magnitude / Time.deltaTime;
@@ -79,6 +108,7 @@ public class NPCRandomNavMesh : MonoBehaviour
                 }
             }
             _npcManager.NPCDied(this);
+            return;
 
         }
 
@@ -103,16 +133,39 @@ public class NPCRandomNavMesh : MonoBehaviour
             NavMeshPath navMeshPath = new NavMeshPath();
             //create path and check if it can be done
             // and check if navMeshAgent can reach its target
-            if (agent.CalculatePath(newTemporalPos, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
+            if ((life > 0.0f) && agent.CalculatePath(newTemporalPos, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
             {
                 //move to target
-                agent.SetDestination(newTemporalPos);
+                if (PhotonNetwork.IsMasterClient)
+                {
+
+                    try
+                    {
+                        agent.SetDestination(newTemporalPos);
+                    }
+                    catch (Exception)
+                    {
+                        UnityEngine.Debug.Log("TemporalPos", gameObject);
+                        throw;
+                    }
+                }
             }
             else
             {
-                if (PhotonNetwork.IsMasterClient)
+                if (PhotonNetwork.IsMasterClient && (life > 0.0f))
                 {
-                    agent.SetDestination(NPCtarget.position);
+                    
+
+                    try
+                    {
+                        agent.SetDestination(NPCtarget.position);
+                    }
+                    catch (Exception)
+                    {
+                        UnityEngine.Debug.Log("Targeted but no path", gameObject);
+                        throw;
+                    }
+                    
                 }
             }
             
@@ -122,13 +175,24 @@ public class NPCRandomNavMesh : MonoBehaviour
         }
         else
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (PhotonNetwork.IsMasterClient && (life > 0.0f))
             {
-                agent.SetDestination(NPCtarget.position);
+                
+
+                try
+                {
+                    agent.SetDestination(NPCtarget.position);
+                }
+                catch (Exception)
+                {
+                    UnityEngine.Debug.Log("Normal", gameObject);
+                    throw;
+                }
+                
             }
         }
 
-        if (NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position)) < 10.0f)) //done with path
+        if ((life > 0.0f) && NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position)) < 10.0f)) //done with path
         {
 
             if (_enemyFollowing != null)
