@@ -172,7 +172,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.99
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -456,6 +456,8 @@ MonoBehaviour:
   moveSpeedID: 0
   jumpID: 0
   isFlyingID: 0
+  attackID: 0
+  attackTypeID: 0
   isGroundedID: 0
   moveSpeedDamp: 0
   audioManager: {fileID: 6623171268276334004}
@@ -613,6 +615,12 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: isGrounded
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack
+  - Type: 3
+    SynchronizeType: 0
+    Name: AttackType
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0

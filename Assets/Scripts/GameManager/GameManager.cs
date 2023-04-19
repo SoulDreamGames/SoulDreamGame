@@ -149,7 +149,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     void SaveDataToResults()
     {
         //Save data to scriptable object
-        _resultsData.evacuees = (int)((float)_npcManager.peopleEvacuated / (float)_npcManager.GetTotalSpawnedNPCs() * 100.0f);
+        _resultsData.evacuees = (int)((float)_npcManager.peopleEvacuated / 
+            (float)_npcManager.GetTotalSpawnedNPCs() * 100.0f);
         _resultsData.domeEnergy = (int)domeEnergy;
         _resultsData.enemiesKilled = enemyKills;
         _resultsData.nDeaths = nDeaths;

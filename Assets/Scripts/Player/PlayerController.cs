@@ -66,6 +66,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector] public int moveSpeedID;
     [HideInInspector] public int jumpID;
     [HideInInspector] public int isFlyingID;
+    [HideInInspector] public int attackID;
+    [HideInInspector] public int attackTypeID;
     [HideInInspector] public int isGroundedID;
     [HideInInspector] public float moveSpeedDamp;
 
@@ -172,6 +174,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         jumpID = Animator.StringToHash("Jump");
         isFlyingID = Animator.StringToHash("isFlying");
         isGroundedID = Animator.StringToHash("isGrounded");
+        attackID = Animator.StringToHash("Attack");
+        attackTypeID = Animator.StringToHash("AttackType");
     }
     
     void Start()
@@ -368,10 +372,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
         
         //Play audio for death
         audioManager.PlayAudioButton("PlayerDie");
-        
-        view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
 
         playersManager.PlayerDied(this);
+        view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
     }
 
     public void Respawn(Vector3 position)
@@ -381,7 +384,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         Debug.Log("Respawn");
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{1.0f, false});
         
-        //Reset transforms
+        //Reset transforms and rb
+        _rb.velocity = Vector3.zero;
         transform.position = position;
         transform.rotation = Quaternion.identity;
         _playerObject.transform.rotation = Quaternion.identity;
