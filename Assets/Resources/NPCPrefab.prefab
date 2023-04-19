@@ -465,6 +465,7 @@ MonoBehaviour:
   NPCtarget: {fileID: 0}
   runfrom: {fileID: 0}
   isTargeted: 0
+  hasPath: 0
   _enemyFollowing: {fileID: 0}
   _npcManager: {fileID: 0}
   view: {fileID: 0}
