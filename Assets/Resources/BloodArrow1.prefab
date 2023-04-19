@@ -243,6 +243,8 @@ MonoBehaviour:
   moveSpeedID: 0
   jumpID: 0
   isFlyingID: 0
+  attackID: 0
+  attackTypeID: 0
   isGroundedID: 0
   moveSpeedDamp: 0
   audioManager: {fileID: 7359921748704868441}
