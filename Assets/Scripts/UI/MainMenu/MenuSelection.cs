@@ -21,11 +21,13 @@ public class MenuSelection : MonoBehaviour
 
     private MenuType _currentMenu = MenuType.StartGame;
     [SerializeField] private OutfitMenu outfitMenu;
+    [SerializeField] private SettingsMenu settingsMenu;
 
     private void Start()
     {
         //Init visual player
         outfitMenu.InitSkin();
+        settingsMenu.OnStartMenu();
         
         //Assign callbacks to menus
         for (int i = 0; i < Enum.GetNames(typeof(MenuType)).Length; i++)

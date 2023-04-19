@@ -25,6 +25,8 @@ public class NPCRandomNavMesh : MonoBehaviour
     public bool isTargeted;
     public bool hasPath;
     public GameObject _enemyFollowing;
+    
+    private float distanceToTarget = 5.0f;
 
     //NPCManager
     [SerializeField] private NPCManager _npcManager;
@@ -192,7 +194,7 @@ public class NPCRandomNavMesh : MonoBehaviour
             }
         }
 
-        if ((life > 0.0f) && NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position)) < 10.0f)) //done with path
+        if ((life > 0.0f) && NPCtarget && ((Vector3.Distance(transform.position, NPCtarget.position)) < distanceToTarget)) //done with path
         {
 
             if (_enemyFollowing != null)

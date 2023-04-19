@@ -29,18 +29,32 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private GameObject creditsObject;
     [SerializeField] private GameObject headerButtons;
 
-    private void Awake()
+    public void OnStartMenu()
     {
         //Music audio
-        musicSlider.value = PlayerPrefs.GetFloat("Volume", 0.0f);
+        float volume = PlayerPrefs.GetFloat("Volume", -100.0f);
+        if (volume > -100.0f)
+        {
+            musicSlider.value = volume;
+
+            float logVolume = 20 * Mathf.Log10(volume);
+            musicMixer.SetFloat("Volume", logVolume);
+        }
         float scale = 1.0f + (musicSlider.value - musicSlider.minValue) / (musicSlider.maxValue - musicSlider.minValue);
         musicRect.localScale = new Vector3(scale, scale, scale);
-        
+  
         //SFX audio
-        sfxSlider.value = PlayerPrefs.GetFloat("VolumeSFX", 0.0f);
+        volume = PlayerPrefs.GetFloat("VolumeSFX", -100.0f);
+        if (volume > -100.0f)
+        {
+            sfxSlider.value = volume;
+
+            float logVolume = 20 * Mathf.Log10(volume);
+            sfxMixer.SetFloat("Volume", logVolume);
+        }
         scale = 1.0f + (sfxSlider.value - sfxSlider.minValue) / (sfxSlider.maxValue - sfxSlider.minValue);
         sfxRect.localScale = new Vector3(scale, scale, scale);
-        
+
         //Set graphics defaults
         graphicsDrop.value = PlayerPrefs.GetInt("Graphics", 4);
         windowedToggle.isOn = PlayerPrefs.GetInt("Windowed", 0) == 1;

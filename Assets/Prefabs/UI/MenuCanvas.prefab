@@ -13842,6 +13842,7 @@ MonoBehaviour:
   - {fileID: 8080103125837496572}
   - {fileID: 8080103126300372343}
   outfitMenu: {fileID: 8080103127397448797}
+  settingsMenu: {fileID: 8080103126300372345}
 --- !u!1 &8080103126650232501
 GameObject:
   m_ObjectHideFlags: 0
@@ -20092,3 +20093,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7757826980266488509, guid: 126d9df815fe5f04a961e2c30fcda6b2, type: 3}
   m_PrefabInstance: {fileID: 1984711338954432453}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8080103126300372345 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7757826980266488508, guid: 126d9df815fe5f04a961e2c30fcda6b2, type: 3}
+  m_PrefabInstance: {fileID: 1984711338954432453}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8080103126300372343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 724c106fff6d5c043b6bad567d52cf80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -30,8 +30,12 @@ public class OutfitMenu : MonoBehaviour
             
             Color colorSkin = PlayerPrefsX.GetColor("SkinColor");
             _currentColor = colorSkin;
-            
-            if (!(colorSkin.r >= 0.0f)) return;
+
+            if (!(colorSkin.r >= 0.0f))
+            {
+                _currentColor = Color.red;
+                return;
+            }
             
             selectedSkin.GetComponent<MaterialChanger>().SetMaterialColor(colorSkin);
             Debug.Log("color loaded:  "+ colorSkin);
