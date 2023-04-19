@@ -31,6 +31,12 @@ public class BloodSplashScript : MonoBehaviour
     
     public void StartAnimation()
     {
+        View.RPC("StartAnimationRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void StartAnimationRPC()
+    {
         ps.Clear();
         ps.Play();
     }
