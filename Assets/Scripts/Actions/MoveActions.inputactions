@@ -156,7 +156,7 @@
                 {
                     "name": "LightningBreak",
                     "type": "Button",
-                    "id": "4fb86cf3-94ac-4fe5-ac61-2811a42e2483",
+                    "id": "fd5b417c-bc0f-4bc5-85ba-27d98c2befcb",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -233,7 +233,7 @@
                 {
                     "name": "",
                     "id": "7bd5d690-c2db-42a1-828c-e9b9bdbadbcf",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -253,15 +253,37 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "2165b02d-188f-4c51-8740-95c7adc33c32",
+                    "name": "1D Axis",
+                    "id": "5df92cdd-1ac2-4462-9946-f6170d96217e",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LightningBreak",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "6ac2e232-7f43-4fca-a334-c89950c9fd0d",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "LightningBreak",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "8d5cff70-5459-402b-ac36-82f36e4addbf",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LightningBreak",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
