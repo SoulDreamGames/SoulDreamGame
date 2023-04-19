@@ -16,6 +16,7 @@ public class EnemiesManager : MonoBehaviour
 
     private int remainingWaveEnemies = 10;
 
+    [SerializeField] public BloodPool _BloodPool;
     [SerializeField]
     private List<EnemySpawnable> enemiesToSpawn = new List<EnemySpawnable>();
     [SerializeField] private List<EnemyBehaviour> _enemiesSpawned;
@@ -51,7 +52,9 @@ public class EnemiesManager : MonoBehaviour
         int numSpawnedEnemies = enemiesPerWave.Count > _gameManager.currentWave ? 
             enemiesPerWave[_gameManager.currentWave] : 
             defaultNEnemiesPerWave;
-        
+
+        numSpawnedEnemies *= _gameManager.GetNumPlayers();
+
         for (int i = 0; i < numSpawnedEnemies; i++)
         {
             /* Choose random spawn and attack points for each enemy */

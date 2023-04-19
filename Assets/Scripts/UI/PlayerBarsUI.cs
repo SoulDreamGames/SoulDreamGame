@@ -20,6 +20,14 @@ public class PlayerBarsUI : MonoBehaviour
     //Dome Energy bar
     public Image DomeImage;
     private float _barDome;
+    
+    //City energy bar
+    public Image CityEnergyImage;
+    private float _barCity;
+    
+    //Round Text
+    [SerializeField] private Text currentWaveText;
+    [SerializeField] private Text shadowWaveText;
 
     private void Awake()
     {
@@ -37,7 +45,11 @@ public class PlayerBarsUI : MonoBehaviour
     {
         UpdateHealthBar();
         UpdateEnergyBar();
+        
+        if (!_gameManager) return;
         UpdateDomeBar();
+        UpdateCityEnergyBar();
+        UpdateCurrentWave();
     }
 
     private void UpdateHealthBar()
@@ -59,5 +71,17 @@ public class PlayerBarsUI : MonoBehaviour
         
         float newEnergy = Mathf.Clamp(_gameManager.domeEnergy / _gameManager.maxDomeEnergy, 0, 1f);
         DomeImage.fillAmount = Mathf.SmoothDamp(DomeImage.fillAmount, newEnergy, ref _barDome, 0.1f);
+    }
+    
+    private void UpdateCityEnergyBar()
+    {
+        float newEnergy = Mathf.Clamp(_gameManager.cityEnergy / 100.0f, 0, 1f);
+        CityEnergyImage.fillAmount = Mathf.SmoothDamp(CityEnergyImage.fillAmount, newEnergy, ref _barCity, 0.1f);
+    }
+
+    private void UpdateCurrentWave()
+    {
+        currentWaveText.text = _gameManager.currentWave + "/" +  _gameManager.totalWaves;
+        shadowWaveText.text = _gameManager.currentWave + "/" +  _gameManager.totalWaves;
     }
 }

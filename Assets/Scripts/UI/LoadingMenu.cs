@@ -10,7 +10,8 @@ public class LoadingMenu : MonoBehaviour
     public Image loadImage;
     private float _barSpeed;
 
-    [SerializeField] private AudioMixer masterMixer;
+    [SerializeField] private AudioMixer musicMixer;
+    [SerializeField] private AudioMixer sfxMixer;
     private void Start()
     {
         //Set saved settings
@@ -19,7 +20,14 @@ public class LoadingMenu : MonoBehaviour
         if (volume > -100.0f)
         {
             float logVolume = 20 * Mathf.Log10(volume);
-            masterMixer.SetFloat("Volume", logVolume);
+            musicMixer.SetFloat("Volume", logVolume);
+        }
+        
+        volume = PlayerPrefs.GetFloat("VolumeSFX", -100f);
+        if (volume > -100.0f)
+        {
+            float logVolume = 20 * Mathf.Log10(volume);
+            sfxMixer.SetFloat("Volume", logVolume);
         }
         
         //Graphics level

@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc088e66517041b7bf9628d823dfd48a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _BloodPool: {fileID: 0}
   enemiesToSpawn:
   - {fileID: 1833742901523320678, guid: 3b505f2a4d8ea27438b329fb5c44b80b, type: 3}
   - {fileID: 8622727489622837505, guid: ee3dec08feabaca479441de3f85c3885, type: 3}

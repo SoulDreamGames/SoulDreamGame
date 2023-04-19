@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ResultsData
   m_EditorClassIdentifier: 
   victory: 0
-  domeEnergy: 85
-  nDeaths: 12
-  enemiesKilled: 65
-  evacuees: 77
+  domeEnergy: -1
+  nDeaths: -1
+  enemiesKilled: -1
+  evacuees: -1

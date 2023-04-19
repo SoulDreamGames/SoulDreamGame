@@ -52,6 +52,12 @@ MonoBehaviour:
   - OnReceiveDamageRPC
   - WaveEndRPC
   - HandleDeathRPC
+  - OnGameEndRPC
+  - HandleTrail
+  - HandleTrailRPC
+  - SetTrailAlphaRPC
+  - SetResultsRPC
+  - StartWaveRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -91,8 +91,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
 
         // Clamp to high accelerations
         float AccelerationMagnitude = acceleration.magnitude;
-        if (AccelerationMagnitude > 4.0f)
-            acceleration = acceleration / AccelerationMagnitude * Mathf.Clamp(AccelerationMagnitude, 0.0f, 10.0f);
+        if (AccelerationMagnitude > 1.0f)
+            acceleration = acceleration / AccelerationMagnitude * Mathf.Clamp(AccelerationMagnitude, 0.0f, 4.0f);
         // Euler integration
         Velocity = Velocity + acceleration;
 
@@ -150,8 +150,8 @@ public class LevitatingEnemyBehaviour : EnemyBehaviour
             float y = transform.position.y - hit.point.y;
             repulsion = GroundRepulsionCoeff * (2 * (y - MaxDist) * Mathf.Log(y / MaxDist) + (y - MaxDist) * (y - MaxDist) * MaxDist / y) * Vector3.up;
             float repulsionMagnitude = repulsion.magnitude;
-            if (repulsionMagnitude > 3.0f)
-                repulsion = repulsion / repulsionMagnitude * Mathf.Clamp(repulsionMagnitude, 0.0f, 20.0f);
+            // if (repulsionMagnitude > 3.0f)
+                //repulsion = repulsion / repulsionMagnitude * Mathf.Clamp(repulsionMagnitude, 0.0f, 10.0f);
         }
 
         return repulsion;

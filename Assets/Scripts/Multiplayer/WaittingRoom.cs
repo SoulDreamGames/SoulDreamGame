@@ -25,6 +25,10 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //UI
     [SerializeField] private Text timerText;
     [SerializeField] private Text bgText;
+    
+    //Players
+    [SerializeField] private Text playersText;
+    [SerializeField] private Text playersShadowText;
 
     //Room properties
     private Room _room;
@@ -52,11 +56,16 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
             _time = waitCountdown;
             Hashtable hash = new Hashtable() { { "Time", _time } };
             _room.SetCustomProperties(hash);
+            _room.MaxPlayers = MaxPlayersPerRoom;
         }
         else
         {
-            _time = (double)_room.CustomProperties["Time"];
+            var time = _room.CustomProperties["Time"];
+            if(time != null)
+                _time = (double)time;
         }
+        
+        UpdatePlayers();
     }
 
     private void Update()
@@ -103,7 +112,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //Read timer for non-master clients
     void ReadTimer()
     {
-        _time = (double)_room.CustomProperties["Time"];
+        var time = _room.CustomProperties["Time"];
+        if(time != null)
+            _time = (double)time;
     }
 
     //Update Timer on UI
@@ -126,9 +137,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
-
+        UpdatePlayers();
+        
         if (!PhotonNetwork.IsMasterClient) return;
-
         if (_room.PlayerCount < MaxPlayersPerRoom) return;
 
         //Close room
@@ -144,7 +155,8 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.Log("Leaving");
-
+        UpdatePlayers();
+        
         //If is master client, set button On and open room
         if (!PhotonNetwork.IsMasterClient) return;
 
@@ -156,5 +168,16 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     {
         SceneManager.LoadScene("Menu");
         base.OnLeftRoom();
+    }
+    
+    public override void OnJoinedRoom()
+    {
+        UpdatePlayers();
+    }
+
+    private void UpdatePlayers()
+    {
+        playersText.text = _room.PlayerCount + "/" + _room.MaxPlayers;
+        playersShadowText.text = _room.PlayerCount + "/" + _room.MaxPlayers;
     }
 }

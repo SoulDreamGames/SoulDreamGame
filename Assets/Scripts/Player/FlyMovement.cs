@@ -5,6 +5,7 @@ using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static MoveInput;
+using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -175,7 +176,10 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
         _timeSinceLastBoost += Time.deltaTime;
         if (_timeSinceLastBoost >= _boostActiveTime)
+        {
             pc.IsBoosting = false;
+            CheckAndPlayMoveAudio();
+        }
     }
 
     private void SpeedControl(in Rigidbody rb)
@@ -273,6 +277,10 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         Vector3 dashPos = pos + dashInput.x * orientation.right + dashInput.y * orientation.up;
         pc.DashTo(dashPos, null);
         pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+        
+        Transform poTransform = pc.PlayerObject.transform;
+        float angle = Vector3.Angle((dashPos - pos).normalized, poTransform.forward) * Mathf.Sign(pc.InputAxis.x);
+        pc.ThirdPersonCam.RotateCameraAfterLightningBreak(angle);
         ResetLightningBreak();
     }
 
@@ -288,11 +296,43 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         pc.IsLightningBreaking = false;
         _internalState = InternalState.Moving;
     }
+    
+    public void CheckAndPlayMoveAudio()
+    {
+        if (_movementComponents.PlayerController.InputAxis != Vector2.zero)
+        {
+            _movementComponents.PlayerController.audioManager.PlayAudioLoop("FlightBase");
+            return;
+        }
+        //If equals zero, then it is stopped
+        _movementComponents.PlayerController.audioManager.StopPlayingAll();
+    }
+
+    private void PlayBoostAudio()
+    {
+        _movementComponents.PlayerController.audioManager.PlayAudioLoop("FlightFast");
+    }
+    
+    public void PlayRandomAttackAudio()
+    {
+        int rand = Random.Range(1, 5); //Random [1-4]
+        string attackAudio = "Slash" + rand;
+        _movementComponents.PlayerController.audioManager.PlayAudioButton(attackAudio);
+    }
+    
+    
     #endregion
 
     #region InputSystemCallbacks
-    public void OnMovement(InputAction.CallbackContext context) =>
+
+    public void OnMovement(InputAction.CallbackContext context)
+    {
+        var pc = _movementComponents.PlayerController;
+        if (!pc.MoveType.Equals(MovementType.Air)) return;
+        
         _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
+        CheckAndPlayMoveAudio();
+    }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
@@ -303,16 +343,17 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         {
             Debug.Log("Attack pressed: ");
             _movementComponents.PlayerController.IsAttacking = true;
+            pc.audioManager.PlayAudioLoop("PlayerAttacking");
             return;
         }
 
         Debug.Log("Attack released");
+        CheckAndPlayMoveAudio();
         _movementComponents.PlayerController.IsAttacking = false;
     }
 
     public void OnHomingAttack(InputAction.CallbackContext context)
     {
-        Debug.Log("Homing attack ");
         var pc = _movementComponents.PlayerController;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsHomingAttacking) return;
@@ -326,11 +367,11 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         
         //Get nearest enemy to anywhere
         pc.IsHomingAttacking = true;
-        pc.DashTo(nearestEnemyPosition, null);
+        pc.DashTo(nearestEnemyPosition, pc.LightningPS);
         pc.PlayerEnergy -= pc.playerEnergyLostOnHomingAttack;
 
         //ToDo: reset movement speed to zero on this case
-
+        
         Invoke(nameof(ResetHomingAttack), 1.0f);
     }
 
@@ -344,6 +385,15 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         _timeSinceLastBoost = 0f;
         _activeForwardSpeed = _maxMoveSpeed;
         pc.PlayerEnergy -= pc.playerEnergyLostOnBoost;
+
+        //Boost Audio
+        PlayBoostAudio();
+        
+        // Boost particle system.
+        pc.CloudPS.transform.position = pc.transform.position;
+        pc.CloudPS.Clear();
+        pc.CloudPS.Play();
+        
     }
 
     public void OnLightningBreak(InputAction.CallbackContext context)

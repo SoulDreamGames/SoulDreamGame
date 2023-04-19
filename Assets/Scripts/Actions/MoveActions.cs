@@ -314,6 +314,34 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""InitScene"",
+            ""id"": ""c98fcd43-ed15-4a3b-a96b-cb4dbb3c8dfc"",
+            ""actions"": [
+                {
+                    ""name"": ""SkipScene"",
+                    ""type"": ""Button"",
+                    ""id"": ""dab217e1-7f48-4c7a-874a-4d3543d5eeb7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""638d1d8a-9e6d-435d-9566-f38efaa3febc"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkipScene"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -333,6 +361,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
+        // InitScene
+        m_InitScene = asset.FindActionMap("InitScene", throwIfNotFound: true);
+        m_InitScene_SkipScene = m_InitScene.FindAction("SkipScene", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -535,6 +566,39 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // InitScene
+    private readonly InputActionMap m_InitScene;
+    private IInitSceneActions m_InitSceneActionsCallbackInterface;
+    private readonly InputAction m_InitScene_SkipScene;
+    public struct InitSceneActions
+    {
+        private @MoveInput m_Wrapper;
+        public InitSceneActions(@MoveInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @SkipScene => m_Wrapper.m_InitScene_SkipScene;
+        public InputActionMap Get() { return m_Wrapper.m_InitScene; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(InitSceneActions set) { return set.Get(); }
+        public void SetCallbacks(IInitSceneActions instance)
+        {
+            if (m_Wrapper.m_InitSceneActionsCallbackInterface != null)
+            {
+                @SkipScene.started -= m_Wrapper.m_InitSceneActionsCallbackInterface.OnSkipScene;
+                @SkipScene.performed -= m_Wrapper.m_InitSceneActionsCallbackInterface.OnSkipScene;
+                @SkipScene.canceled -= m_Wrapper.m_InitSceneActionsCallbackInterface.OnSkipScene;
+            }
+            m_Wrapper.m_InitSceneActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @SkipScene.started += instance.OnSkipScene;
+                @SkipScene.performed += instance.OnSkipScene;
+                @SkipScene.canceled += instance.OnSkipScene;
+            }
+        }
+    }
+    public InitSceneActions @InitScene => new InitSceneActions(this);
     public interface IGroundActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -552,5 +616,9 @@ public partial class @MoveInput : IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         void OnOpenMenu(InputAction.CallbackContext context);
+    }
+    public interface IInitSceneActions
+    {
+        void OnSkipScene(InputAction.CallbackContext context);
     }
 }

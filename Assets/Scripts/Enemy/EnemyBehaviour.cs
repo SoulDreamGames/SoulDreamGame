@@ -125,6 +125,6 @@ public abstract class EnemyBehaviour : EnemySpawnable, IPunObservable
     {
         if (!PhotonNetwork.IsMasterClient) return;
         Debug.Log("Instancing bloood!");
-        PhotonNetwork.Instantiate("BloodPS", position, Quaternion.identity);
+        _EnemiesManager._BloodPool.Instantiate(position);
     }
 }

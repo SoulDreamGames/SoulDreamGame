@@ -5,6 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(GroundMovement))]
 [RequireComponent(typeof(FlyMovement))]
@@ -67,11 +68,22 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [HideInInspector] public int isFlyingID;
     [HideInInspector] public int isGroundedID;
     [HideInInspector] public float moveSpeedDamp;
+
+    public AudioManager audioManager;
+
+    // Trail
+    [HideInInspector] private TrailRenderer _TrailRenderer;
+    [HideInInspector] private int TrailActiveCounter = 0, TrailInactiveCounter = 1000;
+
+    // Particle effects
+    [SerializeField] public ParticleSystem CloudPS;
+    [SerializeField] public ParticleSystem LightningPS;
     
     
     //CD attacked
     private bool _isInvulnerable = false;
     [SerializeField] private float invulnerabilityTime = 1.0f;
+
     
     #endregion
 
@@ -88,6 +100,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         get => _maxMoveSpeed;
     }
+    public ThirdPersonCam ThirdPersonCam
+    {
+        get => _thirdPersonCam;
+    }
+
     public float MoveSpeed { get; set; }
     public float PlayerEnergy { get; set; }
     public float MaxEnergy
@@ -138,6 +155,14 @@ public class PlayerController : MonoBehaviour, IPunObservable
         
         //ToDo:
         //_animator.SetBool(_animIDGrounded, Grounded);
+
+        // Boost cloud particle system
+        CloudPS = Instantiate(CloudPS, Vector3.zero, quaternion.identity);
+        LightningPS = Instantiate(LightningPS, -10000*Vector3.up , quaternion.identity);
+
+        // Trail renderer
+        _TrailRenderer = GetComponentInChildren<TrailRenderer>();
+        
     }
 
     //Animator properties to hash
@@ -209,15 +234,20 @@ public class PlayerController : MonoBehaviour, IPunObservable
         }
 
         SpeedUI.UpdateUIBars();
+
+        HandleTrail();
     }
 
     //ToDo: add a list of effects for lightning break + homing attack
-    public void DashTo(Vector3 targetPosition, Transform pDashEffect)
+    public void DashTo(Vector3 targetPosition, ParticleSystem pDashEffect)
     {
         //Add a visual effect based on a prefab
         if (pDashEffect != null)
         {
-            Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
+            // Transform dashEffect = Instantiate(pDashEffect, transform.position, Quaternion.identity);
+            pDashEffect.transform.position = targetPosition;
+            pDashEffect.Clear();
+            pDashEffect.Play();
         }
 
         //Finally, move to desired position
@@ -254,6 +284,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (other.CompareTag("Water"))
         {
             PhotonNetwork.Instantiate("WaterDropsPs", transform.position + transform.up, quaternion.identity);
+            
+            //Play Water splash
+            audioManager.PlayAudioButton("WaterSplash");
+            
             HandleDeath();
         }
         
@@ -266,6 +300,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
             if (enemy == null) return;
             
             enemy.ReceiveDamage(3);
+            //Audio to attack
+            _flightMovement.PlayRandomAttackAudio();
             return;
         }
         else
@@ -301,6 +337,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public void ReceiveDamage(float damage)
     {
         PlayerEnergy =  PlayerEnergy - damage;
+        
+        //Play hit audio
+        audioManager.PlayAudioButton("PlayerHit");
+        
         PhotonNetwork.Instantiate("BloodPS", transform.position, quaternion.identity);
 
         if (PlayerEnergy <= 0f)
@@ -324,8 +364,13 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
         _flightMovement.ResetMovement();
         _groundMovement.ResetMovement();
-            
+        _inputAxis = Vector2.zero;
+        
+        //Play audio for death
+        audioManager.PlayAudioButton("PlayerDie");
+        
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{ 0.0f, true} );
+
         playersManager.PlayerDied(this);
     }
 
@@ -360,6 +405,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
     #region Functions
     public void SwitchState(MovementType newState)
     {
+        //Firstly, stop playing all sounds
+        audioManager.StopPlayingAll();
+        
         if (newState.Equals(MovementType.Ground))
         {
             _flightMovement.ResetMovement();
@@ -367,6 +415,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
             _thirdPersonCam.SwapCamera(MovementType.Ground);
 
             animator.SetBool(isFlyingID, false);
+            _groundMovement.CheckAndPlayMoveAudio();
         }
         else
         {
@@ -380,8 +429,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
             //Reset collisions
             _canCollide = false;
             Invoke(nameof(DisableCollisionInvulnerability), 0.75f);
+            
+            _flightMovement.CheckAndPlayMoveAudio();
         }
-
+        
         moveType = newState;
         Debug.Log("Rb vel after change: " + _rb.velocity);
     }
@@ -436,5 +487,77 @@ public class PlayerController : MonoBehaviour, IPunObservable
             IsAttacking = (bool)stream.ReceiveNext();
             IsHomingAttacking = (bool)stream.ReceiveNext();
         }
+    }
+
+    private void HandleTrail()
+    {
+        /// Simpler but no fading
+        // _TrailRenderer.enabled = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
+
+        /// Trail fades in and out with a smooth transition from not flying to flying
+        bool TrailActive = (MoveSpeed > 1.3) && (moveType == MovementType.Air);
+
+        float TrailAlphaMultiplier;
+        const float FixedUpdateFPS = 50.0f;
+        const float FadingTime = 1.0f / (2.0f * FixedUpdateFPS); // 2 seconds
+        const int TrailDelay =  (int) (0.5f * FixedUpdateFPS); // 0.5 second
+
+        if (TrailActive) 
+        {
+            TrailActiveCounter++;
+            TrailInactiveCounter = 0;
+            float t = 0.0f;
+            if (TrailActiveCounter >= TrailDelay) t = (TrailActiveCounter - TrailDelay) * FadingTime;
+
+            TrailAlphaMultiplier = Mathf.SmoothStep(0.0f, 1.0f, t);
+        }
+        else
+        {
+            //TrailInactiveCounter++;
+            // TrailAlphaMultiplier = 1.0f - Mathf.SmoothStep(0.0f, 1.0f, TrailInactiveCounter * FadingTime);
+            TrailActiveCounter = 0;
+            TrailAlphaMultiplier = 0;
+        }
+        float a1 = 1.0f * TrailAlphaMultiplier;
+        float a2 = 0.7f * TrailAlphaMultiplier;
+        float a3 = 0.3f * TrailAlphaMultiplier;
+        object[] attributes = new object[] {a1, a2, a3};
+        view.RPC("SetTrailAlphaRPC", RpcTarget.All, attributes);
+    }
+
+    [PunRPC]
+    private void SetTrailAlphaRPC(float a1, float a2, float a3)
+    {
+        /// Modify the alpha channel of the trail
+        GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
+        AlphaKeys[0] = new GradientAlphaKey(a1, 0.0f);
+        AlphaKeys[1] = new GradientAlphaKey(a2, 0.75f);
+        AlphaKeys[2] = new GradientAlphaKey(a3, 1.0f);
+        // Debug.Log("Multiplier: " + TrailAlphaMultiplier + " ActiveCounter: " + TrailActiveCounter + " Inactive Counter: " + TrailInactiveCounter);
+        /// In order for the change to take effect we must create a new gradient
+        Gradient newGrad = new Gradient();
+        newGrad.SetKeys(_TrailRenderer.colorGradient.colorKeys, AlphaKeys);
+        _TrailRenderer.colorGradient = newGrad;
+    }
+
+    public void SetTrailColor(Color color1, Color color2, Color color3)
+    {
+        GradientColorKey[] ColorKeys = new GradientColorKey[3];
+        ColorKeys[0] = new GradientColorKey(color1, 0.0f);
+        ColorKeys[1] = new GradientColorKey(color2, 0.75f);
+        ColorKeys[2] = new GradientColorKey(color3, 1.0f);
+
+        GradientAlphaKey[] AlphaKeys = new GradientAlphaKey[3];
+        AlphaKeys[0] = new GradientAlphaKey(1.0f, 0.0f);
+        AlphaKeys[1] = new GradientAlphaKey(0.7f, 0.75f);
+        AlphaKeys[2] = new GradientAlphaKey(0.3f, 1.0f);
+
+        Gradient NewGradient = new Gradient();
+        NewGradient.SetKeys(ColorKeys, AlphaKeys);
+        _TrailRenderer.colorGradient = NewGradient;
+    }
+    public void SetTrailColor(Color color1, Color color2)
+    {
+        SetTrailColor(color1, color2, color2);
     }
 }
