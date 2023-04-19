@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7323255713697815686}
   - component: {fileID: 523435506604652742}
   - component: {fileID: 6429529683975470182}
+  - component: {fileID: -5487722622929659497}
   m_Layer: 0
   m_Name: BloodPS
   m_TagString: Untagged
@@ -52,7 +53,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: -5487722622929659497}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -68,6 +70,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 910d85c1867a2bf4ab9c545ce3b1d8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsFromPool: 0
+--- !u!114 &-5487722622929659497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670273100557715068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PositionModel:
+    SynchronizeEnabled: 1
+    TeleportEnabled: 1
+    TeleportIfDistanceGreaterThan: 3
+    InterpolateOption: 2
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 1
+    ExtrapolateOption: 0
+    ExtrapolateSpeed: 1
+    ExtrapolateIncludingRoundTripTime: 1
+    ExtrapolateNumberOfStoredPositions: 1
+  m_RotationModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 1
+    InterpolateRotateTowardsSpeed: 180
+    InterpolateLerpSpeed: 5
+  m_ScaleModel:
+    SynchronizeEnabled: 0
+    InterpolateOption: 0
+    InterpolateMoveTowardsSpeed: 1
+    InterpolateLerpSpeed: 0
 --- !u!1 &9192962227905030754
 GameObject:
   m_ObjectHideFlags: 0
