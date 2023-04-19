@@ -10,8 +10,10 @@ public class BloodPool : MonoBehaviour
     public int PoolAmount;
     public List<GameObject> PooledObjects;
     private int LastInitialized = 0;
-    void Start()
+    void Awake()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+
         for (int i = 0; i < PoolAmount; i++)
         {
             GameObject temp = PhotonNetwork.Instantiate(ObjectPrefab.name, Vector3.zero, Quaternion.identity);
@@ -23,6 +25,8 @@ public class BloodPool : MonoBehaviour
 
     public void Instantiate(Vector3 position)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+
         LastInitialized++;
         if (LastInitialized >= PooledObjects.Count) LastInitialized = 0;
 
