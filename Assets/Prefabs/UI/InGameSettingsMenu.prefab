@@ -2009,7 +2009,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 8607983928875752629}
   m_HandleRect: {fileID: 8607983928475306791}
   m_Direction: 0
-  m_MinValue: 0.001
+  m_MinValue: 0.000001
   m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0.001
@@ -5082,7 +5082,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 1965490004723083523}
   m_HandleRect: {fileID: 4460120186696630883}
   m_Direction: 0
-  m_MinValue: 0.001
+  m_MinValue: 0.000001
   m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0.001

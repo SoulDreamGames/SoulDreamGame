@@ -58,8 +58,8 @@ public class ThirdPersonCam : MonoBehaviour
 
     public void SwapToPlayerTarget()
     {
-        cameraBehaviours[0].gameObject.SetActive(true);
         _isFixed = false;
+        cameraBehaviours[0].gameObject.SetActive(true);
     }
 
     public void RotateCameraAfterLightningBreak(float degrees)

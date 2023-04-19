@@ -162,6 +162,7 @@ public class NPCManager : MonoBehaviour, IPunObservable
 
     public int GetTotalSpawnedNPCs()
     {
-        return npcsSpawnedPerWave * _gameManager.totalWaves;
+        //Instead of total waves, we show the current wave so % is based on spawned npcs
+        return npcsSpawnedPerWave * _gameManager.currentWave;
     }
 }
