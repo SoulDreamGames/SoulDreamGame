@@ -1040,7 +1040,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: civilians deaths will decrease city energy
+  m_Text: civilian deaths will decrease city energy
 --- !u!1 &1055703419539029472
 GameObject:
   m_ObjectHideFlags: 0
@@ -8057,7 +8057,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: civilians deaths will decrease city energy
+  m_Text: civilian deaths will decrease city energy
 --- !u!1 &7623097732430860199
 GameObject:
   m_ObjectHideFlags: 0

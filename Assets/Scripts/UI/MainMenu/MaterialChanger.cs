@@ -7,16 +7,16 @@ public class MaterialChanger : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer render;
 
     [SerializeField] private Material skinnedMaterial;
+    private float _intensity = 0.75f;
 
     public void SetMaterialColor(Color color)
     {
         string matName = skinnedMaterial.name + " (Instance)";
         foreach (var material in render.materials)
         {
-            Debug.Log("Render mat: " + material.name);
             if (!material.name.Equals(matName)) continue;
-            Debug.Log("Match");
-            material.SetColor("_EmissionColor", color);
+            material.SetColor("_EmissionColor", color * _intensity);
+            material.color = material.GetColor("_EmissionColor");
         }
         
     }

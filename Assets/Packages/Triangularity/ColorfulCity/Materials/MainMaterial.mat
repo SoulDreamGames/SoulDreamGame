@@ -10,7 +10,8 @@ Material:
   m_Name: MainMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 0816c0152d9f4fe47b610fdfabfea804, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _ISEMISSIVE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -51,6 +52,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Emissive_Map:
+        m_Texture: {fileID: 2800000, guid: 8ce1efc4b801d3d4b964603f0098d36c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -111,12 +116,14 @@ Material:
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0.1
     - _DstBlend: 0
+    - _EmissiveStrength: 1
     - _EnvironmentReflections: 1
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossyReflections: 1
+    - _ISEMISSIVE: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
