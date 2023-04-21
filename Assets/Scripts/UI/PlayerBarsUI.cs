@@ -81,6 +81,12 @@ public class PlayerBarsUI : MonoBehaviour
 
     private void UpdateCurrentWave()
     {
+        if (_gameManager.currentWave == 0)
+        {
+            currentWaveText.text = "Attack soon...";
+            shadowWaveText.text = "Attack soon...";
+            return;
+        }
         currentWaveText.text = _gameManager.currentWave + "/" +  _gameManager.totalWaves;
         shadowWaveText.text = _gameManager.currentWave + "/" +  _gameManager.totalWaves;
     }
