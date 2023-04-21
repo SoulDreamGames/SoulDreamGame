@@ -70,8 +70,9 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (PhotonNetwork.NetworkClientState == ClientState.Leaving) return;
-
+        if (PhotonNetwork.NetworkClientState.Equals(ClientState.Leaving)) return;
+        if (_sceneIsLoading) return;
+        
         if (PhotonNetwork.IsMasterClient)
             UpdateTimer();
 
@@ -104,8 +105,11 @@ public class WaittingRoom : MonoBehaviourPunCallbacks
     //Load main level method, called when timer is over
     void LoadMainLevel()
     {
+        if (_sceneIsLoading) return;
+        
         _sceneIsLoading = true;
         _room.IsOpen = false;
+
         PhotonNetwork.LoadLevel(mainLevelScene);
     }
 
