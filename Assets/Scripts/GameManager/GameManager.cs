@@ -377,6 +377,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public override void OnLeftRoom()
     {
+        Debug.Log("Loading menu on exit");
         SceneManager.LoadScene("Menu");
         base.OnLeftRoom();
     }

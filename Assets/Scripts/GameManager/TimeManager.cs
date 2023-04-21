@@ -132,6 +132,8 @@ public class TimeManager : MonoBehaviour
         Hashtable hash = _room.CustomProperties;
         hash.Remove("Time");
         hash.Add("Time", _time);
+
+        if (PhotonNetwork.NetworkClientState.Equals(ClientState.Leaving)) return;
         _room.SetCustomProperties(hash);
     }
 
