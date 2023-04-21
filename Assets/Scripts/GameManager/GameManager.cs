@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     //City energy, game ends when decreased to 0
     public float cityEnergy = 100.0f;
     public float energyLostOnPlayer = 3.0f;
-    public float energyLostOnCivilian = 0.5f;
+    public float energyLostOnCivilian = 0.25f;
 
     public float domeEnergy = 0.0f;
     public float maxDomeEnergy = 100.0f;
@@ -143,14 +143,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (!PhotonNetwork.IsMasterClient) return;
         SaveDataToResults();
-        Invoke(nameof(ShowGameResults), 5.0f);
+        Invoke(nameof(ShowGameResults), 2.0f);
     }
 
     void SaveDataToResults()
     {
         //Save data to scriptable object
-        _resultsData.evacuees = (int)((float)_npcManager.peopleEvacuated / 
-            (float)_npcManager.GetTotalSpawnedNPCs() * 100.0f);
+        int totalNpc = _npcManager.GetTotalSpawnedNPCs();
+        _resultsData.evacuees = (int)((float)(totalNpc - _npcManager.peopleDied) / 
+            totalNpc * 100.0f);
         _resultsData.domeEnergy = (int)domeEnergy;
         _resultsData.enemiesKilled = enemyKills;
         _resultsData.nDeaths = nDeaths;
