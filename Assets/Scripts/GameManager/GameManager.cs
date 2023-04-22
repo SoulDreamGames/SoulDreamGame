@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject targetableEnemy = null;
 
     //Results scene
-    [SerializeField] private string resultsScene = "Menu";
+    [SerializeField] private string resultsScene = "GameResults";
     [SerializeField] private ResultsData _resultsData;
 
     //Results variables

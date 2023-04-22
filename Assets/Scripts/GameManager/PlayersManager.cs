@@ -60,7 +60,9 @@ public class PlayersManager : MonoBehaviour
     IEnumerator Respawn(float time, PlayerController pc)
     {
         yield return new WaitForSeconds(time);
-        SpawnPlayer(pc);
+        
+        if (_gameManager.gameStarted)
+            SpawnPlayer(pc);
     }
     public void SpawnPlayer(PlayerController pc)
     {

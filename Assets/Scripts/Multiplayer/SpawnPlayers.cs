@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using Photon.Pun;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SpawnPlayers : MonoBehaviour
 {
@@ -18,11 +19,13 @@ public class SpawnPlayers : MonoBehaviour
     void Awake()
     {
         spawnPosition = transform.position;
+        Vector3 displacement = new Vector3(Random.Range(-1f, 1f), 0.0f, Random.Range(-1f, 1f));
+        displacement = Random.Range(1, 3) * displacement.normalized;
         
         //Get selected skin and instantiate matching prefab
         int selectedSkin = Math.Min(PlayerPrefs.GetInt("Skin", 0), playerPrefab.Count -1);
         GameObject selectedPrefab = playerPrefab[selectedSkin];
-        _player = PhotonNetwork.Instantiate(selectedPrefab.name, spawnPosition, Quaternion.identity);
+        _player = PhotonNetwork.Instantiate(selectedPrefab.name, spawnPosition + displacement, Quaternion.identity);
         Debug.Log("Skin was: " + selectedSkin);
     }
 
