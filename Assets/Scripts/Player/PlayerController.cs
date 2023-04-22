@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public LayerMask enemyMask;
 
     [HideInInspector] public PhotonView view;
-    private InGameMenu _menu;
+    [HideInInspector] public InGameMenu menu;
 
     [Header("Debug Info")]
     [SerializeField] private Vector2 _inputAxis; // Input
@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     
     void Start()
     {
-        _menu = FindObjectOfType<InGameMenu>();
+        menu = FindObjectOfType<InGameMenu>();
 
         playersManager = FindObjectOfType<PlayersManager>();
         if(playersManager)
@@ -210,7 +210,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     void Update()
     {
         if (!view.IsMine) return;
-        if (!_menu.EnableInGameControls) InputAxis = Vector2.zero;
+        if (!menu.EnableInGameControls) InputAxis = Vector2.zero;
         if (isDead) return;
         
         switch (MoveType)

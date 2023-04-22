@@ -236,11 +236,13 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     public void OnMove(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        
         if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Ground)) return;
         
         _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
 
+        if (!pc.menu.EnableInGameControls) return;
         if (!_isGrounded) return;
         CheckAndPlayMoveAudio();
         
@@ -249,6 +251,7 @@ public class GroundMovement : MonoBehaviour, IPlayerMovement, IGroundActions
     public void OnJump(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        if (!pc.menu.EnableInGameControls) return;
         if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Ground)) return;
      

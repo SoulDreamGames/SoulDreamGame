@@ -324,6 +324,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         
         _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
+        
+        if (!pc.menu.EnableInGameControls) return;
         CheckAndPlayMoveAudio();
     }
 
@@ -331,6 +333,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var pc = _movementComponents.PlayerController;
         
+        if (!pc.menu.EnableInGameControls) return;
         if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (context.performed && pc.PlayerEnergy > 0.0f)
@@ -350,6 +353,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var pc = _movementComponents.PlayerController;
         
+        if (!pc.menu.EnableInGameControls) return;
         if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsHomingAttacking) return;
@@ -381,6 +385,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     {
         var pc = _movementComponents.PlayerController;
         
+        if (!pc.menu.EnableInGameControls) return;
         if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnBoost) return;
@@ -405,7 +410,7 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         var pc = _movementComponents.PlayerController;
         
         if (pc.isDead) return;
-        
+        if (!pc.menu.EnableInGameControls) return;
         var orientation = _movementComponents.Orientation;
         var dashInput = context.ReadValue<float>();
 
