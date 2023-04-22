@@ -147,7 +147,14 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         {
             //If energy is 0, stop attack
             pc.PlayerEnergy = 0.0f;
-            pc.IsAttacking = false;
+
+            if (pc.IsAttacking)
+            {
+                pc.IsAttacking = false;
+                _movementComponents.PlayerController.audioManager.PlayAudioLoop("FlightBase");
+                
+            }
+
             return;
         }
 
