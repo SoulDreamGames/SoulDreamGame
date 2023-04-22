@@ -436,10 +436,10 @@ MonoBehaviour:
   isDead: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
-  playerEnergyLost: 0.5
-  playerEnergyLostOnHomingAttack: 25
-  playerEnergyLostOnBoost: 25
-  playerEnergyLostOnLightningBreak: 35
+  playerEnergyLost: 1
+  playerEnergyLostOnHomingAttack: 30
+  playerEnergyLostOnBoost: 30
+  playerEnergyLostOnLightningBreak: 45
   _maxEnergy: 100
   homingRadius: 50
   playersManager: {fileID: 0}

@@ -220,12 +220,13 @@ MonoBehaviour:
   _thresholdSpeed: 10
   _maxMoveSpeed: 100
   moveType: 0
+  isDead: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
-  playerEnergyLost: 0.5
-  playerEnergyLostOnHomingAttack: 25
-  playerEnergyLostOnBoost: 25
-  playerEnergyLostOnLightningBreak: 35
+  playerEnergyLost: 1
+  playerEnergyLostOnHomingAttack: 30
+  playerEnergyLostOnBoost: 30
+  playerEnergyLostOnLightningBreak: 45
   _maxEnergy: 100
   homingRadius: 50
   playersManager: {fileID: 0}
@@ -237,6 +238,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   view: {fileID: 0}
+  menu: {fileID: 0}
   _inputAxis: {x: 0, y: 0}
   _godlike: 0
   animator: {fileID: 0}

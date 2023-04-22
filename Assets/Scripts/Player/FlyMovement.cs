@@ -161,7 +161,9 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
         //If not attacking and its moving, then increase energy based on velocity
         if (pc.MoveSpeed > 0.0f)
         {
-            pc.PlayerEnergy += pc.MoveSpeed / pc.MaxMoveSpeed;
+            if(!pc.IsBoosting)
+                pc.PlayerEnergy += pc.MoveSpeed / pc.MaxMoveSpeed;
+            
             if (pc.PlayerEnergy >= pc.MaxEnergy)
             {
                 pc.PlayerEnergy = pc.MaxEnergy;
