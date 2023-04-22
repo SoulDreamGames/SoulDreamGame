@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _audios:
   - IDName: MenuClick
-    Audio: {fileID: 8300000, guid: fe3421de974f0b249b41a832962478da, type: 3}
+    Audio: {fileID: 8300000, guid: 2bbd83ca94c5c474c9040a1c18a99fd3, type: 3}
   - IDName: MenuHover
     Audio: {fileID: 8300000, guid: a8dd47e5a7005b44285ff58c11d4e1ad, type: 3}
   - IDName: MenuStart
-    Audio: {fileID: 8300000, guid: 1d92483d6598ecf43839d815bbbc5cc5, type: 3}
+    Audio: {fileID: 8300000, guid: ec943beae65c0484387243041122a00f, type: 3}
