@@ -21,6 +21,12 @@ public class ThirdPersonCam : MonoBehaviour
 
     private float _startFOV;
     private float _fovMultiplier = 1.3f;
+    
+    //Target variables
+    private bool _isFixed = false;
+    [SerializeField] private Transform nextFollow;
+    [SerializeField] private Transform nextLookAt;
+    
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -46,20 +52,43 @@ public class ThirdPersonCam : MonoBehaviour
             cameraBehaviours[1].gameObject.SetActive(true);
         }
     }
-
-    private bool _isFixed = false;
+    
     public void SwapToFixedTarget()
     {
         _isFixed = true;
+
+        //Set new target pos on player death location
+        nextLookAt.transform.position = cameraBehaviours[0].LookAt.transform.position;
+        nextFollow.transform.position = cameraBehaviours[0].LookAt.transform.position;
         
-        cameraBehaviours[0].gameObject.SetActive(false);
-        cameraBehaviours[1].gameObject.SetActive(false);
+        //Swap Target
+        SwapToNextTarget();
+
+        // cameraBehaviours[0].gameObject.SetActive(false);
+        // cameraBehaviours[1].gameObject.SetActive(false);
     }
 
     public void SwapToPlayerTarget()
     {
         _isFixed = false;
-        cameraBehaviours[0].gameObject.SetActive(true);
+        
+        //Swap target directly
+        SwapToNextTarget();
+    }
+
+    private void SwapToNextTarget()
+    {
+        var currentLookAt = cameraBehaviours[0].LookAt;
+        var currentFollow = cameraBehaviours[0].Follow;
+        
+        cameraBehaviours[0].LookAt = nextLookAt;
+        cameraBehaviours[0].Follow = nextFollow;
+        
+        cameraBehaviours[1].LookAt = nextLookAt;
+        cameraBehaviours[1].Follow = nextFollow;
+
+        nextLookAt = currentLookAt;
+        nextFollow = currentFollow;
     }
 
     public void RotateCameraAfterLightningBreak(float degrees)

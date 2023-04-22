@@ -28,8 +28,11 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [SerializeField] private float _initialMoveSpeed = 5.0f;
     [SerializeField] private float _thresholdSpeed = 20.0f;
     [SerializeField] private float _maxMoveSpeed = 100.0f;
+    
     //State
     [SerializeField] public MovementType moveType = MovementType.Ground;
+    [HideInInspector] public bool isDead = false;
+    
     //Angle limits on air
     public float RotXLimit = 60.0f;
     public float EnemySpeedThreshold = 15.0f;
@@ -208,6 +211,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         if (!view.IsMine) return;
         if (!_menu.EnableInGameControls) InputAxis = Vector2.zero;
+        if (isDead) return;
         
         switch (MoveType)
         {
@@ -226,6 +230,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     private void FixedUpdate()
     {
         if (!view.IsMine) return;
+        if (isDead) return;
         
         switch (MoveType)
         {
@@ -284,6 +289,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     private void OnTriggerEnter(Collider other)
     {
         if (!view.IsMine) return;
+        if (isDead) return;
 
         if (other.CompareTag("Water"))
         {
@@ -340,6 +346,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     public void ReceiveDamage(float damage)
     {
+        if (isDead) return;
+        
         PlayerEnergy =  PlayerEnergy - damage;
         
         //Play hit audio
@@ -357,13 +365,15 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         view.RPC("HandleDeathRPC", RpcTarget.All);
     }
-
+    
     [PunRPC]
     public void HandleDeathRPC()
     {
         if (!view.IsMine) return;
         
-        Debug.Log("player is dead");   
+        Debug.Log("player is dead");
+        
+        isDead = true;
         _thirdPersonCam.SwapToFixedTarget();
 
         _flightMovement.ResetMovement();
@@ -382,6 +392,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (!view.IsMine) return;
         
         Debug.Log("Respawn");
+        
+        isDead = false;
         view.RPC("SetScaleForRespawn", RpcTarget.All, new object[]{1.0f, false});
         
         //Reset transforms and rb
@@ -495,9 +507,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     private void HandleTrail()
     {
-        /// Simpler but no fading
-        // _TrailRenderer.enabled = (animator.GetFloat(moveSpeedID) > 1.3) && animator.GetBool(isFlyingID);
-
         /// Trail fades in and out with a smooth transition from not flying to flying
         bool TrailActive = (MoveSpeed > 1.3) && (moveType == MovementType.Air);
 

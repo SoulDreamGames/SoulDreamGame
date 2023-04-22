@@ -433,6 +433,7 @@ MonoBehaviour:
   _thresholdSpeed: 10
   _maxMoveSpeed: 100
   moveType: 0
+  isDead: 0
   RotXLimit: 60
   EnemySpeedThreshold: 15
   playerEnergyLost: 0.5

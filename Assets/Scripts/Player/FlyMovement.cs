@@ -319,6 +319,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnMovement(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        
+        if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         
         _movementComponents.PlayerController.InputAxis = context.ReadValue<Vector2>();
@@ -328,7 +330,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnAttack(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
-
+        
+        if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (context.performed && pc.PlayerEnergy > 0.0f)
         {
@@ -346,6 +349,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnHomingAttack(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        
+        if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.IsHomingAttacking) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnHomingAttack) return;
@@ -375,6 +380,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnBoost(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        
+        if (pc.isDead) return;
         if (!pc.MoveType.Equals(MovementType.Air)) return;
         if (pc.PlayerEnergy < pc.playerEnergyLostOnBoost) return;
 
@@ -396,6 +403,9 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     public void OnLightningBreak(InputAction.CallbackContext context)
     {
         var pc = _movementComponents.PlayerController;
+        
+        if (pc.isDead) return;
+        
         var orientation = _movementComponents.Orientation;
         var dashInput = context.ReadValue<float>();
 
