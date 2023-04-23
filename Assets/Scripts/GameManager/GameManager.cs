@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public float energyLostOnCivilian = 0.33f;
 
     public float domeEnergy = 0.0f;
-    public float maxDomeEnergy = 100.0f;
+    public float maxDomeEnergy = 85.0f;
     public float energyGainedOnKill = 0.75f;
     public float energyLostOnDeath = 10.0f;
 
