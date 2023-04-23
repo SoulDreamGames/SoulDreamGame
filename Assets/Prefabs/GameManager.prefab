@@ -54,8 +54,8 @@ MonoBehaviour:
   currentWave: 0
   totalWaves: 5
   cityEnergy: 100
-  energyLostOnPlayer: 3
-  energyLostOnCivilian: 0.5
+  energyLostOnPlayer: 2
+  energyLostOnCivilian: 0.33
   domeEnergy: 0
   maxDomeEnergy: 100
   energyGainedOnKill: 1
@@ -223,6 +223,6 @@ MonoBehaviour:
   - {fileID: 7368224080682761783}
   - {fileID: 7368224080682761781}
   - {fileID: 7368224080682761780}
-  sceneViewId: 999
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

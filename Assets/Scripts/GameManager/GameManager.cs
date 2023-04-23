@@ -54,8 +54,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     //City energy, game ends when decreased to 0
     public float cityEnergy = 100.0f;
-    public float energyLostOnPlayer = 3.0f;
-    public float energyLostOnCivilian = 0.25f;
+    public float energyLostOnPlayer = 2.0f;
+    public float energyLostOnCivilian = 0.33f;
 
     public float domeEnergy = 0.0f;
     public float maxDomeEnergy = 100.0f;
@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         int totalNpc = _npcManager.GetTotalSpawnedNPCs();
         _resultsData.evacuees = (int)((float)(totalNpc - _npcManager.peopleDied) / 
             totalNpc * 100.0f);
-        _resultsData.domeEnergy = (int)domeEnergy;
+        _resultsData.domeEnergy = (int)(domeEnergy / maxDomeEnergy);
         _resultsData.enemiesKilled = enemyKills;
         Debug.Log("%%%: prev enemies: " + enemyKills);
         Debug.Log("%%%: SO enemies: " + _resultsData.enemiesKilled);
