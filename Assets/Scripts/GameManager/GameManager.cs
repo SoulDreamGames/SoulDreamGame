@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public float domeEnergy = 0.0f;
     public float maxDomeEnergy = 100.0f;
-    public float energyGainedOnKill = 1.0f;
+    public float energyGainedOnKill = 0.75f;
     public float energyLostOnDeath = 10.0f;
 
     //Game state 
@@ -190,11 +190,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void ShowGameResults()
     {
-        PhotonNetwork.LoadLevel(resultsScene);
+        //PhotonNetwork.LoadLevel(resultsScene);
+        view.RPC("LoadSceneRPC", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    public void LoadSceneRPC()
+    {
+        SceneManager.LoadScene(resultsScene);
     }
 
     public void DecreaseCityEnergy(float energy)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         cityEnergy -= energy;
 
         if (cityEnergy <= 0.0f)
@@ -325,6 +334,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void UpdateDomeEnergy(float energy)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+        
         domeEnergy += energy;
         domeEnergy = Math.Clamp(domeEnergy, 0f, maxDomeEnergy);
         Debug.Log("New dome energy: " + domeEnergy);
