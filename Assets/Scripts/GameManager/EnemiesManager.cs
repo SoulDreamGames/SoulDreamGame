@@ -4,7 +4,7 @@ using UnityEngine;
 using GameEventType = GameManager.GameEventType;
 using Photon.Pun;
 
-public class EnemiesManager : MonoBehaviour
+public class EnemiesManager : MonoBehaviour,IPunObservable
 {
     //ToDo: Sync enemies HP (for receive damage + die)
     //ToDo: call KillEnemy with Master and then Pun.Destroy
@@ -98,7 +98,8 @@ public class EnemiesManager : MonoBehaviour
         _enemiesSpawned.Remove(enemy);
         
         //Invoke Enemy Died event
-        _gameManager.view.RPC("EnemyDiedRPC", RpcTarget.All);
+        if(PhotonNetwork.IsMasterClient)
+            _gameManager.view.RPC("EnemyDiedRPC", RpcTarget.All);
         
         if (_gameManager.nearestEnemy != null)
         {
@@ -120,13 +121,12 @@ public class EnemiesManager : MonoBehaviour
     [PunRPC]
     private void EnemyDiedRPC()
     {
-        if(PhotonNetwork.IsMasterClient)
-            _gameManager.InvokeEvent(GameEventType.onEnemyDied);
+        if (!PhotonNetwork.IsMasterClient) return;
+        _gameManager.InvokeEvent(GameEventType.onEnemyDied);
         
         //Decrease enemyCount and check if all enemies are cleared on this wave with master client
         remainingWaveEnemies--;
-
-        if (!PhotonNetwork.IsMasterClient) return;
+        
         if (remainingWaveEnemies <= 0)
         {
             _gameManager.view.RPC("WaveEndRPC", RpcTarget.All);
@@ -163,5 +163,17 @@ public class EnemiesManager : MonoBehaviour
     public List<EnemyBehaviour> GetEnemiesSpawned()
     {
         return _enemiesSpawned;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(remainingWaveEnemies);
+        }
+        else if (stream.IsReading)
+        {
+            remainingWaveEnemies = (int)stream.ReceiveNext();
+        }
     }
 }
