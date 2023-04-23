@@ -365,6 +365,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public void ReceiveDamage(float damage)
     {
         if (isDead) return;
+        if ((IsAttacking || IsHomingAttacking) && MoveSpeed >= EnemySpeedThreshold) return;
         
         PlayerEnergy =  PlayerEnergy - damage;
         
