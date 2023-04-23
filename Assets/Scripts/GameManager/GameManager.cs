@@ -302,8 +302,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         SubscribeToEvent(GameEventType.onEnemyDied, () => { UpdateDomeEnergy(energyGainedOnKill); });
         SubscribeToEvent(GameEventType.onEnemyDied, () =>
         {
-            if (!PhotonNetwork.IsMasterClient) return; 
-            enemyKills++;
+            if(PhotonNetwork.IsMasterClient)
+                enemyKills++;
         });
 
         SubscribeToEvent(GameEventType.onPlayerDied, () => { UpdateDomeEnergy(-energyLostOnDeath); });
@@ -375,12 +375,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(cityEnergy);
             stream.SendNext(domeEnergy);
             stream.SendNext(currentWave);
+            stream.SendNext(enemyKills);
         }
         else if (stream.IsReading)
         {
             cityEnergy = (float)stream.ReceiveNext();
             domeEnergy = (float)stream.ReceiveNext();
             currentWave = (int)stream.ReceiveNext();
+            enemyKills = (int)stream.ReceiveNext();
         }
     }
 

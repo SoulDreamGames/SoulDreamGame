@@ -120,7 +120,8 @@ public class EnemiesManager : MonoBehaviour
     [PunRPC]
     private void EnemyDiedRPC()
     {
-        _gameManager.InvokeEvent(GameEventType.onEnemyDied);
+        if(PhotonNetwork.IsMasterClient)
+            _gameManager.InvokeEvent(GameEventType.onEnemyDied);
         
         //Decrease enemyCount and check if all enemies are cleared on this wave with master client
         remainingWaveEnemies--;
