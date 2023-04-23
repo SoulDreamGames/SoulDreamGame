@@ -51,7 +51,10 @@ public class MiniMap : MonoBehaviour
         if (!_gameManager) return;
 
         var nearestEnemy = _gameManager.nearestEnemy;
-        if (nearestEnemy == null) return;
+        if (!nearestEnemy){
+            enemyIcon.enabled = false;
+            return;
+        }
         
         enemyIcon.enabled = true;
         Vector3 enemyMapPos = nearestEnemy.transform.position - playerPosition.position;

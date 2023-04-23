@@ -63,18 +63,14 @@ public class InGameSettings : MonoBehaviour
         resolutionDrop.ClearOptions();
 
         List<string> resOptions = new List<string>();
-        _resolutionLevel = 0; 
-        for (int i = 0; i < _resolutions.Length; i++)
+        foreach (var res in _resolutions)
         {
-            resOptions.Add(_resolutions[i].width + " x " + _resolutions[i].height + " " 
-                           + _resolutions[i].refreshRate+"Hz");
-
-            if (_resolutions[i].width == Screen.currentResolution.width &&
-                _resolutions[i].height == Screen.currentResolution.height)
-                _resolutionLevel = i;
+            resOptions.Add(res.width + " x " + res.height + " " 
+                           + res.refreshRate+"Hz");
         }
+        
         resolutionDrop.AddOptions(resOptions);
-        resolutionDrop.value = _resolutionLevel;
+        resolutionDrop.value = PlayerPrefs.GetInt("Resolution", resOptions.Count - 1);
         resolutionDrop.RefreshShownValue();
 
         resolutionDrop.onValueChanged.AddListener(SetResolution);

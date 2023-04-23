@@ -307,6 +307,7 @@ MonoBehaviour:
     Rigidbody: {fileID: 0}
     Orientation: {fileID: 0}
     PlayerController: {fileID: 0}
+  FlyingVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1178050435792598589
 MonoBehaviour:
   m_ObjectHideFlags: 0

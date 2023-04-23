@@ -17,13 +17,13 @@ public class BloodSplashScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!View.IsMine) return;
         if (IsFromPool) return;
+        if(!View.IsMine) return;
 
         counter++;
         const float FixedUpdateFPS = 49.0f;
 
-        if (counter / FixedUpdateFPS > 1.0f) 
+        if (counter / FixedUpdateFPS > 10.0f) 
         {
             PhotonNetwork.Destroy(View);
         }

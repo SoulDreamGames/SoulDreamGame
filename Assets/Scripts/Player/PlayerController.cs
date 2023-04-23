@@ -232,6 +232,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (!view.IsMine) return;
         if (isDead) return;
         
+        // Debug.Log("RIGIDBODY VELOCITY: " + _rb.velocity);
         switch (MoveType)
         {
             case MovementType.Ground:
@@ -271,10 +272,27 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if (!view.IsMine) return;
         
         Debug.Log("Can collide is: " + _canCollide);
+
         if (MoveType.Equals(MovementType.Air) && _canCollide)
         {
-            PlayerEnergy = 0f;
-            SwitchState(MovementType.Ground);
+            // Check weather the surface is horizontal
+            Vector3 ContactNormal = collision.GetContact(0).normal;
+            Vector3 FlyingVel = _flightMovement.FlyingVelocity;
+
+            if (Math.Abs(Vector3.Dot(ContactNormal, Vector3.up)) >= 0.8f)
+            {
+                //Check the angle of incidence
+                if (Mathf.Abs(Vector2.Dot(ContactNormal, FlyingVel.normalized)) >= 0.35f)
+                {
+                    SwitchState(MovementType.Ground);
+                }
+                else return;
+            }
+            else
+            {
+                PlayerEnergy = 0f;
+                SwitchState(MovementType.Ground);
+            }
         }
         if ((GroundMask & (1 << collision.gameObject.layer)) != 0) return;
         // if (collision.gameObject.layer.Equals(groundMask.value)) return;
@@ -304,7 +322,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         if ((enemyMask & (1 << other.gameObject.layer)) == 0) return;
         
         //Enemy is triggering
-        if ((IsAttacking || IsHomingAttacking) && MoveSpeed >= EnemySpeedThreshold)
+        if ((IsAttacking || IsHomingAttacking) && MoveSpeed >= EnemySpeedThreshold) // Damage enemy
         {
             var enemy = other.GetComponent<EnemyBehaviour>();
             if (enemy == null) return;
@@ -314,7 +332,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
             _flightMovement.PlayRandomAttackAudio();
             return;
         }
-        else
+        else // Damage player
         {
             if (_isInvulnerable) return;
             
