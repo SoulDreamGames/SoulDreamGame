@@ -61,6 +61,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
     [SerializeField] private Vector3 _lastForward;
     [SerializeField] private Vector3 _originalForward;
     [SerializeField] private MovementComponents _movementComponents; // Components
+
+    [HideInInspector] public Vector3 FlyingVelocity;
     #endregion
 
 
@@ -259,6 +261,8 @@ public class FlyMovement : MonoBehaviour, IPlayerMovement, IFlyActions
 
         Vector3 velocity = _activeForwardSpeed * orientation.forward + _activeStrafeSpeed * orientation.right;
         _movementComponents.Rigidbody.velocity = velocity;
+        FlyingVelocity = velocity;
+
 
         // Minimum speed tolerance before changing to Ground movement
         _usedTolerance = input.y == 0f ? Mathf.Lerp(_usedTolerance, 0.25f, Time.fixedDeltaTime) : 1f;
