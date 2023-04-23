@@ -328,7 +328,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (point.z > 0 && point.x > 0 && point.y > 0 && point.x < Screen.width && point.y < Screen.width)
         {
             float scale = Mathf.Clamp((localPlayer.homingRadius - point.z), 0f, localPlayer.homingRadius) /
-                          localPlayer.homingRadius;
+                          (localPlayer.homingRadius - 10.0f);
             enemyMarker.rectTransform.localScale = new Vector3(scale, scale, scale) * 1.5f;
 
             point.z = 0.0f;
