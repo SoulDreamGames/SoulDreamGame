@@ -112,6 +112,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   players: []
   _respawnTime: 5
 --- !u!114 &7368224080682761781
@@ -154,8 +155,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  enemiesPerWave: 0a00000014000000190000001e000000280000003200000032000000
-  defaultNEnemiesPerWave: 10
+  enemiesPerWave: 0f000000190000001e00000023000000280000003200000032000000
+  defaultNEnemiesPerWave: 15
 --- !u!114 &7368224080682761780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +220,9 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7368224080682761779}
+  - {fileID: 7368224080682761783}
+  - {fileID: 7368224080682761781}
   - {fileID: 7368224080682761780}
-  sceneViewId: 0
+  sceneViewId: 999
   InstantiationId: 0
   isRuntimeInstantiated: 0
