@@ -82,7 +82,6 @@ public class DuplicatingEnemySwarm : EnemySwarm
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        Debug.Log("Creating new duplicating member");
         GameObject memberObject = PhotonNetwork.Instantiate(SwarmPrefab.name, position, Quaternion.identity);
         if (memberObject.TryGetComponent<DuplicatingEnemyEntity>(out DuplicatingEnemyEntity NewDuplicatingEntity))
         {

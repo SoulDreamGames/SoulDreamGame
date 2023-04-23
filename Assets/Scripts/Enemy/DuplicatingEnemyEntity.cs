@@ -51,7 +51,6 @@ public class DuplicatingEnemyEntity : LevitatingEnemyBehaviour
 
             Vector3 direction = Vector3.Normalize(transform.position - collider.gameObject.transform.position);
             mySwarm.createNewMember(transform.position + direction);
-            Debug.Log("Duplicating");
         }
     }
 
