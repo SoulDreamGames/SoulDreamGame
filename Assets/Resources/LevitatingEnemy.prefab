@@ -103,7 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Target: {fileID: 0}
   _DefaultTarget: {fileID: 0}
-  ContactDamage: 10
+  ContactDamage: 40
   _EnemiesManager: {fileID: 0}
   Hitpoints: 1
   Mass: 5
