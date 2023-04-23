@@ -155,7 +155,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  enemiesPerWave: 0f000000190000001e00000023000000280000003200000032000000
+  enemiesPerWave: 0f00000019000000190000001e0000001e0000003200000032000000
   defaultNEnemiesPerWave: 15
 --- !u!114 &7368224080682761780
 MonoBehaviour:
@@ -223,6 +223,6 @@ MonoBehaviour:
   - {fileID: 7368224080682761783}
   - {fileID: 7368224080682761781}
   - {fileID: 7368224080682761780}
-  sceneViewId: 0
+  sceneViewId: 999
   InstantiationId: 0
   isRuntimeInstantiated: 0
