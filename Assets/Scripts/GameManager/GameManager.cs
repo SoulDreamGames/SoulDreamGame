@@ -139,11 +139,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         //ToDo: add behaviour here - Eg. call cinematic, show statistics, etc.
         //Check game results and show ending depending on that
+        if (!gameStarted) return;
+        
         gameStarted = false;
 
         if (!PhotonNetwork.IsMasterClient) return;
+        
         SaveDataToResults();
-        Invoke(nameof(ShowGameResults), 2.0f);
+        Invoke(nameof(ShowGameResults), 5.0f);
     }
 
     void SaveDataToResults()
@@ -154,6 +157,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             totalNpc * 100.0f);
         _resultsData.domeEnergy = (int)domeEnergy;
         _resultsData.enemiesKilled = enemyKills;
+        Debug.Log("%%%: prev enemies: " + enemyKills);
+        Debug.Log("%%%: SO enemies: " + _resultsData.enemiesKilled);
         _resultsData.nDeaths = nDeaths;
 
         //There are 2 possible sceneries for this: completing all waves (then this will set win or lost)
@@ -171,8 +176,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         _resultsData.victory = _gameVictory;
-
-        if (!PhotonNetwork.IsMasterClient) return;
+        
         object[] attributes = { _resultsData.evacuees, _resultsData.domeEnergy, 
             _resultsData.enemiesKilled,  _resultsData.nDeaths, _resultsData.victory};
         view.RPC("SetResultsRPC", RpcTarget.Others, attributes);
