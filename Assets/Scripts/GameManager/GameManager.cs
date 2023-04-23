@@ -158,10 +158,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         int totalNpc = _npcManager.GetTotalSpawnedNPCs();
         _resultsData.evacuees = (int)((float)(totalNpc - _npcManager.peopleDied) / 
             totalNpc * 100.0f);
-        _resultsData.domeEnergy = (int)(domeEnergy / maxDomeEnergy);
+        _resultsData.domeEnergy = (int)(domeEnergy / maxDomeEnergy) * 100;
         _resultsData.enemiesKilled = enemyKills;
-        Debug.Log("%%%: prev enemies: " + enemyKills);
-        Debug.Log("%%%: SO enemies: " + _resultsData.enemiesKilled);
         _resultsData.nDeaths = nDeaths;
 
         //There are 2 possible sceneries for this: completing all waves (then this will set win or lost)
@@ -174,7 +172,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else //Dome not charged completly but evacuees saved at 75% or more
             {
-                _gameVictory = _resultsData.domeEnergy >= 80 && _resultsData.evacuees >= 75;
+                _gameVictory = _resultsData.domeEnergy >= 80 && _resultsData.evacuees >= 60;
             }
         }
 
