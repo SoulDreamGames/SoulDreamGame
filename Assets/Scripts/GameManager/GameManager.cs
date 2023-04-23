@@ -300,7 +300,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         //Dome energy events - Gain on enemy kill + loss on player respawn
         SubscribeToEvent(GameEventType.onEnemyDied, () => { UpdateDomeEnergy(energyGainedOnKill); });
-        SubscribeToEvent(GameEventType.onEnemyDied, () => { enemyKills++; });
+        SubscribeToEvent(GameEventType.onEnemyDied, () =>
+        {
+            if (!PhotonNetwork.IsMasterClient) return; 
+            enemyKills++;
+        });
 
         SubscribeToEvent(GameEventType.onPlayerDied, () => { UpdateDomeEnergy(-energyLostOnDeath); });
     }
@@ -338,7 +342,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         
         domeEnergy += energy;
         domeEnergy = Math.Clamp(domeEnergy, 0f, maxDomeEnergy);
-        Debug.Log("New dome energy: " + domeEnergy);
+        Debug.Log("%%%: New dome energy: " + domeEnergy);
 
         if (domeEnergy >= maxDomeEnergy)
         {
