@@ -94,6 +94,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             onGameEvents.Add(new UnityEvent());
         }
 
+        //Multiply dome energy depending on players quantity
+        maxDomeEnergy *= PhotonNetwork.CurrentRoom.PlayerCount;
+
         //Init all callbacks needed inside the game manager
         InitGameManagerEvents();
 
