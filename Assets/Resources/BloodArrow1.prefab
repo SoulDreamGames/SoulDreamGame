@@ -228,7 +228,7 @@ MonoBehaviour:
   playerEnergyLostOnBoost: 30
   playerEnergyLostOnLightningBreak: 45
   _maxEnergy: 100
-  homingRadius: 50
+  homingRadius: 40
   playersManager: {fileID: 0}
   SpeedUI: {fileID: 0}
   GroundMask:
